@@ -61,12 +61,12 @@
 
         <!-- نسيان كلمة المرور -->
         <TextView
-            android:id="@+id/txtForgotPassword"
+            android:id="@+id/txtsignup"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Forgot Password?"
+            android:text="or Signup?"
             android:textColor="#3498DB"
-            android:textSize="14sp"
+            android:textSize="16sp"
             android:layout_gravity="end"
             android:layout_marginTop="8dp" />
 

@@ -22,7 +22,6 @@ import androidx.appcompat.app.AppCompatActivity;
                 inputPassword = findViewById(R.id.inputPassword);
                 btnLogin = findViewById(R.id.btnLogin);
                 txtSignup = findViewById(R.id.txtSignup);
-                txtForgotPassword = findViewById(R.id.txtForgotPassword);
 
                 btnLogin.setOnClickListener(new View.OnClickListener() {
                     @Override
@@ -34,7 +33,7 @@ import androidx.appcompat.app.AppCompatActivity;
                             Toast.makeText(login.this, "Please fill in all fields", Toast.LENGTH_SHORT).show();
                         } else {
                             Toast.makeText(login.this, "Welcome, " + user + "!", Toast.LENGTH_SHORT).show();
-                            startActivity(new Intent(login.this, MainActivity.class));
+                            startActivity(new Intent(login.this, mainScreen.class));
                         }
                     }
                 });
@@ -49,10 +48,9 @@ import androidx.appcompat.app.AppCompatActivity;
                 txtForgotPassword.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
-                        startActivity(new Intent(login.this, forgotPassword.class));
+                        startActivity(new Intent(login.this,mainScreen.class));
                     }
                 });
             }
         }
-    }
-}
+
