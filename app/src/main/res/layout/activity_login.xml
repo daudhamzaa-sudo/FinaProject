@@ -6,5 +6,102 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context=".login">
+    <?xml version="1.0" encoding="utf-8"?>
+    <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:tools="http://schemas.android.com/tools"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical"
+        android:gravity="center"
+        android:padding="24dp"
+        android:background="#F4F6F7"
+        tools:context=".login">
 
+        <!-- شعار التطبيق -->
+        <ImageView
+            android:layout_width="120dp"
+            android:layout_height="120dp"
+            android:src="@drawable/ic_city_logo"
+            android:layout_marginBottom="24dp"
+            android:contentDescription="App Logo"
+            android:elevation="6dp"
+            android:background="@drawable/rounded_bg_white"
+            android:padding="12dp" />
+
+        <!-- عنوان ترحيبي -->
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Welcome Back!"
+            android:textSize="24sp"
+            android:textStyle="bold"
+            android:textColor="#2C3E50"
+            android:layout_marginBottom="16dp" />
+
+        <!-- إدخال البريد أو اسم المستخدم -->
+        <EditText
+            android:id="@+id/inputEmail"
+            android:layout_width="match_parent"
+            android:layout_height="50dp"
+            android:hint="Email or Username"
+            android:background="@drawable/edittext_bg"
+            android:padding="12dp"
+            android:inputType="textEmailAddress" />
+
+        <!-- إدخال كلمة المرور -->
+        <EditText
+            android:id="@+id/inputPassword"
+            android:layout_width="match_parent"
+            android:layout_height="50dp"
+            android:hint="Password"
+            android:background="@drawable/edittext_bg"
+            android:padding="12dp"
+            android:inputType="textPassword"
+            android:layout_marginTop="12dp" />
+
+        <!-- نسيان كلمة المرور -->
+        <TextView
+            android:id="@+id/txtForgotPassword"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Forgot Password?"
+            android:textColor="#3498DB"
+            android:textSize="14sp"
+            android:layout_gravity="end"
+            android:layout_marginTop="8dp" />
+
+        <!-- زر تسجيل الدخول -->
+        <Button
+            android:id="@+id/btnLogin"
+            android:layout_width="match_parent"
+            android:layout_height="50dp"
+            android:text="Login"
+            android:layout_marginTop="16dp"
+            android:backgroundTint="#27AE60"
+            android:textColor="#FFFFFF"
+            android:textStyle="bold" />
+
+        <!-- خيار التسجيل -->
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:layout_marginTop="16dp">
+
+            <TextView
+                android:text="Don't have an account?"
+                android:textSize="14sp"
+                android:textColor="#7F8C8D"  android:layout_height="" android:layout_width=""/>
+
+            <TextView
+                android:id="@+id/txtSignup"
+                android:text=" Sign up"
+                android:textSize="14sp"
+                android:textStyle="bold"
+                android:textColor="#2980B9"
+                android:clickable="true"
+                android:focusable="true"  android:layout_height="" android:layout_width=""/>
+        </LinearLayout>
+
+    </LinearLayout>
 </androidx.constraintlayout.widget.ConstraintLayout>
