@@ -1,56 +1,37 @@
-
 package com.example.finaproject;
 
-import android.content.Intent;
 import android.os.Bundle;
-import android.view.View;
-import android.widget.*;
+import android.widget.Button;
+import android.widget.EditText;
+
+import androidx.activity.EdgeToEdge;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.graphics.Insets;
+import androidx.core.view.ViewCompat;
+import androidx.core.view.WindowInsetsCompat;
 
-        public class login extends AppCompatActivity {
+public class login extends AppCompatActivity {
 
-            EditText inputEmail, inputPassword;
-            Button btnLogin;
-            TextView txtSignup, txtForgotPassword;
+    private EditText etEmail;
+    private EditText etPassword;
+    private Button btnLogin;
+    private Button btnLoginWithFacebook;
+    private Button btnLoginWithGoogle;
 
-            @Override
-            protected void onCreate(Bundle savedInstanceState) {
-                super.onCreate(savedInstanceState);
-                setContentView(R.layout.activity_login); // يربط مع ملف XML
-
-                inputEmail = findViewById(R.id.inputEmail);
-                inputPassword = findViewById(R.id.inputPassword);
-                btnLogin = findViewById(R.id.btnLogin);
-                txtSignup = findViewById(R.id.txtSignup);
-
-                btnLogin.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-                        String user = inputEmail.getText().toString().trim();
-                        String pass = inputPassword.getText().toString().trim();
-
-                        if (user.isEmpty() || pass.isEmpty()) {
-                            Toast.makeText(login.this, "Please fill in all fields", Toast.LENGTH_SHORT).show();
-                        } else {
-                            Toast.makeText(login.this, "Welcome, " + user + "!", Toast.LENGTH_SHORT).show();
-                            startActivity(new Intent(login.this, mainScreen.class));
-                        }
-                    }
-                });
-
-                txtSignup.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-                        startActivity(new Intent(login.this, signup.class));
-                    }
-                });
-
-                txtForgotPassword.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-                        startActivity(new Intent(login.this,mainScreen.class));
-                    }
-                });
-            }
-        }
-
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        EdgeToEdge.enable(this);
+        setContentView(R.layout.activity_login);
+        etEmail=findViewById(R.id.login_with_email);
+        etPassword=findViewById(R.id.password);
+        btnLogin=findViewById(R.id.login_with_email);
+        btnLoginWithFacebook=findViewById(R.id.login_with_facebook);
+        btnLoginWithGoogle=findViewById(R.id.login_with_google);
+        ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main), (v, insets) -> {
+            Insets systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars());
+            v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom);
+            return insets;
+        });
+    }
+}

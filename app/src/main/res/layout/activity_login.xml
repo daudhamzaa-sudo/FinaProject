@@ -6,102 +6,47 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context=".login">
-    <?xml version="1.0" encoding="utf-8"?>
-    <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-        xmlns:tools="http://schemas.android.com/tools"
+
+    <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
+        android:layout_height="wrap_content"
         android:orientation="vertical"
-        android:gravity="center"
-        android:padding="24dp"
-        android:background="#F4F6F7"
-        tools:context=".login">
+        android:padding="16dp">
 
-        <!-- شعار التطبيق -->
-        <ImageView
-            android:layout_width="120dp"
-            android:layout_height="120dp"
-            android:src="@drawable/ic_city_logo"
-            android:layout_marginBottom="24dp"
-            android:contentDescription="App Logo"
-            android:elevation="6dp"
-            android:background="@drawable/rounded_bg_white"
-            android:padding="12dp" />
-
-        <!-- عنوان ترحيبي -->
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Welcome Back!"
-            android:textSize="24sp"
-            android:textStyle="bold"
-            android:textColor="#2C3E50"
-            android:layout_marginBottom="16dp" />
-
-        <!-- إدخال البريد أو اسم المستخدم -->
         <EditText
-            android:id="@+id/inputEmail"
+            android:id="@+id/email"
             android:layout_width="match_parent"
-            android:layout_height="50dp"
-            android:hint="Email or Username"
-            android:background="@drawable/edittext_bg"
-            android:padding="12dp"
-            android:inputType="textEmailAddress" />
-
-        <!-- إدخال كلمة المرور -->
-        <EditText
-            android:id="@+id/inputPassword"
-            android:layout_width="match_parent"
-            android:layout_height="50dp"
-            android:hint="Password"
-            android:background="@drawable/edittext_bg"
-            android:padding="12dp"
-            android:inputType="textPassword"
-            android:layout_marginTop="12dp" />
-
-        <!-- نسيان كلمة المرور -->
-        <TextView
-            android:id="@+id/txtsignup"
-            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="or Signup?"
-            android:textColor="#3498DB"
-            android:textSize="16sp"
-            android:layout_gravity="end"
-            android:layout_marginTop="8dp" />
+            android:hint="@string/email_hint" />
 
-        <!-- زر تسجيل الدخول -->
-        <Button
-            android:id="@+id/btnLogin"
+        <EditText
+            android:id="@+id/password"
             android:layout_width="match_parent"
-            android:layout_height="50dp"
-            android:text="Login"
+            android:layout_height="wrap_content"
+            android:hint="@string/password_hint"
+            android:inputType="textPassword" />
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/login_with_email"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
             android:layout_marginTop="16dp"
-            android:backgroundTint="#27AE60"
-            android:textColor="#FFFFFF"
-            android:textStyle="bold" />
+            android:text="@string/login_with_email" />
 
-        <!-- خيار التسجيل -->
-        <LinearLayout
-            android:layout_width="wrap_content"
+        <Button
+            android:id="@+id/login_with_facebook"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="horizontal"
-            android:layout_marginTop="16dp">
+            android:layout_marginTop="16dp"
+            android:text="@string/login_with_facebook" />
 
-            <TextView
-                android:text="Don't have an account?"
-                android:textSize="14sp"
-                android:textColor="#7F8C8D"  android:layout_height="" android:layout_width=""/>
-
-            <TextView
-                android:id="@+id/txtSignup"
-                android:text=" Sign up"
-                android:textSize="14sp"
-                android:textStyle="bold"
-                android:textColor="#2980B9"
-                android:clickable="true"
-                android:focusable="true"  android:layout_height="" android:layout_width=""/>
-        </LinearLayout>
+        <Button
+            android:id="@+id/login_with_google"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="16dp"
+            android:text="@string/login_with_google" />
 
     </LinearLayout>
+
 </androidx.constraintlayout.widget.ConstraintLayout>
