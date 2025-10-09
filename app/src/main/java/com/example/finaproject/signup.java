@@ -1,12 +1,8 @@
 package com.example.finaproject;
 
-import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.os.Bundle;
 import android.widget.Button;
-import android.widget.EditText;
-import android.widget.ImageView;
-import android.widget.TextView;
 
 import androidx.activity.EdgeToEdge;
 import androidx.appcompat.app.AppCompatActivity;
@@ -15,37 +11,28 @@ import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
 
 import com.google.android.material.button.MaterialButton;
-import com.google.android.material.card.MaterialCardView;
 import com.google.android.material.textfield.TextInputLayout;
 
-public class login extends AppCompatActivity {
-
-private ImageView imVLogo;
-private TextView appTitle;
-private MaterialCardView loginCard;
+public class signup extends AppCompatActivity {
+private Button btnSignup;
+private TextInputLayout inputName;
 private TextInputLayout inputEmail;
 private TextInputLayout inputPassword;
+private TextInputLayout inputConfirmPassword;
 private MaterialButton btnLogin;
-private MaterialButton btnLoginWithFacebook;
-private MaterialButton btnLoginWithGoogle;
-private MaterialButton btnSignup;
-    @SuppressLint({"MissingInflatedId", "WrongViewCast"})
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         EdgeToEdge.enable(this);
-        setContentView(R.layout.activity_login);
-        imVLogo = findViewById(R.id.imVLogo);
-        appTitle = findViewById(R.id.appTitle);
-        loginCard = findViewById(R.id.loginCard);
+        setContentView(R.layout.activity_signup);
+        btnSignup = findViewById(R.id.btnSignup);
+        inputName = findViewById(R.id.inputName);
         inputEmail = findViewById(R.id.inputEmail);
         inputPassword = findViewById(R.id.inputPassword);
+        inputConfirmPassword = findViewById(R.id.inputConfirmPassword);
         btnLogin = findViewById(R.id.btnLogin);
-        btnLoginWithFacebook = findViewById(R.id.btnLoginWithFacebook);
-      //  btnLoginWithGoogle = findViewById(R.id.btnLoginWithGoogle);
-        btnSignup = findViewById(R.id.btnSignup);
-        btnSignup.setOnClickListener(v -> {
-            Intent intent = new Intent(login.this, signup.class);
+        btnLogin.setOnClickListener(v -> {
+            Intent intent = new Intent(signup.this, login.class);
             startActivity(intent);
         });
         ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main), (v, insets) -> {
