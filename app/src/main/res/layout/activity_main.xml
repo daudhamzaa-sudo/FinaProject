@@ -3,154 +3,114 @@
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    android:id="@+id/mainLayout"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#F6F9F6"
+    android:background="#F9F9F9"
     tools:context=".MainActivity">
 
-    <!-- Top App     Bar -->
+    <!-- شريط علوي -->
+    <com.google.android.material.appbar.MaterialToolbar
+        android:id="@+id/topAppBar"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:backgroundTint="#1B5E20"
+        android:title="Municipality Reports"
+        android:titleTextColor="@android:color/white"
+        android:elevation="6dp"
+    />
 
-    <!-- Scrollable content -->
-    <ScrollView
+    <!-- محتوى الصفحة -->
+    <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_marginTop="?attr/actionBarSize"
-        android:fillViewport="true"
-        android:padding="16dp">
+        android:orientation="vertical"
+        android:padding="16dp"
+        app:layout_behavior="@string/appbar_scrolling_view_behavior">
 
+        <!-- عنوان المستخدم -->
+        <TextView
+            android:id="@+id/tvWelcome"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Welcome, Hamza 👋"
+            android:textSize="20sp"
+            android:textStyle="bold"
+            android:textColor="#1B5E20"
+            android:layout_marginTop="8dp"
+            android:layout_marginBottom="12dp"/>
+
+        <!-- مربع البحث -->
+        <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/searchLayout"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            app:startIconDrawable="@android:drawable/ic_menu_search"
+            app:boxBackgroundMode="filled"
+            app:boxCornerRadiusTopStart="16dp"
+            app:boxCornerRadiusTopEnd="16dp"
+            app:boxCornerRadiusBottomStart="16dp"
+            app:boxCornerRadiusBottomEnd="16dp"
+            app:boxBackgroundColor="#FFFFFF"
+            app:boxStrokeColor="#4CAF50"
+            android:hint="Search for reports...">
+
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/etSearch"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:inputType="text"
+                android:textColor="#000"
+                android:textColorHint="#757575"/>
+        </com.google.android.material.textfield.TextInputLayout>
+
+        <!-- قسم الفلاتر -->
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="vertical">
+            android:orientation="horizontal"
+            android:gravity="center"
+            android:layout_marginTop="16dp"
+            android:layout_marginBottom="8dp">
 
-            <!-- Welcome Section -->
-            <TextView
-                android:id="@+id/welcomeText"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:text="Welcome back, Alex 👋"
-                android:textSize="22sp"
-                android:textStyle="bold"
-                android:textColor="#1B5E20"
-                android:layout_marginBottom="12dp" />
+            <com.google.android.material.chip.Chip
+                android:id="@+id/chipAll"
+                style="@style/Widget.MaterialComponents.Chip.Choice"
+                android:text="All"
 
-            <!-- Search Bar -->
-            <com.google.android.material.textfield.TextInputLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:hint="Search reports..."
-                style="@style/Widget.Material3.TextInputLayout.OutlinedBox"
-                app:startIconDrawable="@drawable/ic_search"
-                app:boxStrokeColor="#4CAF50"
-                app:hintTextColor="@color/green">
+                android:checked="true"/>
 
-                <com.google.android.material.textfield.TextInputEditText
-                    android:id="@+id/searchInput"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:inputType="text" />
-            </com.google.android.material.textfield.TextInputLayout>
+            <com.google.android.material.chip.Chip
+                android:id="@+id/chipPending"
+                style="@style/Widget.MaterialComponents.Chip.Choice"
+                android:text="Pending"/>
 
-            <!-- Section Title -->
-            <TextView
-                android:id="@+id/recentReportsTitle"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:text="Recent Reports"
-                android:textSize="20sp"
-                android:textStyle="bold"
-                android:textColor="#388E3C"
-                android:layout_marginTop="24dp"
-                android:layout_marginBottom="8dp" />
-
-            <!-- Report Cards -->
-            <LinearLayout
-                android:id="@+id/reportsContainer"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="vertical"
-                android:dividerPadding="8dp">
-
-                <!-- Sample Report Card -->
-                <com.google.android.material.card.MaterialCardView
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    app:cardCornerRadius="16dp"
-                    app:cardElevation="5dp"
-                    app:strokeColor="#A5D6A7"
-                    app:strokeWidth="1dp"
-                    android:backgroundTint="#FFFFFF"
-                    android:layout_marginBottom="12dp">
-
-                    <LinearLayout
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:orientation="vertical"
-                        android:padding="16dp">
-
-                        <TextView
-                            android:id="@+id/reportTitle"
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:text="Streetlight not working"
-                            android:textSize="18sp"
-                            android:textStyle="bold"
-                            android:textColor="#1B5E20" />
-
-                        <TextView
-                            android:id="@+id/reportStatus"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:text="Status: In Progress"
-                            android:textColor="#4CAF50"
-                            android:textSize="14sp"
-                            android:layout_marginTop="4dp" />
-
-                        <TextView
-                            android:id="@+id/reportDate"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:text="Oct 12, 2025"
-                            android:textColor="#757575"
-                            android:textSize="13sp"
-                            android:layout_marginTop="2dp" />
-
-                        <Button
-                            android:id="@+id/viewDetailsBtn"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:text="View Details"
-                            android:textColor="#FFFFFF"
-                            android:backgroundTint="#2E7D32"
-                            android:layout_gravity="end"
-                            android:layout_marginTop="10dp" />
-                    </LinearLayout>
-                </com.google.android.material.card.MaterialCardView>
-            </LinearLayout>
+            <com.google.android.material.chip.Chip
+                android:id="@+id/chipCompleted"
+                style="@style/Widget.MaterialComponents.Chip.Choice"
+                android:text="Completed"/>
         </LinearLayout>
-    </ScrollView>
 
-    <!-- Floating Add Report Button -->
+        <!-- RecyclerView لعرض البلاغات -->
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/recyclerReports"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="1"
+
+            android:layout_marginTop="4dp"
+         />
+    </LinearLayout>
+
+    <!-- زر إضافة بلاغ جديد -->
     <com.google.android.material.floatingactionbutton.FloatingActionButton
-        android:id="@+id/addReportBtn"
+        android:id="@+id/fabAddReport"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="bottom|end"
-        android:layout_margin="24dp"
-        app:backgroundTint="#4CAF50"
-        app:srcCompat="@drawable/ic_add"
-        app:tint="#FFFFFF" />
+        android:layout_margin="20dp"
+        android:contentDescription="Add Report"
 
-    <!-- Bottom Navigation Bar -->
-    <com.google.android.material.bottomnavigation.BottomNavigationView
-        android:id="@+id/bottomNav"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_gravity="bottom"
-        android:background="#FFFFFF"
-        app:itemIconTint="@color/green_selector"
-        app:itemTextColor="@color/green_selector"
-        app:menu="@menu/bottom_menu" />
+        app:backgroundTint="#43A047"
+        app:tint="@android:color/white"/>
 
 </androidx.coordinatorlayout.widget.CoordinatorLayout>
