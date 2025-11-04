@@ -34,7 +34,7 @@ private MaterialButton btnLogin;
         inputConfirmPassword = findViewById(R.id.inputConfirmPassword);
 
 btnSignup.setOnClickListener(v -> {
-            Intent intent = new Intent(signup.this, login.class);
+            Intent intent = new Intent(signup.this, MainActivity.class);
             startActivity(intent);
         });
     //btnSignup.setOnClickListener(v -> {
