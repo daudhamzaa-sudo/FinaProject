@@ -1,9 +1,7 @@
 package com.example.finaproject;
 
-import android.annotation.SuppressLint;
-import android.content.Intent;
 import android.os.Bundle;
-import android.widget.Button;
+import android.widget.AutoCompleteTextView;
 import android.widget.TextView;
 
 import androidx.activity.EdgeToEdge;
@@ -15,37 +13,32 @@ import androidx.core.view.WindowInsetsCompat;
 import com.google.android.material.textfield.TextInputEditText;
 import com.google.android.material.textfield.TextInputLayout;
 
-public class MainActivity extends AppCompatActivity {
-
+public class NewReporScreen extends AppCompatActivity {
+private TextInputEditText inputTitle;
+private TextInputEditText inputDescription;
+private AutoCompleteTextView inputRegion;
+private TextInputEditText attachPhotoLayout;
+    private TextView imgPreview;
+    private TextView btnAttachPhoto;
 private TextView tvTitle;
 private TextView tvSubtitle;
-private TextInputLayout inputSearchLayout;
-private TextInputEditText inputSearch;
-private Button btnSearch;
-private Button btnAddReport;
-
-
-    @SuppressLint("MissingInflatedId")
+private TextInputEditText btnSubmit;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         EdgeToEdge.enable(this);
-        setContentView(R.layout.activity_main);
+        setContentView(R.layout.activity_new_repor_screen);
         ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main), (v, insets) -> {
             Insets systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars());
             v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom);
             return insets;
-
         });
+        inputTitle = findViewById(R.id.inputTitle);
+        inputDescription = findViewById(R.id.inputDescription);
+        inputRegion = findViewById(R.id.inputRegion);
+
         tvTitle = findViewById(R.id.tvTitle);
         tvSubtitle = findViewById(R.id.tvSubtitle);
-        inputSearchLayout = findViewById(R.id.inputSearchLayout);
-        inputSearch = findViewById(R.id.inputSearch);
 
-        btnAddReport = findViewById(R.id.btnAddReport);
-        btnAddReport.setOnClickListener(view -> {
-            Intent intent = new Intent(MainActivity.this, NewReporScreen.class);
-            startActivity(intent);
-});
     }
 }
