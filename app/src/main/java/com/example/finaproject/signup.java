@@ -19,6 +19,7 @@ public class signup extends AppCompatActivity {
 private Button btnSignup1;
 
 private TextInputEditText inputEmail;
+private TextInputEditText inputUsername;
 private TextInputEditText inputPassword;
 private TextInputEditText inputConfirmPassword;
 private MaterialButton btnLogin;
@@ -36,6 +37,7 @@ private MaterialButton btnLogin;
             return insets;
         });
             btnSignup1 = findViewById(R.id.btnSignup1);
+        inputUsername = findViewById(R.id.inputUsername);
             inputEmail = findViewById(R.id.inputEmail);
             inputPassword = findViewById(R.id.inputPassword);
             inputConfirmPassword = findViewById(R.id.inputConfirmPassword);

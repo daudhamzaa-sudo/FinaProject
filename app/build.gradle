@@ -4,7 +4,7 @@ plugins {
 
 android {
     namespace 'com.example.finaproject'
-    compileSdk 33
+    compileSdk 36
 
     defaultConfig {
         applicationId "com.example.finaproject"

@@ -8,15 +8,15 @@ import androidx.room.RoomDatabase;
 
 import com.example.finaproject.data.MyTaskTable.MyTask;
 import com.example.finaproject.data.MyTaskTable.MyTaskQuery;
-import com.example.finaproject.data.MyUserTable.MyUser;
-import com.example.finaproject.data.MyUserTable.MyUserQuery;
+import com.example.finaproject.data.MyProfileTable.Profile;
+import com.example.finaproject.data.MyProfileTable.MyProfileQuery;
 
 
-@Database(entities = {MyUser.class, MyTask.class}, version = 1)
+@Database(entities = {Profile.class, MyTask.class}, version = 1)
     public abstract class AppDatabase extends RoomDatabase {
 private static AppDatabase db;
 
-public abstract MyUserQuery getUserQuery();
+public abstract MyProfileQuery getUserQuery();
 
 public abstract MyTaskQuery getMyTaskQuery();
 

@@ -12,16 +12,14 @@ import java.util.List;
 public interface MyTaskQuery {
     @Query("SELECT * FROM MyTask")
     List<MyTask> getAll();
-    @Query("SELECT * FROM MyTask WHERE keyid IN (:userIds)")
-    List<MyTask> loadAllByIds(int[] userIds);
+
     @Query("SELECT * FROM MyTask WHERE :name LIKE :name LIMIT 1")
     MyTask findByName(String name);
     @Insert
     void insertAll(MyTask... users);
     @Delete
     void delete(MyTask user);
-    @Query("Delete From MyTask WHERE keyid=:id ")
-    void delete(int id);
+    
     @Insert
     void insert(MyTask myTask);
     @Update

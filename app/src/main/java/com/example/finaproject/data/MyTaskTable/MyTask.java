@@ -6,7 +6,7 @@ import androidx.room.PrimaryKey;
 @Entity
 public class MyTask {
     @PrimaryKey
-    public long keyid;
+
     public String taskName;
     public String taskDescription;
     public String taskDate;
@@ -17,7 +17,7 @@ public class MyTask {
     @Override
     public String toString() {
         return "MyTask{" +
-                "keyid=" + keyid +
+
                 ", taskName='" + taskName + '\'' +
                 ", taskDescription='" + taskDescription + '\'' +
                 ", taskDate='" + taskDate + '\'' +
@@ -27,15 +27,23 @@ public class MyTask {
                 '}';
     }
 
-    public long getKeyid() {
-        return keyid;
+    public String getTaskName() {
+        return taskName;
     }
 
-    public void setKeyid(long keyid) {
-        this.keyid = keyid;
+    public void setTaskName(String taskName) {
+        this.taskName = taskName;
     }
 
-    public MyTask(long keyid) {
-        this.keyid = keyid;
+    public MyTask(String taskName,
+                  String taskDescription, String taskDate, String taskTime, String taskPriority, String taskStatus) {
+        this.taskName = taskName;
+        this.taskDescription = taskDescription;
+        this.taskDate = taskDate;
+        this.taskTime = taskTime;
+        this.taskPriority = taskPriority;
+        this.taskStatus = taskStatus;
+    }
+    public MyTask() {
     }
 }
