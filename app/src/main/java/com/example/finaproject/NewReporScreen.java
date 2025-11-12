@@ -1,5 +1,6 @@
 package com.example.finaproject;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.widget.AutoCompleteTextView;
 import android.widget.TextView;
@@ -10,6 +11,7 @@ import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
 
+import com.google.android.material.button.MaterialButton;
 import com.google.android.material.textfield.TextInputEditText;
 import com.google.android.material.textfield.TextInputLayout;
 
@@ -22,7 +24,7 @@ private TextInputEditText attachPhotoLayout;
     private TextView btnAttachPhoto;
 private TextView tvTitle;
 private TextView tvSubtitle;
-private TextInputEditText btnSubmit;
+private MaterialButton btnSubmit;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -33,12 +35,15 @@ private TextInputEditText btnSubmit;
             v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom);
             return insets;
         });
-        inputTitle = findViewById(R.id.inputTitle);
-        inputDescription = findViewById(R.id.inputDescription);
-        inputRegion = findViewById(R.id.inputRegion);
-
-        tvTitle = findViewById(R.id.tvTitle);
-        tvSubtitle = findViewById(R.id.tvSubtitle);
-
+btnSubmit = findViewById(R.id.btnSubmit);
+inputTitle = findViewById(R.id.inputTitle);
+inputDescription = findViewById(R.id.inputDescription);
+inputRegion = findViewById(R.id.inputRegion);
+tvTitle = findViewById(R.id.tvTitle);
+tvSubtitle = findViewById(R.id.tvSubtitle);
+btnSubmit.setOnClickListener(view -> {
+    Intent intent = new Intent(NewReporScreen.this, MainActivity.class);
+    startActivity(intent);
+});
     }
 }
