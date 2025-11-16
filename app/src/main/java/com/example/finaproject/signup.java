@@ -11,6 +11,8 @@ import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
 
+import com.example.finaproject.data.AppDatabase;
+import com.example.finaproject.data.MyProfileTable.MyProfileQuery;
 import com.example.finaproject.data.MyProfileTable.Profile;
 import com.google.android.material.button.MaterialButton;
 import com.google.android.material.textfield.TextInputEditText;
@@ -97,5 +99,10 @@ public class signup extends AppCompatActivity {
             myUser.setPassw(password);
         }
         return isValid;
+
     }
+    AppDatabase appDatabase = Room.databaseBuilder(this, AppDatabase.class, "mydatabase").build();
+    MyProfileQuery myProfileQuery = appDatabase.myProfileQuery();
+    myProfileQuery.insert(myUser);
+
 }
