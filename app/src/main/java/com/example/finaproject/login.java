@@ -5,6 +5,7 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
+import android.widget.Toast;
 
 import androidx.activity.EdgeToEdge;
 import androidx.appcompat.app.AppCompatActivity;
@@ -62,5 +63,30 @@ public class login extends AppCompatActivity {
                 startActivity(intent1);
             }
         });
+    private void validateAndReadData() {
+        boolean isValid = true;
+        String email = inputEmail.getText().toString().trim();
+        String password = inputPassword.getText().toString().trim();
+
+        if (email.isEmpty()) {
+            inputEmail.setError("Email is required");
+            isValid = false;
+        } else if (!android.util.Patterns.EMAIL_ADDRESS.matcher(email).matches()) {
+            inputEmail.setError("Please enter a valid email address");
+            isValid = false;
+        }
+        if (password.isEmpty() || password.length() < 5 || password.length() > 8) {
+            inputPassword.setError("Password must be at least 5 characters and not more than 8");
+            isValid = false;
+        }
+        if (isValid==false) {
+            Toast.makeText(getApplicationContext(), "Error in form", Toast.LENGTH_SHORT).show();
+        }
+        if (isValid) {
+            // Do something with the data
+
+        }
+
+    }
     }
 }
