@@ -45,7 +45,7 @@ public class signup extends AppCompatActivity {
         inputEmail = findViewById(R.id.inputEmail);
         inputPassword = findViewById(R.id.inputPassword);
         inputConfirmPassword = findViewById(R.id.inputConfirmPassword);
-        if(validateAndReadData())
+        if(validateAndReadData()==true)
         btnSignup1.setOnClickListener(view -> {
             Intent intent = new Intent(signup.this, MainActivity.class);
             startActivity(intent);
@@ -101,8 +101,11 @@ public class signup extends AppCompatActivity {
         return isValid;
 
     }
-    AppDatabase appDatabase = Room.databaseBuilder(this, AppDatabase.class, "mydatabase").build();
-    MyProfileQuery myProfileQuery = appDatabase.myProfileQuery();
-    myProfileQuery.insert(myUser);
+
+    private void insertUser(Profile myUser) {
+        // Get writeable database
+        AppDatabase db = AppDatabase.getDB(getApplicationContext());
+        db.myProfileQuery().insert(myUser);
+    }
 
 }
