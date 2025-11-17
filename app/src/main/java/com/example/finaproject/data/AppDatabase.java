@@ -1,5 +1,6 @@
 package com.example.finaproject.data;
 
+import android.app.Application;
 import android.content.Context;
 
 import androidx.room.Database;
@@ -16,7 +17,10 @@ import com.example.finaproject.data.MyProfileTable.MyProfileQuery;
     public abstract class AppDatabase extends RoomDatabase {
 private static AppDatabase db;
 
-public abstract MyProfileQuery getUserQuery();
+    public static AppDatabase getDB(Application application) {
+    }
+
+    public abstract MyProfileQuery getUserQuery();
 
 public abstract MyTaskQuery getMyTaskQuery();
 
@@ -32,14 +36,10 @@ public static AppDatabase getdb(Context context) {
 }
 
 
-
-
-
-
-
-
-
+    public MyProfileQuery getProfile() {
+    return getUserQuery();
     }
+}
 
 
 

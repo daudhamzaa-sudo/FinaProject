@@ -99,7 +99,7 @@ public class signup extends AppCompatActivity {
             myUser.setPassw(password);
         }
 
-        MyProfileQuery myProfileQuery = new MyProfileQuery(username,email,password);
+        Profile myProfileQuery = new Profile(username,email,password);
         Profile checkUser = myProfileQuery.checkEmailPassw(email, password);
         if (checkUser != null) {
             Toast.makeText(getApplicationContext(), "Email and password already exist", Toast.LENGTH_SHORT).show();
@@ -111,7 +111,7 @@ if (isValid==true) {
 
 
     //بناء قاعدة بيانات وارجاع مؤشر عليها1
-    AppDataBase db=AppDataBase.getDB(getApplication());
+    AppDatabase db = AppDatabase.getDB(getApplication());
 //2 مؤشر لكائن عمليات  لجدول
     MyProfileQuery ProfileQuery = db.getProfile();
 //3  بناء كائن من نوع الجدول وتحديد قيم الصفات
@@ -119,9 +119,13 @@ if (isValid==true) {
     s1.setEmail(email);
     Profile s2=new Profile();
     s2.setPassw(password);
+
+    Profile s4=new Profile();
+    s4.setUsername(username);
 //4 اضافة كائن للجدول
     MyProfileQuery.insert(s1);
     MyProfileQuery.insert(s2);
+    MyProfileQuery.insert(s4);
 
 
 }
