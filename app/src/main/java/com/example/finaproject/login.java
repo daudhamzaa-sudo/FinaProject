@@ -25,8 +25,7 @@ public class login extends AppCompatActivity {
  private TextInputEditText inputPassword;
     @SuppressLint({"MissingInflatedId", "WrongViewCast"})
     @Override
-    protected void onCreate(Bundle savedInstanceState)
-    {
+    protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         EdgeToEdge.enable(this);
         setContentView(R.layout.activity_login);
@@ -36,26 +35,24 @@ public class login extends AppCompatActivity {
             return insets;
         });
 
-      btnLogin = findViewById(R.id.btnLogin);
-      btnSignup1 = findViewById(R.id.btnSignup1);
-      btnLoginWithFacebook = findViewById(R.id.btnLoginWithFacebook);
-     // btnLoginWithGoogle = findViewById(R.id.btnLoginWithGoogle);
-      inputEmail = findViewById(R.id.inputEmail);
-      inputPassword = findViewById(R.id.inputPassword);
+        btnLogin = findViewById(R.id.btnLogin);
+        btnSignup1 = findViewById(R.id.btnSignup1);
+        btnLoginWithFacebook = findViewById(R.id.btnLoginWithFacebook);
+        // btnLoginWithGoogle = findViewById(R.id.btnLoginWithGoogle);
+        inputEmail = findViewById(R.id.inputEmail);
+        inputPassword = findViewById(R.id.inputPassword);
 
         btnSignup1.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
 
-            Intent intent = new Intent(login.this, signup.class);
-            startActivity(intent);
+                Intent intent = new Intent(login.this, signup.class);
+                startActivity(intent);
             }
 
 
-
-    });
-        btnLogin.setOnClickListener(new View.OnClickListener()
-        {
+        });
+        btnLogin.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view1) {
 
@@ -63,30 +60,32 @@ public class login extends AppCompatActivity {
                 startActivity(intent1);
             }
         });
-    private void validateAndReadData() {
-        boolean isValid = true;
-        String email = inputEmail.getText().toString().trim();
-        String password = inputPassword.getText().toString().trim();
+        // Validate and read data
+        private boolean validateAndReadData() {
+            boolean isValid = true;
+            String email = inputEmail.getText().toString().trim();
+            String password = inputPassword.getText().toString().trim();
 
-        if (email.isEmpty()) {
-            inputEmail.setError("Email is required");
-            isValid = false;
-        } else if (!android.util.Patterns.EMAIL_ADDRESS.matcher(email).matches()) {
-            inputEmail.setError("Please enter a valid email address");
-            isValid = false;
-        }
-        if (password.isEmpty() || password.length() < 5 || password.length() > 8) {
-            inputPassword.setError("Password must be at least 5 characters and not more than 8");
-            isValid = false;
-        }
-        if (isValid==false) {
-            Toast.makeText(getApplicationContext(), "Error in form", Toast.LENGTH_SHORT).show();
-        }
-        if (isValid) {
-            // Do something with the data
+            if (email.isEmpty()) {
+                inputEmail.setError("Email is required");
+                isValid = false;
+            }
+            if (password.isEmpty() || password.length() < 5 || password.length() > 8) {
+                inputPassword.setError("Password must be at least 5 characters and not more than 8");
+                isValid = false;
+            }
+            if (isValid==false) {
 
-        }
+                Toast.makeText(getApplicationContext(), "Error in form", Toast.LENGTH_SHORT).show();
 
-    }
+            }
+            if (isValid) {
+                // Do something with the data
+                Profile myUser = new Profile();
+                myUser.setEmail(email);
+                myUser.setPassw(password);
+            }
+            return isValid;
+        }
     }
 }

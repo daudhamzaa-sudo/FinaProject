@@ -98,14 +98,38 @@ public class signup extends AppCompatActivity {
             myUser.setEmail(email);
             myUser.setPassw(password);
         }
+
+        MyProfileQuery myProfileQuery = new MyProfileQuery(username,email,password);
+        Profile checkUser = myProfileQuery.checkEmailPassw(email, password);
+        if (checkUser != null) {
+            Toast.makeText(getApplicationContext(), "Email and password already exist", Toast.LENGTH_SHORT).show();
+            isValid = false;
+        }
+
         return isValid;
+if (isValid==true) {
 
-    }
 
-    private void insertUser(Profile myUser) {
-        // Get writeable database
-        AppDatabase db = AppDatabase.getDB(getApplicationContext());
-        db.myProfileQuery().insert(myUser);
-    }
+    //بناء قاعدة بيانات وارجاع مؤشر عليها1
+    AppDataBase db=AppDataBase.getDB(getApplication());
+//2 مؤشر لكائن عمليات  لجدول
+    MyProfileQuery ProfileQuery = db.getProfile();
+//3  بناء كائن من نوع الجدول وتحديد قيم الصفات
+    Profile s1=new Profile();
+    s1.setEmail(email);
+    Profile s2=new Profile();
+    s2.setPassw(password);
+//4 اضافة كائن للجدول
+    MyProfileQuery.insert(s1);
+    MyProfileQuery.insert(s2);
+
 
 }
+
+}
+    }
+
+
+
+
+
