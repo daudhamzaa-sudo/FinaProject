@@ -32,14 +32,10 @@ public static AppDatabase getdb(Context context) {
 }
 
 
-
-
-
-
-
-
-
+    public MyProfileQuery getProfileQuery() {
+    return db.getProfileQuery();
     }
+}
 
 
 

@@ -13,6 +13,8 @@ import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
 
+import com.example.finaproject.data.AppDatabase;
+import com.example.finaproject.data.MyProfileTable.Profile;
 import com.google.android.material.textfield.TextInputEditText;
 
 public class login extends AppCompatActivity {
@@ -54,38 +56,55 @@ public class login extends AppCompatActivity {
         });
         btnLogin.setOnClickListener(new View.OnClickListener() {
             @Override
-            public void onClick(View view1) {
-
-                Intent intent1 = new Intent(login.this, MainActivity.class);
-                startActivity(intent1);
+            public void onClick(View view) {
+                if (validateAndReadData()) {
+                    Intent intent = new Intent(login.this, MainActivity.class);
+                    startActivity(intent);
+                }
             }
         });
         // Validate and read data
-        private boolean validateAndReadData() {
-            boolean isValid = true;
-            String email = inputEmail.getText().toString().trim();
-            String password = inputPassword.getText().toString().trim();
 
-            if (email.isEmpty()) {
-                inputEmail.setError("Email is required");
-                isValid = false;
-            }
-            if (password.isEmpty() || password.length() < 5 || password.length() > 8) {
-                inputPassword.setError("Password must be at least 5 characters and not more than 8");
-                isValid = false;
-            }
-            if (isValid==false) {
-
-                Toast.makeText(getApplicationContext(), "Error in form", Toast.LENGTH_SHORT).show();
-
-            }
-            if (isValid) {
-                // Do something with the data
-                Profile myUser = new Profile();
-                myUser.setEmail(email);
-                myUser.setPassw(password);
-            }
-            return isValid;
-        }
     }
+    private boolean validateAndReadData() {
+        boolean isValid = true;
+        String email = inputEmail.getText().toString().trim();
+        String password = inputPassword.getText().toString().trim();
+
+        if (email.isEmpty()) {
+            inputEmail.setError("Email is required");
+            isValid = false;
+        }
+        if (password.isEmpty() || password.length() < 5 || password.length() > 8) {
+            inputPassword.setError("Password must be at least 5 characters and not more than 8");
+            isValid = false;
+        }
+        if (isValid==false) {
+            Toast.makeText(getApplicationContext(), "Error in form", Toast.LENGTH_SHORT).show();
+        }
+        if(email.isEmpty()) {
+            inputEmail.setError("Email is required");
+            isValid = false;
+        }
+        if(password.isEmpty() || password.length() < 5 || password.length() > 8) {
+            inputPassword.setError("Password must be at least 5 characters and not more than 8");
+            isValid = false;
+        }
+if (isValid)
+{
+
+    Profile myProfile = AppDatabase.getdb(this).getProfileQuery().checkEmailPassw(email, password);
+    if (myProfile != null) {
+        Toast.makeText(getApplicationContext(), "Login successful", Toast.LENGTH_SHORT).show();
+        Intent intent = new Intent(login.this, MainActivity.class);
+        startActivity(intent);
+    }
+    else {
+        Toast.makeText(getApplicationContext(), "Login failed", Toast.LENGTH_SHORT).show();
+    }
+    }
+
+        return isValid;
+    }
+
 }

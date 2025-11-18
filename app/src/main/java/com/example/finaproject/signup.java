@@ -2,6 +2,7 @@ package com.example.finaproject;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.view.View;
 import android.widget.Button;
 import android.widget.Toast;
 
@@ -45,16 +46,19 @@ public class signup extends AppCompatActivity {
         inputEmail = findViewById(R.id.inputEmail);
         inputPassword = findViewById(R.id.inputPassword);
         inputConfirmPassword = findViewById(R.id.inputConfirmPassword);
-        if(validateAndReadData()==true)
-        btnSignup1.setOnClickListener(view -> {
-            Intent intent = new Intent(signup.this, MainActivity.class);
-            startActivity(intent);
 
-
+      btnSignup1.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                if (validateAndReadData()) {
+                    Intent intent = new Intent(signup.this, MainActivity.class);
+                    startActivity(intent);
+                }
+            }
         });
     }
 
-    private boolean validateAndReadData() {
+    public boolean validateAndReadData() {
         boolean isValid = true;
         String username = inputUsername.getText().toString().trim();
         String email = inputEmail.getText().toString().trim();
@@ -97,34 +101,14 @@ public class signup extends AppCompatActivity {
             myUser.setUsername(username);
             myUser.setEmail(email);
             myUser.setPassw(password);
+            AppDatabase.getdb(this).getProfileQuery().insert(myUser);
         }
 
-        MyProfileQuery myProfileQuery = new MyProfileQuery(username,email,password);
-        Profile checkUser = myProfileQuery.checkEmailPassw(email, password);
-        if (checkUser != null) {
-            Toast.makeText(getApplicationContext(), "Email and password already exist", Toast.LENGTH_SHORT).show();
-            isValid = false;
-        }
+
+
 
         return isValid;
-if (isValid==true) {
 
-
-    //بناء قاعدة بيانات وارجاع مؤشر عليها1
-    AppDataBase db=AppDataBase.getDB(getApplication());
-//2 مؤشر لكائن عمليات  لجدول
-    MyProfileQuery ProfileQuery = db.getProfile();
-//3  بناء كائن من نوع الجدول وتحديد قيم الصفات
-    Profile s1=new Profile();
-    s1.setEmail(email);
-    Profile s2=new Profile();
-    s2.setPassw(password);
-//4 اضافة كائن للجدول
-    MyProfileQuery.insert(s1);
-    MyProfileQuery.insert(s2);
-
-
-}
 
 }
     }
