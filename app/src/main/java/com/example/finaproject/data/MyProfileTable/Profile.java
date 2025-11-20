@@ -10,7 +10,6 @@ public class Profile {
     @PrimaryKey(autoGenerate = true)
     public long uid; // Use long for the auto-generated primary key
 
-    @ColumnInfo(name = "full_Name")
     public String username;
 
     public String email;

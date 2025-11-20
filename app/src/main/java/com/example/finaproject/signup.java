@@ -47,7 +47,7 @@ public class signup extends AppCompatActivity {
         inputPassword = findViewById(R.id.inputPassword);
         inputConfirmPassword = findViewById(R.id.inputConfirmPassword);
 
-      btnSignup1.setOnClickListener(new View.OnClickListener() {
+        btnSignup1.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 if (validateAndReadData()) {
@@ -89,11 +89,21 @@ public class signup extends AppCompatActivity {
             inputConfirmPassword.setError("Password does not match");
             isValid = false;
         }
-        if (isValid==false) {
+        if (isValid == false) {
 
             Toast.makeText(getApplicationContext(), "Error in form", Toast.LENGTH_SHORT).show();
 
         }
+
+//        if (isValid) {
+//            // فحص هل الايميل موجود من قبل
+//
+//            Profile myProfile = AppDatabase.getdb(this).getProfileQuery().checkEmail(email);
+//            if (myProfile != null) {
+//                inputEmail.setError("Email already registered");
+//                isValid = false;
+//            }
+//        }
         if (isValid) {
             // Do something with the data
 
@@ -101,17 +111,15 @@ public class signup extends AppCompatActivity {
             myUser.setUsername(username);
             myUser.setEmail(email);
             myUser.setPassw(password);
-            AppDatabase.getdb(this).getProfileQuery().insert(myUser);
+            AppDatabase.getdb(getApplicationContext()).getProfQr().insert(myUser);
         }
-
-
 
 
         return isValid;
 
 
-}
     }
+}
 
 
 

@@ -54,10 +54,12 @@ public class login extends AppCompatActivity {
 
 
         });
+        //
         btnLogin.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                if (validateAndReadData()) {
+                if (validateAndReadData())
+                {
                     Intent intent = new Intent(login.this, MainActivity.class);
                     startActivity(intent);
                 }
@@ -66,6 +68,7 @@ public class login extends AppCompatActivity {
         // Validate and read data
 
     }
+    //validate and read data
     private boolean validateAndReadData() {
         boolean isValid = true;
         String email = inputEmail.getText().toString().trim();
@@ -93,6 +96,7 @@ public class login extends AppCompatActivity {
 if (isValid)
 {
 
+    // Retrieve the user with the given email and password from the database
     Profile myProfile = AppDatabase.getdb(this).getProfileQuery().checkEmailPassw(email, password);
     if (myProfile != null) {
         Toast.makeText(getApplicationContext(), "Login successful", Toast.LENGTH_SHORT).show();
