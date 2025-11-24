@@ -68,47 +68,42 @@ public class login extends AppCompatActivity {
         // Validate and read data
 
     }
-    //validate and read data
+    //validate and check data
     private boolean validateAndReadData() {
-        boolean isValid = true;
         String email = inputEmail.getText().toString().trim();
         String password = inputPassword.getText().toString().trim();
+
+        boolean isValid = true;
 
         if (email.isEmpty()) {
             inputEmail.setError("Email is required");
             isValid = false;
-        }
-        if (password.isEmpty() || password.length() < 5 || password.length() > 8) {
-            inputPassword.setError("Password must be at least 5 characters and not more than 8");
+        } else if (!isValidEmail(email)) {
+            inputEmail.setError("Invalid email");
             isValid = false;
         }
-        if (isValid==false) {
-            Toast.makeText(getApplicationContext(), "Error in form", Toast.LENGTH_SHORT).show();
-        }
-        if(email.isEmpty()) {
-            inputEmail.setError("Email is required");
-            isValid = false;
-        }
-        if(password.isEmpty() || password.length() < 5 || password.length() > 8) {
-            inputPassword.setError("Password must be at least 5 characters and not more than 8");
-            isValid = false;
-        }
-if (isValid)
-{
 
-    // Retrieve the user with the given email and password from the database
-    Profile myProfile = AppDatabase.getdb(this).getProfileQuery().checkEmailPassw(email, password);
-    if (myProfile != null) {
-        Toast.makeText(getApplicationContext(), "Login successful", Toast.LENGTH_SHORT).show();
-        Intent intent = new Intent(login.this, MainActivity.class);
-        startActivity(intent);
-    }
-    else {
-        Toast.makeText(getApplicationContext(), "Login failed", Toast.LENGTH_SHORT).show();
-    }
+        if (password.isEmpty()) {
+            inputPassword.setError("Password is required");
+            isValid = false;
+        }
+
+        if (isValid) {
+            AppDatabase db = AppDatabase.getdb(getApplicationContext());
+            Profile profile = db.getMyProfileQuery().checkEmail(email);
+            if (profile != null && profile.getPassw().equals(password)) {
+                return true;
+            } else {
+                Toast.makeText(this, "Invalid email or password", Toast.LENGTH_SHORT).show();
+                return false;
+            }
+        }
+
+        return false;
     }
 
-        return isValid;
+    private boolean isValidEmail(String email) {
+        return android.util.Patterns.EMAIL_ADDRESS.matcher(email).matches();
     }
 
 }

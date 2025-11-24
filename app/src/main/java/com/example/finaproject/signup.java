@@ -111,7 +111,7 @@ public class signup extends AppCompatActivity {
             myUser.setUsername(username);
             myUser.setEmail(email);
             myUser.setPassw(password);
-            AppDatabase.getdb(getApplicationContext()).getProfQr().insert(myUser);
+            AppDatabase.getdb(getApplicationContext()).getMyProfileQuery().insert(myUser);
         }
 
 

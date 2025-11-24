@@ -2,38 +2,40 @@ package com.example.finaproject.data.MyProfileTable;
 
 import androidx.room.ColumnInfo;
 import androidx.room.Entity;
+import androidx.room.Ignore;
 import androidx.room.PrimaryKey;
 
 @Entity
 public class Profile {
 
     @PrimaryKey(autoGenerate = true)
-    public long uid; // Use long for the auto-generated primary key
+    public long uid;
 
     public String username;
-
     public String email;
     public int phone;
     public String passw;
 
+    public Profile() {
+        // هذا يستخدمه Room
+    }
+
+    @Ignore
+    public Profile(String username, String email, String passw) {
+        this.username = username;
+        this.email = email;
+        this.passw = passw;
+    }
+
     @Override
     public String toString() {
         return "MyUser{" +
-                "uid=" + uid + // Include the new ID in toString
+                "uid=" + uid +
                 ", fullName='" + username + '\'' +
                 ", email='" + email + '\'' +
                 ", phone='" + phone + '\'' +
                 ", passw='" + passw + '\'' +
                 '}';
-    }
-    public Profile()
-        {
-
-    }
-    public Profile(String username, String email, String passw) {
-        this.username = username;
-        this.email = email;
-        this.passw = passw;
     }
 
     public long getUid() {
