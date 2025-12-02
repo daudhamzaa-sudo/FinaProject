@@ -21,7 +21,7 @@ public interface MyProfileQuery {
     Profile checkEmailPassw(String myEmail, String myPassw);
 
     //فحص هل الايميل موجود من قبل
-    @Query("SELECT * FROM Profile WHERE email = :myEmail LIMIT 1")
+    @Query("SELECT * FROM Profile WHERE email=:myEmail LIMIT 1")
     Profile checkEmail(String myEmail);
 
     @Insert// اضافة مستعمل او مجموعة مستعملين
@@ -38,4 +38,5 @@ public interface MyProfileQuery {
     @Update
         //تعديل مستعمل او قائمة مستعملين
     void update(Profile...values);
+
 }

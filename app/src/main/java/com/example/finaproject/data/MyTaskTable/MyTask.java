@@ -10,9 +10,9 @@ public class MyTask {
     public String taskName;
     public String taskDescription;
     public String taskDate;
-    public String taskTime;
-    public String taskPriority;
-    public String taskStatus;
+    public String Region;
+    //public Image taskPriority;
+    public boolean taskStatus;
 
     @Override
     public String toString() {
@@ -20,8 +20,8 @@ public class MyTask {
                 "taskName='" + taskName + '\'' +
                 ", taskDescription='" + taskDescription + '\'' +
                 ", taskDate='" + taskDate + '\'' +
-                ", taskTime='" + taskTime + '\'' +
-                ", taskPriority='" + taskPriority + '\'' +
+                ", taskTime='" + Region + '\'' +
+
                 ", taskStatus='" + taskStatus + '\'' +
                 '}';
     }
@@ -34,16 +34,7 @@ public class MyTask {
         this.taskName = taskName;
     }
 
-    public MyTask(@NonNull String taskName, // <-- And in the constructor parameter
-                  String taskDescription, String taskDate, String taskTime, String taskPriority, String taskStatus) {
-        this.taskName = taskName;
-        this.taskDescription = taskDescription;
-        this.taskDate = taskDate;
-        this.taskTime = taskTime;
-        this.taskPriority = taskPriority;
-        this.taskStatus = taskStatus;
-    }
 
-    public MyTask() {
-    }
+
+
 }

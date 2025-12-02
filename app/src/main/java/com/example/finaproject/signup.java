@@ -2,6 +2,7 @@ package com.example.finaproject;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.view.View;
 import android.widget.Button;
 import android.widget.Toast;
 
@@ -45,16 +46,19 @@ public class signup extends AppCompatActivity {
         inputEmail = findViewById(R.id.inputEmail);
         inputPassword = findViewById(R.id.inputPassword);
         inputConfirmPassword = findViewById(R.id.inputConfirmPassword);
-        if(validateAndReadData()==true)
-        btnSignup1.setOnClickListener(view -> {
-            Intent intent = new Intent(signup.this, MainActivity.class);
-            startActivity(intent);
 
-
+        btnSignup1.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                if (validateAndReadData()) {
+                    Intent intent = new Intent(signup.this, MainActivity.class);
+                    startActivity(intent);
+                }
+            }
         });
     }
 
-    private boolean validateAndReadData() {
+    public boolean validateAndReadData() {
         boolean isValid = true;
         String username = inputUsername.getText().toString().trim();
         String email = inputEmail.getText().toString().trim();
@@ -85,11 +89,21 @@ public class signup extends AppCompatActivity {
             inputConfirmPassword.setError("Password does not match");
             isValid = false;
         }
-        if (isValid==false) {
+        if (isValid == false) {
 
             Toast.makeText(getApplicationContext(), "Error in form", Toast.LENGTH_SHORT).show();
 
         }
+
+//        if (isValid) {
+//            // فحص هل الايميل موجود من قبل
+//
+//            Profile myProfile = AppDatabase.getdb(this).getProfileQuery().checkEmail(email);
+//            if (myProfile != null) {
+//                inputEmail.setError("Email already registered");
+//                isValid = false;
+//            }
+//        }
         if (isValid) {
             // Do something with the data
 
@@ -97,41 +111,15 @@ public class signup extends AppCompatActivity {
             myUser.setUsername(username);
             myUser.setEmail(email);
             myUser.setPassw(password);
+            AppDatabase.getdb(getApplicationContext()).getMyProfileQuery().insert(myUser);
         }
 
-        Profile myProfileQuery = new Profile(username,email,password);
-        Profile checkUser = myProfileQuery.checkEmailPassw(email, password);
-        if (checkUser != null) {
-            Toast.makeText(getApplicationContext(), "Email and password already exist", Toast.LENGTH_SHORT).show();
-            isValid = false;
-        }
 
         return isValid;
-if (isValid==true) {
 
 
-    //بناء قاعدة بيانات وارجاع مؤشر عليها1
-    AppDatabase db = AppDatabase.getDB(getApplication());
-//2 مؤشر لكائن عمليات  لجدول
-    MyProfileQuery ProfileQuery = db.getProfile();
-//3  بناء كائن من نوع الجدول وتحديد قيم الصفات
-    Profile s1=new Profile();
-    s1.setEmail(email);
-    Profile s2=new Profile();
-    s2.setPassw(password);
-
-    Profile s4=new Profile();
-    s4.setUsername(username);
-//4 اضافة كائن للجدول
-    MyProfileQuery.insert(s1);
-    MyProfileQuery.insert(s2);
-    MyProfileQuery.insert(s4);
-
-
-}
-
-}
     }
+}
 
 
 
