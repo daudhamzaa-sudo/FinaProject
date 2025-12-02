@@ -11,7 +11,9 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
+import androidx.recyclerview.widget.RecyclerView;
 
+import com.example.finaproject.data.MyTaskTable.MyTaskAdapter;
 import com.google.android.material.textfield.TextInputEditText;
 import com.google.android.material.textfield.TextInputLayout;
 
@@ -23,7 +25,8 @@ private TextInputLayout inputSearchLayout;
 private TextInputEditText inputSearch;
 private Button btnSearch;
 private Button btnAddReport;
-
+private MyTaskAdapter myTaskAdapter;
+private RecyclerView recyclerView;
 
     @SuppressLint("MissingInflatedId")
     @Override
@@ -43,6 +46,9 @@ private Button btnAddReport;
         inputSearch = findViewById(R.id.inputSearch);
 
         btnAddReport = findViewById(R.id.btnAddReport);
+        recyclerView = findViewById(R.id.recyclerReports);
+        myTaskAdapter = new  MyTaskAdapter(this,R.layout.task_item_layout);
+        recyclerView.setAdapter(myTaskAdapter);
         btnAddReport.setOnClickListener(view -> {
             Intent intent = new Intent(MainActivity.this, NewReporScreen.class);
             startActivity(intent);
