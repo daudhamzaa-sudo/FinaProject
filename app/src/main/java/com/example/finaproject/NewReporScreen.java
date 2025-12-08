@@ -86,9 +86,14 @@ btnSubmit.setOnClickListener(view -> {
             String description = inputDescription.getText().toString().trim();
             String region = inputRegion.getText().toString().trim();
 
-            // Add your code here to add a new task using the provided fields
+            MyTask myTask = new MyTask();
+            myTask.setTaskName(title);
+            myTask.setTaskDescription(description);
+            //myTask.set(region);
+            //myTask.setPhoto(attachPhotoLayout.getText().toString().trim());
 
-            //AppDatabase.getdb(this).getTaskQuery().insert(myTask);
+            AppDatabase.getdb(this).getMyTaskQuery().insert(myTask);
         }
     }
+
 }

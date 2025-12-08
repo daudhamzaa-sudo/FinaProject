@@ -8,6 +8,15 @@ import androidx.room.PrimaryKey;
 public class MyTask {
     @PrimaryKey@NonNull // <-- Add this annotation to the primary key
     public String taskName;
+
+    public String getTaskDescription() {
+        return taskDescription;
+    }
+
+    public void setTaskDescription(String taskDescription) {
+        this.taskDescription = taskDescription;
+    }
+
     public String taskDescription;
     public String taskDate;
     public String Region;

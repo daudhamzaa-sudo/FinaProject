@@ -18,6 +18,14 @@ import com.example.finaproject.data.MyProfileTable.MyProfileQuery;
 private static AppDatabase db;
 
     public static AppDatabase getDB(Application application) {
+        if (db == null) {
+            db = Room.databaseBuilder(application,
+                    AppDatabase.class,"HamzaDataBase")
+                    .fallbackToDestructiveMigration()
+                    .allowMainThreadQueries()
+                    .build();
+        }
+        return db;
     }
 
     public abstract MyProfileQuery getUserQuery();

@@ -48,7 +48,7 @@ private RecyclerView recyclerView;
         btnAddReport = findViewById(R.id.btnAddReport);
         recyclerView = findViewById(R.id.recyclerReports);
         myTaskAdapter = new  MyTaskAdapter(this,R.layout.task_item_layout);
-        recyclerView.setAdapter(myTaskAdapter);
+        //recyclerView.setAdapter(myTaskAdapter);
         btnAddReport.setOnClickListener(view -> {
             Intent intent = new Intent(MainActivity.this, NewReporScreen.class);
             startActivity(intent);

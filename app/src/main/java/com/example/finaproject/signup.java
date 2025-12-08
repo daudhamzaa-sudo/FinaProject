@@ -95,15 +95,14 @@ public class signup extends AppCompatActivity {
 
         }
 
-//        if (isValid) {
-//            // فحص هل الايميل موجود من قبل
-//
-//            Profile myProfile = AppDatabase.getdb(this).getProfileQuery().checkEmail(email);
-//            if (myProfile != null) {
-//                inputEmail.setError("Email already registered");
-//                isValid = false;
-//            }
-//        }
+        if (isValid) {
+           // فحص هل الايميل موجود من قبل
+
+            Profile myProfile = AppDatabase.getdb(this).getProfile().checkEmail(email);
+            if (myProfile != null) {
+               inputEmail.setError("Email already registered");
+                isValid = false;            }
+       }
         if (isValid) {
             // Do something with the data
 
@@ -111,7 +110,7 @@ public class signup extends AppCompatActivity {
             myUser.setUsername(username);
             myUser.setEmail(email);
             myUser.setPassw(password);
-            AppDatabase.getdb(getApplicationContext()).getMyProfileQuery().insert(myUser);
+            AppDatabase.getdb(getApplicationContext()).getProfile().insert(myUser);
         }
 
 

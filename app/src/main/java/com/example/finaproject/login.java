@@ -90,7 +90,7 @@ public class login extends AppCompatActivity {
 
         if (isValid) {
             AppDatabase db = AppDatabase.getdb(getApplicationContext());
-            Profile profile = db.getMyProfileQuery().checkEmail(email);
+            Profile profile = db.getProfile().checkEmail(email);
             if (profile != null && profile.getPassw().equals(password)) {
                 return true;
             } else {
