@@ -28,11 +28,23 @@ private static AppDatabase db;
         return db;
     }
 
-    public abstract MyProfileQuery getUserQuery();
+    public static Object getInstance(Context applicationContext) {
+        return null;
+    }
+
+    public abstract MyProfileQuery myProfileQuery();
 
 public abstract MyTaskQuery getMyTaskQuery();
 
-public static AppDatabase getdb(Context context) {
+    public static AppDatabase getDb() {
+        return db;
+    }
+
+    public static void setDb(AppDatabase db) {
+        AppDatabase.db = db;
+    }
+
+    public static AppDatabase getdb(Context context) {
     if (db == null) {
         db = Room.databaseBuilder(context,
                 AppDatabase.class,"HamzaDataBase")
@@ -43,10 +55,10 @@ public static AppDatabase getdb(Context context) {
     return db;
 }
 
-
     public MyProfileQuery getProfile() {
-    return getUserQuery();
+         return myProfileQuery();
     }
+
 }
 
 

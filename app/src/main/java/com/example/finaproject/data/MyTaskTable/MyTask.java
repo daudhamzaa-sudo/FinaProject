@@ -44,7 +44,7 @@ public class MyTask {
     }
 
 
-
-
-
+    public int getTaskStatus() {
+        return 1;
+    }
 }

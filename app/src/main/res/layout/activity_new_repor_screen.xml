@@ -81,16 +81,7 @@
             android:hint="Select Region"
             android:layout_marginTop="16dp"
 
-            app:boxStrokeColor="#2E7D32">
-
-            <AutoCompleteTextView
-                android:id="@+id/inputRegion"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:inputType="none"
-                android:focusable="false"
-                android:textColor="#000000" />
-        </com.google.android.material.textfield.TextInputLayout>
+            app:boxStrokeColor="#2E7D32"/>
 
         <!-- Attach photo -->
         <LinearLayout

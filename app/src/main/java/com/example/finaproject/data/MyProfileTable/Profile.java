@@ -20,12 +20,9 @@ public class Profile {
         // هذا يستخدمه Room
     }
 
-    @Ignore
-    public Profile(String username, String email, String passw) {
-        this.username = username;
-        this.email = email;
-        this.passw = passw;
-    }
+
+
+
 
     @Override
     public String toString() {

@@ -4,6 +4,7 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.widget.AutoCompleteTextView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.activity.EdgeToEdge;
 import androidx.appcompat.app.AppCompatActivity;
@@ -12,6 +13,7 @@ import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
 
 import com.example.finaproject.data.AppDatabase;
+import com.example.finaproject.data.MyProfileTable.Profile;
 import com.example.finaproject.data.MyTaskTable.MyTask;
 import com.google.android.material.button.MaterialButton;
 import com.google.android.material.textfield.TextInputEditText;
@@ -37,63 +39,52 @@ private MaterialButton btnSubmit;
             v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom);
             return insets;
         });
-btnSubmit = findViewById(R.id.btnSubmit);
-inputTitle = findViewById(R.id.inputTitle);
-inputDescription = findViewById(R.id.inputDescription);
-inputRegion = findViewById(R.id.inputRegion);
-tvTitle = findViewById(R.id.tvTitle);
-tvSubtitle = findViewById(R.id.tvSubtitle);
+        btnSubmit = findViewById(R.id.btnSubmit);
+        inputTitle = findViewById(R.id.inputTitle);
+        inputDescription = findViewById(R.id.inputDescription);
+        tvTitle = findViewById(R.id.tvTitle);
+        tvSubtitle = findViewById(R.id.tvSubtitle);
+
+
 btnSubmit.setOnClickListener(view -> {
-    Intent intent = new Intent(NewReporScreen.this, MainActivity.class);
-    startActivity(intent);
-});
+    if (validateAndExtractData()) {
+        Intent intent = new Intent(NewReporScreen.this, MainActivity.class);
+        startActivity(intent);
     }
+});
+        }
 
-    private boolean isValidReportFields() {
+    private boolean validateAndExtractData() {
+        String title = inputTitle.getText().toString();
+        String description = inputDescription.getText().toString();
+
+
+        if (title.isEmpty() || description.isEmpty() ) {
+            Toast.makeText(this, "All fields are required", Toast.LENGTH_SHORT).show();
+            return false;
+        }
+
         boolean isValid = true;
-        String title = inputTitle.getText().toString().trim();
-        String description = inputDescription.getText().toString().trim();
-        String region = inputRegion.getText().toString().trim();
-
-        if (title.isEmpty()) {
-            inputTitle.setError("Title is required");
+        if (title.length() < 5) {
+            inputTitle.setError("Title must be at least 5 characters");
             isValid = false;
-        } else {
-            inputTitle.setError(null);
+        }
+        if (description.length() < 10) {
+            inputDescription.setError("Description must be at least 10 characters");
+            isValid = false;
         }
 
-        if (description.isEmpty()) {
-            inputDescription.setError("Description is required");
-            isValid = false;
-        } else {
-            inputDescription.setError(null);
-        }
 
-        if (region.isEmpty()) {
-            inputRegion.setError("Region is required");
-            isValid = false;
-        } else {
-            inputRegion.setError(null);
+        if (isValid) {
+            MyTask myTask1 = new MyTask();
+            myTask1.setTaskName(title);
+            myTask1.setTaskDescription(description);
+
+            AppDatabase.getdb(this).getMyTaskQuery().insert(myTask1);
         }
 
         return isValid;
     }
 
 
-    private void addNewReport() {
-        if (isValidReportFields()) {
-            String title = inputTitle.getText().toString().trim();
-            String description = inputDescription.getText().toString().trim();
-            String region = inputRegion.getText().toString().trim();
-
-            MyTask myTask = new MyTask();
-            myTask.setTaskName(title);
-            myTask.setTaskDescription(description);
-            //myTask.set(region);
-            //myTask.setPhoto(attachPhotoLayout.getText().toString().trim());
-
-            AppDatabase.getdb(this).getMyTaskQuery().insert(myTask);
-        }
     }
-
-}
