@@ -11,7 +11,7 @@ import java.util.List;
 @Dao
 public interface MyTaskQuery {
     @Query("SELECT * FROM MyTask")
-    List<MyTask> getAll();
+    List<MyTask> getAllTasks();
 
     @Query("SELECT * FROM MyTask WHERE :name LIKE :name LIMIT 1")
     MyTask findByName(String name);

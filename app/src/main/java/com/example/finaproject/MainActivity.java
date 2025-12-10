@@ -1,4 +1,5 @@
 package com.example.finaproject;
+import com.example.finaproject.data.AppDatabase;
 
 import android.annotation.SuppressLint;
 import android.content.Intent;
@@ -19,6 +20,8 @@ import com.google.android.material.textfield.TextInputLayout;
 
 import java.util.ArrayList; // Import ArrayList
 import java.util.List;      // Import List
+import com.example.finaproject.data.AppDatabase;
+import com.example.finaproject.data.AppDatabase;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -52,14 +55,25 @@ public class MainActivity extends AppCompatActivity {
         recyclerView = findViewById(R.id.recyclerReports);
 
         // FIX: Initialize an empty list of tasks and pass it to the adapter.
-        List<MyTask> myTasks = new ArrayList<>();
-        myTaskAdapter = new MyTaskAdapter(this, myTasks); // Pass the list here
 
+        // TO THIS:
+        List<MyTask> myTasks = new ArrayList<>();
+        myTaskAdapter = new MyTaskAdapter(this, myTasks); // Pass the initialized list
+//lstTasks.setAdapter(myTaskAdapter)
         recyclerView.setAdapter(myTaskAdapter);
 
         btnAddReport.setOnClickListener(view -> {
             Intent intent = new Intent(MainActivity.this, NewReporScreen.class);
             startActivity(intent);
         });
+    }
+    @Override
+    protected void onResume() {
+        super.onResume();
+        List<MyTask> allTasks = AppDatabase.getdb(this).getMyTaskQuery().getAllTasks();
+        taskArrayAdapter.clear();
+        taskArrayAdapter.addAll(allTasks);
+        taskArrayAdapter.notifyDatasetChanged();
+
     }
 }
