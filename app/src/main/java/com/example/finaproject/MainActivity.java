@@ -71,9 +71,9 @@ public class MainActivity extends AppCompatActivity {
     protected void onResume() {
         super.onResume();
         List<MyTask> allTasks = AppDatabase.getdb(this).getMyTaskQuery().getAllTasks();
-        taskArrayAdapter.clear();
-        taskArrayAdapter.addAll(allTasks);
-        taskArrayAdapter.notifyDatasetChanged();
+        //myTaskAdapter.clear();
+        myTaskAdapter.addAll(allTasks);
+        myTaskAdapter.notifyDatasetChanged();
 
     }
 }
