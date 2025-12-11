@@ -47,4 +47,8 @@ public class MyTask {
     public int getTaskStatus() {
         return 1;
     }
+
+    public String getTaskTitle() {
+        return taskName;
+    }
 }

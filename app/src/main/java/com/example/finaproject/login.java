@@ -58,7 +58,7 @@ public class login extends AppCompatActivity {
         btnLogin.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                if (validateAndReadData())
+                //if (validateAndReadData())
                 {
                     Intent intent = new Intent(login.this, MainActivity.class);
                     startActivity(intent);
