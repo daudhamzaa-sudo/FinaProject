@@ -54,7 +54,7 @@ public class MyTaskAdapter extends RecyclerView.Adapter<MyTaskAdapter.TaskViewHo
     @Override
     public void onBindViewHolder(@NonNull TaskViewHolder holder, int position) {
         MyTask current = tasksList.get(position);
-        holder.task_status.setText(current.getTaskStatus());
+        holder.task_status.setText(""+current.getTaskStatus());
         holder.task_description.setText(current.getTaskDescription());
         holder.task_title.setText("Importance:" + current.getTaskTitle());
     }

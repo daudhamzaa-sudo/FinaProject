@@ -17,6 +17,8 @@ import com.example.finaproject.data.MyProfileTable.Profile;
 import java.util.List;
 
 public class Settings extends AppCompatActivity {
+
+    //تعريف الصفات
     private TextView tvTitle;
     private TextView tvSubtitle;
     private Button btnLogout;
