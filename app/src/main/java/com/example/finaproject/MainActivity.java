@@ -26,6 +26,7 @@ public class MainActivity extends AppCompatActivity {
     private TextView tvTitle;
     private TextView tvSubtitle;
     private TextInputLayout inputSearchLayout;
+    //private ImageButton btnSettings;
     private TextInputEditText inputSearch;
     private Button btnSearch;
     private Button btnAddReport;
@@ -54,6 +55,7 @@ public class MainActivity extends AppCompatActivity {
         tvTitle = findViewById(R.id.tvTitle);
         tvSubtitle = findViewById(R.id.tvSubtitle);
         inputSearchLayout = findViewById(R.id.inputSearchLayout);
+        //btnSettings = findViewById(R.id.btnSettings);
         inputSearch = findViewById(R.id.inputSearch);
         // btnSearch = findViewById(R.id.btnSearch);
         btnAddReport = findViewById(R.id.btnAddReport);
