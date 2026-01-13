@@ -90,7 +90,7 @@ public class MainActivity extends AppCompatActivity {
         inputSearchLayout = findViewById(R.id.inputSearchLayout);
         inputSearch = findViewById(R.id.inputSearch);
         btnAddReport = findViewById(R.id.btnAddReport);
-
+        responseText = findViewById(R.id.responseText);
         // إعداد RecyclerView لعرض البيانات
         recyclerReports.setLayoutManager(new LinearLayoutManager(this));
         ArrayList<MyTask> myTasks = (ArrayList<MyTask>) AppDatabase.getdb(this).getMyTaskQuery().getAllTasks();

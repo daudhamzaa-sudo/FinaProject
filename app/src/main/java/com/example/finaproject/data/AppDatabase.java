@@ -13,7 +13,7 @@ import com.example.finaproject.data.MyProfileTable.Profile;
 import com.example.finaproject.data.MyProfileTable.MyProfileQuery;
 
 //تحول الفئات الى جدول//
-@Database(entities = {Profile.class, MyTask.class}, version = 1)
+@Database(entities = {Profile.class, MyTask.class}, version = 2)
     public abstract class AppDatabase extends RoomDatabase {
 private static AppDatabase db;
 

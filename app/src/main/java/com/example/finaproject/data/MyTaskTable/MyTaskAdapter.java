@@ -1,9 +1,11 @@
 package com.example.finaproject.data.MyTaskTable;
 
 import android.content.Context;
+import android.net.Uri;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
@@ -31,6 +33,7 @@ public class MyTaskAdapter extends RecyclerView.Adapter<MyTaskAdapter.TaskViewHo
         TextView task_title;
         TextView task_description;
         TextView task_status;
+        ImageView task_image;
 
 
         public TaskViewHolder(@NonNull View itemView) {
@@ -38,6 +41,7 @@ public class MyTaskAdapter extends RecyclerView.Adapter<MyTaskAdapter.TaskViewHo
             task_status = itemView.findViewById(R.id.task_status);
             task_description = itemView.findViewById(R.id.task_description);
             task_title = itemView.findViewById(R.id.task_title);
+            task_image= itemView.findViewById(R.id.task_image);
         }
     }
 
@@ -57,6 +61,8 @@ public class MyTaskAdapter extends RecyclerView.Adapter<MyTaskAdapter.TaskViewHo
         holder.task_status.setText(""+current.getTaskStatus());
         holder.task_description.setText(current.getTaskDescription());
         holder.task_title.setText("Importance:" + current.getTaskTitle());
+//        if (current.getImageUrl()!=null)
+//            holder.task_image.setImageURI(new Uri( current.getImageUrl()));
     }
 
 

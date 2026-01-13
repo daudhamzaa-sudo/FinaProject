@@ -46,7 +46,15 @@ public class MyTask {
     public boolean taskStatus;
 
 
+    public String imageUrl;
 
+    public void setImageUrl(String imageUrl) {
+        this.imageUrl = imageUrl;
+    }
+
+    public String getImageUrl() {
+        return imageUrl;
+    }
     // --- الدوال المساعدة (Getters and Setters) ---
     // هذه الدوال توفر طريقة آمنة ومنظمة للوصول إلى بيانات الكائن وتعديلها.
 
@@ -99,4 +107,6 @@ public class MyTask {
                 ", taskStatus='" + taskStatus + '\'' +
                 '}';
     }
+
+
 }

@@ -1,18 +1,25 @@
 package com.example.finaproject;
 
+import static android.content.ContentValues.TAG;
+
 import android.content.Intent;
-import android.net.Uri; // **إضافة جديدة**
+import android.content.pm.PackageManager;
+import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
-import android.view.View; // **إضافة جديدة**
+import android.util.Log;
+import android.view.View;
 import android.widget.AutoCompleteTextView;
-import android.widget.ImageView; // **إضافة جديدة**
+import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.activity.EdgeToEdge;
-import androidx.activity.result.ActivityResultLauncher; // **إضافة جديدة**
-import androidx.activity.result.contract.ActivityResultContracts; // **إضافة جديدة**
+import androidx.activity.result.ActivityResultCallback;
+import androidx.activity.result.ActivityResultLauncher;
+import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.content.ContextCompat;
 import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
@@ -23,33 +30,18 @@ import com.google.android.material.button.MaterialButton;
 import com.google.android.material.textfield.TextInputEditText;
 
 public class NewReporScreen extends AppCompatActivity {
+    private ImageView ivSelectedImage; //صفة كمؤشر لهذا الكائن
+    private Uri selectedImageUri;//صفة لحفظ عنوان الصورة بعد اختيارها
+    private ActivityResultLauncher<String> pickImage;// ‏كائن لطلب الصورة من الهاتف
+    private ActivityResultLauncher<String> requestReadMediaImagesPermission;
+    private ActivityResultLauncher<String> requestReadMediaVideoPermission;
+    private ActivityResultLauncher<String> requestReadExternalStoragePermission;
     private TextInputEditText inputTitle;
     private TextInputEditText inputDescription;
-    private AutoCompleteTextView inputRegion;
-
-    // **تعديل أنواع المتغيرات لتناسب الواجهة الجديدة**
-    private ImageView imgPreview;
-    private MaterialButton btnAttachPhoto;
 
     private TextView tvTitle;
     private TextView tvSubtitle;
     private MaterialButton btnSubmit;
-
-    // **إضافة جديدة: متغير لتخزين مسار الصورة المختارة**
-    private Uri selectedImageUri = null;
-
-    // **إضافة جديدة: تعريف الـ Launcher لاستقبال الصورة من المعرض**
-    private final ActivityResultLauncher<String> galleryLauncher =
-            registerForActivityResult(new ActivityResultContracts.GetContent(), uri -> {
-                // هذا الكود يعمل بعد اختيار المستخدم للصورة
-                if (uri != null) {
-                    // حفظ مسار الصورة وعرضها
-                    selectedImageUri = uri;
-                    imgPreview.setImageURI(selectedImageUri);
-                    imgPreview.setVisibility(View.VISIBLE); // إظهار الصورة
-                }
-            });
-
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -61,6 +53,50 @@ public class NewReporScreen extends AppCompatActivity {
             v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom);
             return insets;
         });
+        // تسجيل مُشغّل لطلب إذن READ_MEDIA_IMAGES
+        requestReadMediaImagesPermission = registerForActivityResult(new ActivityResultContracts.RequestPermission(), isGranted -> {
+            if (isGranted) {
+                Log.d(TAG, "READ_MEDIA_IMAGES permission granted");
+                Toast.makeText(this, "تم منح إذن قراءة الصور", Toast.LENGTH_SHORT).show();
+                // يمكنك الآن المتابعة بالعملية التي تتطلب هذا الإذن
+            } else {
+                Log.d(TAG, "READ_MEDIA_IMAGES permission denied");
+                Toast.makeText(this, "تم رفض إذن قراءة الصور", Toast.LENGTH_SHORT).show();
+                // التعامل مع حالة رفض الإذن
+            }
+        });
+
+
+// تسجيل مُشغّل لطلب إذن READ_MEDIA_VIDEO
+        requestReadMediaVideoPermission = registerForActivityResult(new ActivityResultContracts.RequestPermission(), isGranted -> {
+            if (isGranted) {
+                Log.d(TAG, "READ_MEDIA_VIDEO permission granted");
+                Toast.makeText(this, "تم منح إذن قراءة الفيديو", Toast.LENGTH_SHORT).show();
+                // يمكنك الآن المتابعة بالعملية التي تتطلب هذا الإذن
+            } else {
+                Log.d(TAG, "READ_MEDIA_VIDEO permission denied");
+                Toast.makeText(this, "تم رفض إذن قراءة الفيديو", Toast.LENGTH_SHORT).show();
+                // التعامل مع حالة رفض الإذن
+            }
+        });
+
+
+// تسجيل مُشغّل لطلب إذن READ_EXTERNAL_STORAGE
+        requestReadExternalStoragePermission = registerForActivityResult(new ActivityResultContracts.RequestPermission(), isGranted -> {
+            if (isGranted) {
+                Log.d(TAG, "READ_EXTERNAL_STORAGE permission granted");
+                Toast.makeText(this, "تم منح إذن قراءة التخزين الخارجي", Toast.LENGTH_SHORT).show();
+                // يمكنك الآن المتابعة بالعملية التي تتطلب هذا الإذن
+            } else {
+                Log.d(TAG, "READ_EXTERNAL_STORAGE permission denied");
+                Toast.makeText(this, "تم رفض إذن قراءة التخزين الخارجي", Toast.LENGTH_SHORT).show();
+                // التعامل مع حالة رفض الإذن
+            }
+        });
+//استدعاء دالة الفحص (سيتم تطبيقها لاحقا)
+        checkAndRequestPermissions();
+
+
 
         // --- ربط المتغيرات بعناصر الواجهة ---
         btnSubmit = findViewById(R.id.btnSubmit);
@@ -68,39 +104,89 @@ public class NewReporScreen extends AppCompatActivity {
         inputDescription = findViewById(R.id.inputDescription);
         tvTitle = findViewById(R.id.tvTitle);
         tvSubtitle = findViewById(R.id.tvSubtitle);
-
-
-
-        imgPreview = findViewById(R.id.imgPreview);
-        btnAttachPhoto = findViewById(R.id.btnAttachPhoto);
-
-        // **إضافة جديدة: مستمع النقر لزر إرفاق الصورة**
-        btnAttachPhoto.setOnClickListener(view -> {
-            // عند الضغط، يتم فتح معرض الصور لاختيار صورة
-            galleryLauncher.launch("image/*");
+        ivSelectedImage=findViewById(R.id.imgPreview);
+        pickImage = registerForActivityResult(new ActivityResultContracts.GetContent(), new ActivityResultCallback<Uri>() {
+            @Override
+            public void onActivityResult(Uri result) {
+                if (result != null) {
+                    selectedImageUri = result;
+                    ivSelectedImage.setImageURI(result);
+                    ivSelectedImage.setVisibility(View.VISIBLE);
+                }
+            }
         });
-
-
+        ivSelectedImage.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                pickImage.launch("image/*"); // Launch the image picker
+            }
+        });
         btnSubmit.setOnClickListener(view -> {
             if (validateAndExtractData()) {
                 // **تحسين: إضافة رسالة نجاح وإغلاق الشاشة**
                 Toast.makeText(this, "Report saved successfully!", Toast.LENGTH_SHORT).show();
-                Intent intent = new Intent(NewReporScreen.this, MainActivity.class);
-                startActivity(intent);
-                finish(); // إغلاق الشاشة الحالية لمنع تراكمها
+                finish(); // إغلاق الشاشة الحالية والرجوع إلى الشاشة السابقة
+                // Initialize the ActivityResultLauncher for picking images
+
+
             }
         });
     }
+    // دالة لفحص وطلب الأذونات
+    private void checkAndRequestPermissions() {
+        // فحص وطلب إذن READ_MEDIA_IMAGES (للإصدارات الحديثة)
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) { // أندرويد 13+
+            if (ContextCompat.checkSelfPermission(this, android.Manifest.permission.READ_MEDIA_IMAGES)
+                    != PackageManager.PERMISSION_GRANTED) {
+                requestReadMediaImagesPermission.launch(android.Manifest.permission.READ_MEDIA_IMAGES);
+            } else {
+                Log.d(TAG, "READ_MEDIA_IMAGES permission already granted");
+                Toast.makeText(this, "إذن قراءة الصور ممنوح بالفعل", Toast.LENGTH_SHORT).show();
+            }
+        } else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) { // أندرويد 10 و 11 و 12// على هذه الإصدارات، READ_EXTERNAL_STORAGE له سلوك مختلف
+            // إذا كنت تستخدم Scoped Storage بشكل صحيح، قد لا تحتاج إلى هذا الإذن
+            // ولكن إذا كنت تحتاج إلى الوصول إلى جميع الصور، فقد تحتاج إلى READ_EXTERNAL_STORAGE
+            // في هذا المثال، سنفحص READ_EXTERNAL_STORAGE للإصدارات الأقدم من 13
+            if (ContextCompat.checkSelfPermission(this, android.Manifest.permission.READ_EXTERNAL_STORAGE)
+                    != PackageManager.PERMISSION_GRANTED) {
+                requestReadExternalStoragePermission.launch(android.Manifest.permission.READ_EXTERNAL_STORAGE);
+            } else {
+                Log.d(TAG, "READ_EXTERNAL_STORAGE permission already granted (for older versions)");
+                Toast.makeText(this, "إذن قراءة التخزين ممنوح بالفعل (للإصدارات الأقدم)", Toast.LENGTH_SHORT).show();
+            }
+        } else { // أندرويد 9 والإصدارات الأقدم
+            if (ContextCompat.checkSelfPermission(this, android.Manifest.permission.READ_EXTERNAL_STORAGE)
+                    != PackageManager.PERMISSION_GRANTED) {
+                requestReadExternalStoragePermission.launch(android.Manifest.permission.READ_EXTERNAL_STORAGE);
+            } else {
+                Log.d(TAG, "READ_EXTERNAL_STORAGE permission already granted (for older versions)");
+                Toast.makeText(this, "إذن قراءة التخزين ممنوح بالفعل (للإصدارات الأقدم)", Toast.LENGTH_SHORT).show();
+            }
+        }
+
+
+        // فحص وطلب إذن READ_MEDIA_VIDEO (للإصدارات الحديثة)
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) { // أندرويد 13+
+            if (ContextCompat.checkSelfPermission(this, android.Manifest.permission.READ_MEDIA_VIDEO)
+                    != PackageManager.PERMISSION_GRANTED) {
+                requestReadMediaVideoPermission.launch(android.Manifest.permission.READ_MEDIA_VIDEO);
+            } else {
+                Log.d(TAG, "READ_MEDIA_VIDEO permission already granted");
+                Toast.makeText(this, "إذن قراءة الفيديو ممنوح بالفعل", Toast.LENGTH_SHORT).show();
+            }
+        }// ملاحظة: إذن INTERNET لا يحتاج إلى فحص أو
+    }
 
     private boolean validateAndExtractData() {
+        // **تصحيح:** يجب ربط حقل المنطقة أولاً إذا لم يكن مربوطًا في onCreate
+
+
         // **تعديل: إضافة trim() لإزالة المسافات الزائدة**
         String title = inputTitle.getText().toString().trim();
         String description = inputDescription.getText().toString().trim();
-        // **إضافة جديدة: قراءة قيمة المنطقة**
-        String region = inputRegion.getText().toString().trim();
 
         // **تعديل: التحقق يشمل الآن حقل المنطقة**
-        if (title.isEmpty() || description.isEmpty() || region.isEmpty()) {
+        if (title.isEmpty() || description.isEmpty() ) {
             Toast.makeText(this, "All fields are required", Toast.LENGTH_SHORT).show();
             return false;
         }
@@ -120,16 +206,24 @@ public class NewReporScreen extends AppCompatActivity {
             myTask1.setTaskName(title);
             myTask1.setTaskDescription(description);
 
-            // **إضافة جديدة: حفظ المنطقة ومسار الصورة في الكائن**
-            myTask1.Region = region; // تأكد من وجود حقل Region في MyTask.java
+            // --- هنا تم وضع الكود الناقص والمهم ---
+
+            // 1. حفظ المنطقة في الكائن
+
+
+            // 2. التحقق من وجود صورة مختارة وحفظ مسارها
             if (selectedImageUri != null) {
-                // تأكد من وجود حقل imageUri في MyTask.java
-                myTask1.imageUri = selectedImageUri.toString();
+                // ملاحظة هامة: هذا يحفظ المسار المؤقت. الحل الدائم يتطلب نسخ الملف.
+                myTask1.setImageUrl(selectedImageUri.toString());
             }
 
+            // --- نهاية الكود الناقص ---
+
+            // حفظ الكائن في قاعدة البيانات
             AppDatabase.getdb(this).getMyTaskQuery().insert(myTask1);
         }
 
         return isValid;
     }
+
 }

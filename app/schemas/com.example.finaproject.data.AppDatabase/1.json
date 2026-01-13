@@ -2,7 +2,7 @@
   "formatVersion": 1,
   "database": {
     "version": 1,
-    "identityHash": "9e66511b7b2f534fa85fd68322c83390",
+    "identityHash": "547aa6d320a318d47fa0da25bb54d468",
     "entities": [
       {
         "tableName": "Profile",
@@ -45,7 +45,7 @@
       },
       {
         "tableName": "MyTask",
-        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`taskName` TEXT NOT NULL, `taskDescription` TEXT, `taskDate` TEXT, `Region` TEXT, `taskStatus` INTEGER NOT NULL, `imageUri` TEXT, PRIMARY KEY(`taskName`))",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`taskName` TEXT NOT NULL, `taskDescription` TEXT, `taskDate` TEXT, `Region` TEXT, `taskStatus` INTEGER NOT NULL, `imageUrl` TEXT, PRIMARY KEY(`taskName`))",
         "fields": [
           {
             "fieldPath": "taskName",
@@ -75,8 +75,8 @@
             "notNull": true
           },
           {
-            "fieldPath": "imageUri",
-            "columnName": "imageUri",
+            "fieldPath": "imageUrl",
+            "columnName": "imageUrl",
             "affinity": "TEXT"
           }
         ],
@@ -90,7 +90,7 @@
     ],
     "setupQueries": [
       "CREATE TABLE IF NOT EXISTS room_master_table (id INTEGER PRIMARY KEY,identity_hash TEXT)",
-      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, '9e66511b7b2f534fa85fd68322c83390')"
+      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, '547aa6d320a318d47fa0da25bb54d468')"
     ]
   }
 }
