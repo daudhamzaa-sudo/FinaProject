@@ -84,32 +84,40 @@
             app:boxStrokeColor="#2E7D32"/>
 
         <!-- Attach photo -->
+        <!-- ... (الكود السابق مثل حقول العنوان والوصف) ... -->
+
+        <!-- حاوية لإرفاق الصور -->
         <LinearLayout
             android:id="@+id/attachPhotoLayout"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:gravity="center_vertical"
-            android:layout_marginTop="20dp"
-            android:padding="12dp"
-            android:orientation="horizontal"
-            android:background="@drawable/outlined_box_light">
+            android:orientation="vertical"
+            android:layout_marginTop="16dp"
+            app:layout_constraintTop_toBottomOf="@id/inputDescriptionLayout"> <!-- اربطه بالحقل الذي قبله -->
 
-            <ImageView
-                android:id="@+id/imgPreview"
-                android:layout_width="60dp"
-                android:layout_height="60dp"
-                android:src="@drawable/ic_camera"
-                android:scaleType="centerCrop"
-                android:contentDescription="Attach Photo" />
-
-            <TextView
+            <!-- زر لإرفاق الصورة -->
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/btnAttachPhoto"
+                style="@style/Widget.MaterialComponents.Button.OutlinedButton"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Attach a photo"
-                android:textColor="#555555"
-                android:textSize="16sp"
-                android:layout_marginStart="16dp" />
+                android:text="Attach Photo"
+                app:icon="@drawable/ic_attach_file" /> <!-- يمكنك إضافة أيقونة مناسبة -->
+
+            <!-- مكان عرض الصورة المصغرة بعد اختيارها -->
+            <ImageView
+                android:id="@+id/imgPreview"
+                android:layout_width="100dp"
+                android:layout_height="100dp"
+                android:layout_marginTop="8dp"
+                android:visibility="gone"
+                android:scaleType="centerCrop"
+                android:src="@drawable/ic_launcher_background" /> <!-- أي صورة افتراضية -->
+
         </LinearLayout>
+
+        <!-- ... (بقية الكود مثل زر Submit) ... -->
+
 
         <!-- Submit button -->
         <com.google.android.material.button.MaterialButton

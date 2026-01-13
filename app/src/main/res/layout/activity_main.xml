@@ -14,19 +14,7 @@
 
     <!-- Title -->
     <!-- تم تعديل الهامش العلوي ليناسب التصميم الجديد -->
-    <ImageButton
-        android:id="@+id/btnSettings"
-        android:layout_width="48dp"
-        android:layout_height="48dp"
-        android:layout_marginTop="16dp"
-        android:layout_marginEnd="16dp"
-        android:background="?attr/selectableItemBackgroundBorderless"
-        android:contentDescription="Settings"
-        android:padding="12dp"
-        android:src="@drawable/ic_settings_24"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:tint="#424242" />
+
 
     <TextView
         android:id="@+id/tvTitle"
@@ -80,31 +68,87 @@
     </com.google.android.material.textfield.TextInputLayout>
 
     <!-- Section label -->
+
+    <!-- Reports list -->
     <TextView
         android:id="@+id/tvRecent"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_marginStart="16dp"
+        android:layout_marginTop="4dp"
         android:text="Recent Reports"
+        android:textColor="#2E7D32"
         android:textSize="18sp"
         android:textStyle="bold"
-        android:textColor="#2E7D32"
-        android:layout_marginStart="24dp"
-        android:layout_marginTop="28dp"
-        app:layout_constraintTop_toBottomOf="@id/inputSearchLayout"
-        app:layout_constraintStart_toStartOf="parent" />
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/inputSearchLayout" />
 
-    <!-- Reports list -->
+    <!-- بداية واجهة الذكاء الاصطناعي -->
+
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/recyclerReports"
-        android:layout_width="0dp"
-        android:layout_height="0dp"
+        android:layout_width="363dp"
+        android:layout_height="311dp"
         android:layout_marginHorizontal="16dp"
         android:layout_marginTop="12dp"
         android:layout_marginBottom="16dp"
-        app:layout_constraintTop_toBottomOf="@id/tvRecent"
-        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintBottom_toTopOf="@id/btnAddReport"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintBottom_toTopOf="@id/btnAddReport"/>
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/tvRecent"
+        app:layout_constraintVertical_bias="0.0" />
+
+    <TextView
+        android:id="@+id/responseText"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginHorizontal="24dp"
+        android:layout_marginBottom="12dp"
+        android:padding="8dp"
+        android:textAlignment="center"
+        app:layout_constraintBottom_toTopOf="@id/inputText"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        tools:text="Response will appear here" />
+
+    <EditText
+        android:id="@+id/inputText"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="24dp"
+        android:layout_marginEnd="8dp"
+        android:layout_marginBottom="8dp"
+        android:hint="Ask Gemini..."
+        android:inputType="text"
+        app:layout_constraintBottom_toTopOf="@id/btnAddReport"
+        app:layout_constraintEnd_toStartOf="@+id/sendButton"
+        app:layout_constraintStart_toStartOf="parent" />
+
+    <Button
+        android:id="@+id/sendButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="24dp"
+        android:backgroundTint="#226825"
+        android:text="Send"
+        app:layout_constraintBottom_toBottomOf="@+id/inputText"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="@+id/inputText" />
+
+    <ProgressBar
+        android:id="@+id/progressBar"
+        style="?android:attr/progressBarStyle"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:visibility="gone"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        tools:visibility="visible" />
+
+    <!-- نهاية واجهة الذكاء الاصطناعي -->
+
 
     <!-- Add new report button -->
     <com.google.android.material.button.MaterialButton
