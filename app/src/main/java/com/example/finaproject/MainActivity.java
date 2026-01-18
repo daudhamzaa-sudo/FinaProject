@@ -144,7 +144,9 @@ public class MainActivity extends AppCompatActivity {
         inputText.setText(""); // مسح حقل الإدخال بعد الإرسال
 
         // الحصول على نسخة من GeminiHelper وإرسال الطلب
-        GeminiHelper.getInstance().sendMessage(query, new ResponseCallback() {
+        String prompt = PromptBuilder.buildReportPrompt(query);
+
+        GeminiHelper.getInstance().sendMessage(prompt, new ResponseCallback()  {
             /**
              * يتم استدعاؤها عند وصول الرد بنجاح.
              */
