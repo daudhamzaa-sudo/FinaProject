@@ -12,7 +12,8 @@ import java.util.List;
 public interface MyTaskQuery {
     @Query("SELECT * FROM MyTask")
     List<MyTask> getAllTasks();
-
+    @Query("SELECT * FROM MyTask WHERE taskName = :name LIMIT 1")
+    MyTask getTaskByName(String name);
     @Query("SELECT * FROM MyTask WHERE :name LIKE :name LIMIT 1")
     MyTask findByName(String name);
     @Insert

@@ -15,8 +15,8 @@ import kotlin.coroutines.EmptyCoroutineContext;
  * Gemini
  */
 public  class GeminiHelper {
-    public static final String GEMINI_Version = "gemini-2.0-flash";    // ‏إصدار ال gemini الذي يمكن استعماله
-    private static String GEMINI_API_KEY = "your key";   // مفتاح التطبيق الذي نسخه من الموقع التابع gemini
+    public static final String GEMINI_Version = "gemini-1.5-flash";    // ‏إصدار ال gemini الذي يمكن استعماله
+    private static String GEMINI_API_KEY = "AIzaSyCJ_7dTIZSo0NY0D-2SF5YgCXgp4Dn6Kxs";   // مفتاح التطبيق الذي نسخه من الموقع التابع gemini
     private static GeminiHelper instance;    // كائن وحيد الذي يساعدنا على عدم بناء أكثر من كائن لهذه الخدمة ويسمى singleton
     private GenerativeModel gemini;    // موديل الذكاء الاصطناعي
 

@@ -11,6 +11,17 @@ public class Profile {
     @PrimaryKey(autoGenerate = true)
     public long uid;
 
+    public boolean isAdmin() {
+        return isAdmin;
+    }
+
+    public void setAdmin(boolean admin) {
+        isAdmin = admin;
+    }
+
+    @ColumnInfo(defaultValue = "false")
+    private boolean isAdmin; // <-- الحقل الجديد لتحديد صلاحيات المدير
+
     public String username;
     public String email;
     public int phone;

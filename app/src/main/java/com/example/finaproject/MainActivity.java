@@ -6,6 +6,7 @@ import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText; // استيراد EditText
+import android.widget.ImageView;
 import android.widget.ProgressBar; // استيراد ProgressBar
 import android.widget.TextView;
 import android.widget.Toast; // استيراد Toast لعرض الأخطاء
@@ -32,7 +33,9 @@ public class MainActivity extends AppCompatActivity {
 
     // --- متغيرات واجهة عرض التقارير (الكود الأصلي) ---
     private TextView tvTitle;
+    private TextView responseText;
 
+    private ImageView imgPreview;
     private TextView tvSubtitle;
     private TextInputLayout inputSearchLayout;
     private TextInputEditText inputSearch;
@@ -52,7 +55,7 @@ public class MainActivity extends AppCompatActivity {
     /**
      * حقل نصي لعرض إجابة Gemini.
      */
-    private TextView responseText;
+
     /**
      * شريط تقدم يظهر أثناء انتظار الرد.
      */
@@ -88,11 +91,49 @@ public class MainActivity extends AppCompatActivity {
         tvTitle = findViewById(R.id.tvTitle);
         tvSubtitle = findViewById(R.id.tvSubtitle);
         inputSearchLayout = findViewById(R.id.inputSearchLayout);
-        inputSearch = findViewById(R.id.inputSearch);
+        imgPreview = findViewById(R.id.imgPreview);
+        // إضافة مستمع النقر على الصورة للانتقال إلى شاشة الإعدادات
+        imgPreview.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(MainActivity.this, Settings.class);
+                startActivity(intent);
+            }
+        });
+
         btnAddReport = findViewById(R.id.btnAddReport);
         responseText = findViewById(R.id.responseText);
         // إعداد RecyclerView لعرض البيانات
         recyclerReports.setLayoutManager(new LinearLayoutManager(this));
+        // --- أضف هذا الكود هنا ---
+        // إضافة مستمع للنقرات على الـ RecyclerView
+        recyclerReports.addOnItemTouchListener(new RecyclerItemClickListener(this, recyclerReports, new RecyclerItemClickListener.OnItemClickListener() {
+            @Override
+            public void onItemClick(View view, int position) {
+                // 1. الحصول على قائمة البلاغات الحالية من الـ Adapter
+                ArrayList<MyTask> currentTasks = myTaskAdapter.getTasksList();
+                if (currentTasks != null && position < currentTasks.size()) {
+                    MyTask clickedTask = currentTasks.get(position);
+
+                    // 2. إنشاء "نية" (Intent) للانتقال إلى شاشة التفاصيل
+                    Intent intent = new Intent(MainActivity.this, ReportDetailsActivity.class);
+
+                    // 3. وضع "هوية" البلاغ (ID) في الـ Intent
+// نرسل اسم المهمة بدلاً من الرقم، ونغير اسم الـ Extra ليكون أوضح
+                    intent.putExtra("TASK_NAME", clickedTask.getTaskName());
+                    // 4. بدء تشغيل شاشة التفاصيل
+                    startActivity(intent);
+                }
+            }
+
+            @Override
+            public void onLongItemClick(View view, int position) {
+                // يمكنك إضافة كود هنا إذا أردت تفعيل شيء عند الضغط المطول
+            }
+        }));
+        // ------------------------
+
+
         ArrayList<MyTask> myTasks = (ArrayList<MyTask>) AppDatabase.getdb(this).getMyTaskQuery().getAllTasks();
         myTaskAdapter = new MyTaskAdapter(this, myTasks);
         recyclerReports.setAdapter(myTaskAdapter);

@@ -1,4 +1,5 @@
 package com.example.finaproject;
+import com.google.firebase.auth.FirebaseAuth;
 
 import android.content.Intent;
 import android.os.Bundle;
@@ -22,7 +23,7 @@ import com.google.android.material.textfield.TextInputLayout;
 public class signup extends AppCompatActivity {
 
     private Button btnSignup1;
-
+    private com.google.firebase.auth.FirebaseAuth mAuth; // <--- أضف هذا السطر
     private TextInputEditText inputEmail;
     private TextInputEditText inputUsername;
     private TextInputEditText inputPassword;
@@ -101,7 +102,10 @@ public class signup extends AppCompatActivity {
             Profile myProfile = AppDatabase.getdb(this).getProfile().checkEmail(email);
             if (myProfile != null) {
                inputEmail.setError("Email already registered");
-                isValid = false;            }
+                isValid = false;
+
+
+            }
        }
         if (isValid) {
             // Do something with the data
@@ -111,6 +115,18 @@ public class signup extends AppCompatActivity {
             myUser.setEmail(email);
             myUser.setPassw(password);
             AppDatabase.getdb(getApplicationContext()).getProfile().insert(myUser);
+
+
+            FirebaseAuth.getInstance()
+                    .createUserWithEmailAndPassword(email, password)
+                    .addOnSuccessListener(result -> {
+                        Toast.makeText(this, "Account Created", Toast.LENGTH_SHORT).show();
+                        finish();
+                    })
+                    .addOnFailureListener(e -> {
+                        Toast.makeText(this, e.getMessage(), Toast.LENGTH_SHORT).show();
+                    });
+
         }
 
 
