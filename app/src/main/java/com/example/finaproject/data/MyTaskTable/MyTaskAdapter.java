@@ -1,6 +1,7 @@
 package com.example.finaproject.data.MyTaskTable;
 
 import android.content.Context;
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -12,6 +13,8 @@ import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 import com.bumptech.glide.Glide;
 import com.example.finaproject.R;
+import com.example.finaproject.ReportDetailsActivity;
+
 import java.util.ArrayList;
 
 public class MyTaskAdapter extends RecyclerView.Adapter<MyTaskAdapter.TaskViewHolder> {
@@ -86,6 +89,18 @@ public class MyTaskAdapter extends RecyclerView.Adapter<MyTaskAdapter.TaskViewHo
             // إخفاء الصورة في حال عدم وجود رابط
             holder.task_image.setVisibility(View.GONE);
         }
+        holder.itemView.setOnClickListener(v -> {
+
+            Intent intent = new Intent(v.getContext(), ReportDetailsActivity.class);
+
+            // نمرر كل تفاصيل البلاغ
+            intent.putExtra("TITLE", current.getTaskTitle());
+            intent.putExtra("DESCRIPTION", current.getTaskDescription());
+            intent.putExtra("STATUS", current.getTaskStatus());
+            intent.putExtra("IMAGE", current.getImageUrl());
+
+            v.getContext().startActivity(intent);
+        });
     }
 
     @Override
