@@ -22,26 +22,31 @@ public class ReportDetailsActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_report_details);
 
+        // ربط العناصر من XML
         detailImage = findViewById(R.id.detail_image);
         detailTitle = findViewById(R.id.detail_title);
         detailDescription = findViewById(R.id.detail_description);
         detailStatus = findViewById(R.id.detail_status);
 
+        // استلام البيانات من Intent
         String title = getIntent().getStringExtra("TITLE");
         String description = getIntent().getStringExtra("DESCRIPTION");
         String status = getIntent().getStringExtra("STATUS");
         String imageUrl = getIntent().getStringExtra("IMAGE_URL");
 
+        // تحقق
         if (title == null) {
-            Toast.makeText(this, "Error loading report", Toast.LENGTH_SHORT).show();
+            Toast.makeText(this, "لم يتم استلام بيانات البلاغ", Toast.LENGTH_SHORT).show();
             finish();
             return;
         }
 
+        // عرض البيانات
         detailTitle.setText(title);
         detailDescription.setText(description);
-        detailStatus.setText("Status: " + status);
+        detailStatus.setText(status);
 
+        // تحميل الصورة (بدون ما تخرب)
         if (imageUrl != null && !imageUrl.isEmpty()) {
             detailImage.setVisibility(View.VISIBLE);
             Glide.with(this)

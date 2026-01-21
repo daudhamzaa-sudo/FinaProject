@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "187975857353",
+    "project_id": "finaproject-2f3dc",
+    "storage_bucket": "finaproject-2f3dc.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:187975857353:android:7f62a07ccb8a820de14918",
+        "android_client_info": {
+          "package_name": "com.example.finaproject"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "187975857353-3bcijn1detm52ki77nk6g2vd7b9brlgj.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDWwY-O827eA9bjH0cC46rQuuE6T3YByXo"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "187975857353-3bcijn1detm52ki77nk6g2vd7b9brlgj.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
