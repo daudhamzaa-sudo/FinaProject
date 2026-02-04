@@ -18,6 +18,7 @@ import androidx.activity.EdgeToEdge;
 import androidx.activity.result.ActivityResultCallback;
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.content.ContextCompat;
 import androidx.core.graphics.Insets;
@@ -109,6 +110,7 @@ public class NewReporScreen extends AppCompatActivity {
             @Override
             public void onActivityResult(Uri result) {
                 if (result != null) {
+                    getContentResolver().takePersistableUriPermission(result, Intent.FLAG_GRANT_READ_URI_PERMISSION);
                     selectedImageUri = result;
                     ivSelectedImage.setImageURI(result);
                     ivSelectedImage.setVisibility(View.VISIBLE);
@@ -225,5 +227,45 @@ public class NewReporScreen extends AppCompatActivity {
 
         return isValid;
     }
+    public void saveTask(MyTask task, android.content.Context context) {
+        // Get a reference to the database
+        com.google.firebase.database.DatabaseReference database =
+                com.google.firebase.database.FirebaseDatabase.getInstance().getReference();
 
+        // Reference to the "tasks" node
+        com.google.firebase.database.DatabaseReference tasksRef = database.child("tasks");
+
+        // Create a new unique key for the task
+        com.google.firebase.database.DatabaseReference newTaskRef = tasksRef.push();
+
+        // Set the task ID
+        task.seti(Long.parseLong(newTaskRef.get()));
+
+        // Save the task to the database
+        newTaskRef.setValue(task)
+                .addOnSuccessListener(new com.google.android.gms.tasks.OnSuccessListener<Void>() {
+                    @Override
+                    public void onSuccess(Void aVoid) {
+                        if (context != null) {
+                            android.widget.Toast.makeText(context, "تم حفظ المهمة بنجاح",
+                                    android.widget.Toast.LENGTH_SHORT).show();
+                            if (context instanceof android.app.Activity) {
+                                ((android.app.Activity) context).finish();
+                            }
+                        }
+                        android.util.Log.d("MyTask", "تم حفظ المهمة بنجاح: " + task.getId());
+                    }
+                })
+                .addOnFailureListener(new com.google.android.gms.tasks.OnFailureListener() {
+                    @Override
+                    public void onFailure(@NonNull Exception e) {
+                        android.util.Log.e("MyTask", "خطأ في حفظ المهمة: " + e.getMessage(), e);
+                        if (context != null) {
+                            android.widget.Toast.makeText(context,
+                                    "فشل في حفظ المهمة: " + e.getMessage(),
+                                    android.widget.Toast.LENGTH_SHORT).show();
+                        }
+                    }
+                });
+    }
 }

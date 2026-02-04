@@ -120,7 +120,7 @@ public class MainActivity extends AppCompatActivity {
 
                     // 3. وضع "هوية" البلاغ (ID) في الـ Intent
 // نرسل اسم المهمة بدلاً من الرقم، ونغير اسم الـ Extra ليكون أوضح
-                    intent.putExtra("TASK_NAME", clickedTask.getTaskName());
+                    intent.putExtra("TASK_id", clickedTask.getId());
                     // 4. بدء تشغيل شاشة التفاصيل
                     startActivity(intent);
                 }

@@ -5,12 +5,14 @@ import android.annotation.SuppressLint; // لتجاهل بعض التحذيرا�
 import android.content.Intent;          // لإنشاء Intent للتنقل بين الشاشات
 import android.content.SharedPreferences;
 import android.os.Bundle;              // لتمرير بيانات للشاشة عند إنشائها
+import android.util.Log;
 import android.view.View;              // للتعامل مع عناصر الواجهة مثل الأزرار
 import android.widget.Button;          // زر
 import android.widget.Toast;           // لعرض رسائل مؤقتة على الشاشة
 
 // مكتبات داعمة لتصميم واجهة تفاعلية
 import androidx.activity.EdgeToEdge;
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
@@ -21,8 +23,12 @@ import com.example.finaproject.data.AppDatabase;
 import com.example.finaproject.data.MyProfileTable.Profile;
 
 // مكتبة لإدخال النصوص بطريقة جميلة
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.Task;
 import com.google.android.material.textfield.TextInputEditText;
+import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
 
 // تعريف الكلاس login (Activity لتسجيل الدخول)
 public class login extends AppCompatActivity {
@@ -46,6 +52,12 @@ public class login extends AppCompatActivity {
 
         // تمكين التصميم الذي يشغل كامل الشاشة حتى حواف الجهاز
         EdgeToEdge.enable(this);
+        if(FirebaseAuth.getInstance().getCurrentUser()!=null)
+        {
+            Intent intent = new Intent(login.this, MainActivity.class);
+            startActivity(intent);
+            finish(); //
+        }
 
         // ربط الكلاس بواجهة المستخدم XML الخاصة بالشاشة
         setContentView(R.layout.activity_login);
@@ -90,11 +102,35 @@ public class login extends AppCompatActivity {
                     SharedPreferences.Editor editor = prefs.edit();
                     editor.putBoolean("IS_ADMIN", loggedInUser.isAdmin()); // <-- حفظ صلاحية المدير
                     editor.apply();
+        btnLogin.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                String email = inputEmail.getText().toString().trim();
+                String password = inputPassword.getText().toString().trim();
 
+                mAuth.signInWithEmailAndPassword(email, password)
+                        .addOnCompleteListener(login.this, new OnCompleteListener<AuthResult>() {
+                            @Override
+                            public void onComplete(@NonNull Task<AuthResult> task) {
+                                if (task.isSuccessful()) {
+                                    // Sign in success, update UI with the signed-in user's information
+                                   // Log.d(TAG, "signInWithEmail:success");
+                                    Intent intent = new Intent(login.this, MainActivity.class);
+                                    startActivity(intent);
+                                    finish(); //
+                                    // updateUI(user);
+                                } else {
+                                    // If sign in fails, display a message to the user.
+                                   // Log.w(TAG, "signInWithEmail:failure", task.getException());
+                                    Toast.makeText(login.this, "Authentication failed.",
+                                            Toast.LENGTH_SHORT).show();
+                                    // updateUI(null);
+                                }
+                            }
+                        });
+            }
+        });
                     // 4. الانتقال للشاشة الرئيسية
-                    Intent intent = new Intent(login.this, MainActivity.class);
-                    startActivity(intent);
-                    finish(); // إغلاق شاشة تسجيل الدخول
                 }
             }
         });

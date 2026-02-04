@@ -19,7 +19,8 @@ public class MyTask {
      *              مما يعني أن قيمته يجب أن تكون فريدة لكل صف ولا يمكن تكرارها.
      * @NonNull: تضمن أن هذا الحقل لا يمكن أن يكون فارغًا (null).
      */
-    @PrimaryKey
+    @PrimaryKey(autoGenerate = true)
+    long id;
     @NonNull
     public String taskName;
 
@@ -91,6 +92,9 @@ public class MyTask {
         return taskName;
     }
 
+    public long getId() {
+        return id;
+    }
 
     /**
      * دالة toString() تقوم بإرجاع تمثيل نصي (String) للكائن.
@@ -100,13 +104,14 @@ public class MyTask {
     @Override
     public String toString() {
         return "MyTask{" +
-                "taskName='" + taskName + '\'' +
+                "id=" + id +
+                ", taskName='" + taskName + '\'' +
                 ", taskDescription='" + taskDescription + '\'' +
                 ", taskDate='" + taskDate + '\'' +
-                ", taskTime='" + Region + '\'' + // ملاحظة: التسمية هنا "taskTime" لكن المتغير هو Region
-                ", taskStatus='" + taskStatus + '\'' +
+                ", Region='" + Region + '\'' +
+                ", taskStatus=" + taskStatus +
+                ", imageUrl='" + imageUrl + '\'' +
                 '}';
     }
-
 
 }
