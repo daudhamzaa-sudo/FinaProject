@@ -1,6 +1,11 @@
 package com.example.finaproject;
 
 import static android.content.ContentValues.TAG;
+import android.Manifest;
+import android.content.pm.PackageManager;
+import androidx.core.app.ActivityCompat;
+import com.google.android.gms.location.FusedLocationProviderClient;
+import com.google.android.gms.location.LocationServices;
 
 import android.content.Intent;
 import android.content.pm.PackageManager;
@@ -10,6 +15,7 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.widget.AutoCompleteTextView;
+import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -38,6 +44,10 @@ public class NewReporScreen extends AppCompatActivity {
     private ActivityResultLauncher<String> requestReadExternalStoragePermission;
     private TextInputEditText inputTitle;
     private TextInputEditText inputDescription;
+    private FusedLocationProviderClient fusedLocationClient;
+
+    private double latitude = 0;
+    private double longitude = 0;
 
     private TextView tvTitle;
     private TextView tvSubtitle;
@@ -51,6 +61,36 @@ public class NewReporScreen extends AppCompatActivity {
         ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main), (v, insets) -> {
             Insets systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars());
             v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom);
+            fusedLocationClient = LocationServices.getFusedLocationProviderClient(this);
+
+            Button btnGetLocation = findViewById(R.id.btnGetLocation);
+            TextView tvLocation = findViewById(R.id.tvLocation);
+
+            btnGetLocation.setOnClickListener(v1 -> {
+
+                if (ActivityCompat.checkSelfPermission(this,
+                        Manifest.permission.ACCESS_FINE_LOCATION)
+                        != PackageManager.PERMISSION_GRANTED) {
+
+                    ActivityCompat.requestPermissions(this,
+                            new String[]{Manifest.permission.ACCESS_FINE_LOCATION},
+                            100);
+                    return;
+                }
+
+                fusedLocationClient.getLastLocation()
+                        .addOnSuccessListener(location -> {
+                            if (location != null) {
+                                latitude = location.getLatitude();
+                                longitude = location.getLongitude();
+
+                                tvLocation.setText("Location: " + latitude + ", " + longitude);
+                            } else {
+                                tvLocation.setText("Location not found");
+                            }
+                        });
+            });
+
             return insets;
         });
         // تسجيل مُشغّل لطلب إذن READ_MEDIA_IMAGES
@@ -205,6 +245,8 @@ public class NewReporScreen extends AppCompatActivity {
             MyTask myTask1 = new MyTask();
             myTask1.setTaskName(title);
             myTask1.setTaskDescription(description);
+            myTask1.setLatitude(latitude);
+            myTask1.setLongitude(longitude);
 
             // --- هنا تم وضع الكود الناقص والمهم ---
 

@@ -13,6 +13,7 @@ import androidx.core.view.WindowInsetsCompat;
 
 import com.example.finaproject.data.AppDatabase;
 import com.example.finaproject.data.MyProfileTable.Profile;
+import com.google.firebase.auth.FirebaseAuth;
 
 import java.util.List;
 
@@ -47,6 +48,7 @@ public class Settings extends AppCompatActivity {
         }
         btnLogout.setOnClickListener(view -> {
             Intent intent = new Intent(Settings.this, SplashScreen.class);
+            FirebaseAuth.getInstance().signOut();
             startActivity(intent);
         });
 

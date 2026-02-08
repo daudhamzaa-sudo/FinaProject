@@ -116,6 +116,19 @@
 
         </LinearLayout>
 
+        <Button
+            android:id="@+id/btnGetLocation"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+
+            android:backgroundTint="#196B1D"
+            android:text="Get Current Location" />
+        <TextView
+            android:id="@+id/tvLocation"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Location: Not set"/>
+
         <!-- ... (بقية الكود مثل زر Submit) ... -->
 
 

@@ -28,9 +28,9 @@ public class MyTask {
      */
     public String taskDescription;
 
-    /**
-     * تاريخ المهمة (مثال: "2024-12-25").
-     */
+    private double latitude;
+    private double longitude;
+
     public String taskDate;
 
     /**
@@ -72,6 +72,21 @@ public class MyTask {
 
     public void setTaskName(@NonNull String taskName) {
         this.taskName = taskName;
+    }
+    public double getLatitude() {
+        return latitude;
+    }
+
+    public void setLatitude(double latitude) {
+        this.latitude = latitude;
+    }
+
+    public double getLongitude() {
+        return longitude;
+    }
+
+    public void setLongitude(double longitude) {
+        this.longitude = longitude;
     }
 
     public boolean getTaskStatus() {
