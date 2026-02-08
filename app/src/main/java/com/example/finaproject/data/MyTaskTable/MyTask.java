@@ -96,6 +96,10 @@ public class MyTask {
         return id;
     }
 
+    public void setId(long id) {
+        this.id = id;
+    }
+
     /**
      * دالة toString() تقوم بإرجاع تمثيل نصي (String) للكائن.
      * هذه الدالة مفيدة جدًا في عمليات التصحيح (Debugging) لطباعة محتويات الكائن بسهولة.

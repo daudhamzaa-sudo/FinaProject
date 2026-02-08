@@ -8,6 +8,7 @@ material = "1.10.0"
 activity = "1.10.1"
 constraintlayout = "2.1.4"
 generativeai = "0.9.0"
+firebaseDatabase = "22.0.1"
 
 [libraries]
 junit = { group = "junit", name = "junit", version.ref = "junit" }
@@ -18,6 +19,8 @@ material = { group = "com.google.android.material", name = "material", version.r
 activity = { group = "androidx.activity", name = "activity", version.ref = "activity" }
 constraintlayout = { group = "androidx.constraintlayout", name = "constraintlayout", version.ref = "constraintlayout" }
 generativeai = { group = "com.google.ai.client.generativeai", name = "generativeai", version.ref = "generativeai" }
+firebase-database = { group = "com.google.firebase", name = "firebase-database", version.ref = "firebaseDatabase" }
+firebase-storage_z = { group = "'com.google.firebase", name = "firebase-storage' // << أضف هذا السطر" }
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }

@@ -1,49 +1,21 @@
+
 plugins {
-    alias(libs.plugins.android.application)
-   // id 'com.android.application'
-
-    // Add the Google services Gradle plugin
+    id 'com.android.application'
     id 'com.google.gms.google-services'
-
-
-}
-
-dependencies {
-    // Import the Firebase BoM
-    implementation platform('com.google.firebase:firebase-bom:34.8.0')
-
-
-    // TODO: Add the dependencies for Firebase products you want to use
-    // When using the BoM, don't specify versions in Firebase dependencies
-    implementation 'com.google.firebase:firebase-analytics'
-
-    implementation 'com.google.firebase:firebase-auth'
-    // Add the dependencies for any other desired Firebase products
-    // https://firebase.google.com/docs/android/setup#available-libraries
 }
 
 android {
     namespace 'com.example.finaproject'
-    compileSdk 36
+    compileSdk 34
 
     defaultConfig {
         applicationId "com.example.finaproject"
         minSdk 26
-        targetSdk 36
+        targetSdk 34
         versionCode 1
         versionName "1.0"
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
-
-        // Room schema export
-        javaCompileOptions {
-            annotationProcessorOptions {
-                arguments += [
-                        "room.schemaLocation": "$projectDir/schemas".toString(),
-                        "room.incremental"   : "true"
-                ]
-            }
-        }
     }
 
     buildTypes {
@@ -52,33 +24,52 @@ android {
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
         }
     }
-
     compileOptions {
-        sourceCompatibility JavaVersion.VERSION_11
-        targetCompatibility JavaVersion.VERSION_11
+        sourceCompatibility JavaVersion.VERSION_1_8
+        targetCompatibility JavaVersion.VERSION_1_8
     }
 }
 
 dependencies {
 
-    implementation libs.appcompat
-    implementation libs.material
-    implementation libs.activity
-    implementation libs.constraintlayout
-    implementation libs.generativeai
-    testImplementation libs.junit
-    androidTestImplementation libs.ext.junit
-    androidTestImplementation libs.espresso.core
-
-    // Room Database
-    def room_version = "2.8.3"
+    implementation 'androidx.appcompat:appcompat:1.6.1'
+    implementation 'com.google.android.material:material:1.10.0'
+    implementation 'androidx.constraintlayout:constraintlayout:2.1.4'
+    implementation 'androidx.activity:activity:1.8.0'
+    implementation 'com.google.firebase:firebase-database:21.0.0'
+    implementation 'com.google.firebase:firebase-storage:21.0.0'
+    testImplementation 'junit:junit:4.13.2'
+    androidTestImplementation 'androidx.test.ext:junit:1.1.5'
+    androidTestImplementation 'androidx.test.espresso:espresso-core:3.5.1'
+    //room
+    def room_version = "2.5.0"
     implementation "androidx.room:room-runtime:$room_version"
     annotationProcessor "androidx.room:room-compiler:$room_version"
+    // optional - RxJava2 support for Room
     implementation "androidx.room:room-rxjava2:$room_version"
+    // optional - RxJava3 support for Room
     implementation "androidx.room:room-rxjava3:$room_version"
+    // optional - Guava support for Room, including Optional<T> and ListenableFuture
     implementation "androidx.room:room-guava:$room_version"
+    // optional - Test helpers
     testImplementation "androidx.room:room-testing:$room_version"
+    // optional - Paging 3 Integration
     implementation "androidx.room:room-paging:$room_version"
 
-    implementation "com.github.bumptech.glide:glide:4.16.0"
+    // Import the Firebase BoM
+    implementation(platform("com.google.firebase:firebase-bom:33.0.0"))
+    // TODO: Add the dependencies for Firebase products you want to use
+    // When using the BoM, don't specify versions in Firebase dependencies
+    implementation("com.google.firebase:firebase-analytics")
+    implementation("com.google.firebase:firebase-auth")
+
+
+    // Add the dependency for the App Check library
+    // When using the BoM, you don't specify versions in Firebase library dependencies
+    implementation("com.google.firebase:firebase-appcheck-playintegrity")
+    implementation ("com.google.ai.client.generativeai:generativeai:0.9.0")
+    implementation ("com.google.guava:guava:33.0.0-android")
+    implementation 'com.github.bumptech.glide:glide:4.16.0'
+
+
 }

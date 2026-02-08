@@ -1,4 +1,11 @@
 package com.example.finaproject;
+// أضف هذه الـ imports في أعلى الملف مع بقية الـ imports
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.android.gms.tasks.OnFailureListener;
+import androidx.annotation.NonNull;
+
 
 import static android.content.ContentValues.TAG;
 
@@ -18,7 +25,6 @@ import androidx.activity.EdgeToEdge;
 import androidx.activity.result.ActivityResultCallback;
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
-import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.content.ContextCompat;
 import androidx.core.graphics.Insets;
@@ -223,36 +229,41 @@ public class NewReporScreen extends AppCompatActivity {
 
             // حفظ الكائن في قاعدة البيانات
             AppDatabase.getdb(this).getMyTaskQuery().insert(myTask1);
+            // استدعاء دالة الحفظ في Firebase بعد الحفظ المحلي
+            saveTask(myTask1, this);
+
         }
 
         return isValid;
     }
+
+    // هذه هي النسخة الصحيحة من الدالة
     public void saveTask(MyTask task, android.content.Context context) {
-        // Get a reference to the database
-        com.google.firebase.database.DatabaseReference database =
-                com.google.firebase.database.FirebaseDatabase.getInstance().getReference();
+        // 1. الحصول على مؤشر مباشر لعقدة "tasks" (طريقة أفضل)
+        com.google.firebase.database.DatabaseReference tasksRef =
+                com.google.firebase.database.FirebaseDatabase.getInstance().getReference("tasks");
 
-        // Reference to the "tasks" node
-        com.google.firebase.database.DatabaseReference tasksRef = database.child("tasks");
-
-        // Create a new unique key for the task
+        // 2. إنشاء مفتاح فريد (ID) للمهمة الجديدة
         com.google.firebase.database.DatabaseReference newTaskRef = tasksRef.push();
 
-        // Set the task ID
-        task.seti(Long.parseLong(newTaskRef.get()));
+        // 3. تعيين هذا المفتاح الفريد (وهو String) داخل كائن المهمة نفسه
+        // هذا هو السطر الذي تم تصحيحه
+        task.setTaskName(newTaskRef.getKey());
 
-        // Save the task to the database
+        // 4. حفظ الكائن بالكامل في Firebase تحت هذا المفتاح
         newTaskRef.setValue(task)
                 .addOnSuccessListener(new com.google.android.gms.tasks.OnSuccessListener<Void>() {
                     @Override
                     public void onSuccess(Void aVoid) {
                         if (context != null) {
-                            android.widget.Toast.makeText(context, "تم حفظ المهمة بنجاح",
+                            android.widget.Toast.makeText(context, "تم حفظ البلاغ بنجاح",
                                     android.widget.Toast.LENGTH_SHORT).show();
+                            // إغلاق الشاشة الحالية بعد النجاح
                             if (context instanceof android.app.Activity) {
                                 ((android.app.Activity) context).finish();
                             }
                         }
+                        // استخدام getTaskId() لعرض المعرف الصحيح
                         android.util.Log.d("MyTask", "تم حفظ المهمة بنجاح: " + task.getId());
                     }
                 })
@@ -268,4 +279,6 @@ public class NewReporScreen extends AppCompatActivity {
                     }
                 });
     }
+
+
 }
