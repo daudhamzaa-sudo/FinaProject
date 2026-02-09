@@ -1,12 +1,12 @@
 package com.example.finaproject;
-// أضف هذه الـ imports في أعلى الملف مع بقية الـ imports
+
+
+import androidx.annotation.NonNull;
+
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.OnFailureListener;
-import androidx.annotation.NonNull;
-
-
 import static android.content.ContentValues.TAG;
 import android.Manifest;
 import android.content.pm.PackageManager;
@@ -52,7 +52,8 @@ public class NewReporScreen extends AppCompatActivity {
     private TextInputEditText inputTitle;
     private TextInputEditText inputDescription;
     private FusedLocationProviderClient fusedLocationClient;
-
+private Button btnGetLocation;
+private TextView tvLocation;
     private double latitude = 0;
     private double longitude = 0;
 
@@ -70,33 +71,8 @@ public class NewReporScreen extends AppCompatActivity {
             v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom);
             fusedLocationClient = LocationServices.getFusedLocationProviderClient(this);
 
-            Button btnGetLocation = findViewById(R.id.btnGetLocation);
-            TextView tvLocation = findViewById(R.id.tvLocation);
 
-            btnGetLocation.setOnClickListener(v1 -> {
 
-                if (ActivityCompat.checkSelfPermission(this,
-                        Manifest.permission.ACCESS_FINE_LOCATION)
-                        != PackageManager.PERMISSION_GRANTED) {
-
-                    ActivityCompat.requestPermissions(this,
-                            new String[]{Manifest.permission.ACCESS_FINE_LOCATION},
-                            100);
-                    return;
-                }
-
-                fusedLocationClient.getLastLocation()
-                        .addOnSuccessListener(location -> {
-                            if (location != null) {
-                                latitude = location.getLatitude();
-                                longitude = location.getLongitude();
-
-                                tvLocation.setText("Location: " + latitude + ", " + longitude);
-                            } else {
-                                tvLocation.setText("Location not found");
-                            }
-                        });
-            });
 
             return insets;
         });
@@ -151,7 +127,44 @@ public class NewReporScreen extends AppCompatActivity {
         inputDescription = findViewById(R.id.inputDescription);
         tvTitle = findViewById(R.id.tvTitle);
         tvSubtitle = findViewById(R.id.tvSubtitle);
+
+         btnGetLocation = findViewById(R.id.btnGetLocation);
+         tvLocation = findViewById(R.id.tvLocation);
         ivSelectedImage=findViewById(R.id.imgPreview);
+
+        btnGetLocation.setOnClickListener(v -> {
+
+            FusedLocationProviderClient locationClient =
+                    LocationServices.getFusedLocationProviderClient(this);
+
+            // طلب صلاحية الموقع
+            if (ActivityCompat.checkSelfPermission(this,
+                    Manifest.permission.ACCESS_FINE_LOCATION)
+                    != PackageManager.PERMISSION_GRANTED) {
+
+                ActivityCompat.requestPermissions(this,
+                        new String[]{Manifest.permission.ACCESS_FINE_LOCATION},
+                        100);
+                return;
+            }
+
+            // جلب الموقع الحالي
+            locationClient.getLastLocation().addOnSuccessListener(location -> {
+
+                if (location != null) {
+
+                    latitude = location.getLatitude();
+                    longitude = location.getLongitude();
+
+                    tvLocation.setText("Location: " + latitude + ", " + longitude);
+
+                } else {
+                    Toast.makeText(this, "Location not found", Toast.LENGTH_SHORT).show();
+                }
+            });
+        });
+
+
         pickImage = registerForActivityResult(new ActivityResultContracts.GetContent(), new ActivityResultCallback<Uri>() {
             @Override
             public void onActivityResult(Uri result) {
@@ -173,6 +186,8 @@ public class NewReporScreen extends AppCompatActivity {
             if (validateAndExtractData()) {
                 // **تحسين: إضافة رسالة نجاح وإغلاق الشاشة**
                 Toast.makeText(this, "Report saved successfully!", Toast.LENGTH_SHORT).show();
+
+
                 finish(); // إغلاق الشاشة الحالية والرجوع إلى الشاشة السابقة
                 // Initialize the ActivityResultLauncher for picking images
 

@@ -23,12 +23,19 @@ import com.example.finaproject.data.AppDatabase;
 import com.example.finaproject.data.MyProfileTable.Profile;
 
 // مكتبة لإدخال النصوص بطريقة جميلة
+import com.google.android.gms.auth.api.signin.GoogleSignIn;
+import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
+import com.google.android.gms.auth.api.signin.GoogleSignInClient;
+import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
+import com.google.android.gms.common.api.ApiException;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.android.material.textfield.TextInputEditText;
+import com.google.firebase.auth.AuthCredential;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.auth.GoogleAuthProvider;
 
 // تعريف الكلاس login (Activity لتسجيل الدخول)
 public class login extends AppCompatActivity {
@@ -40,7 +47,10 @@ public class login extends AppCompatActivity {
     private Button btnLoginWithFacebook;  // زر تسجيل الدخول عبر فيسبوك
     private Button btnLoginWithGoogle;    // زر تسجيل الدخول عبر جوجل
     private Button btnSignup1;            // زر الانتقال لشاشة التسجيل (SignUp)
+    private GoogleSignInClient googleSignInClient;
+    private FirebaseAuth auth;
 
+    private final int RC_SIGN_IN = 100;
     // تعريف حقول الإدخال
     private TextInputEditText inputEmail;    // حقل إدخال البريد الإلكتروني
     private TextInputEditText inputPassword; // حقل إدخال كلمة المرور
@@ -73,10 +83,17 @@ public class login extends AppCompatActivity {
         btnLogin = findViewById(R.id.btnLogin);                   // زر تسجيل الدخول
         btnSignup1 = findViewById(R.id.btnSignup1);               // زر التسجيل
         btnLoginWithFacebook = findViewById(R.id.btnLoginWithFacebook); // زر فيسبوك
-        // btnLoginWithGoogle = findViewById(R.id.btnLoginWithGoogle); // زر جوجل (معلق حالياً)
+         btnLoginWithGoogle = findViewById(R.id.btnLoginWithGoogle); // زر جوجل (معلق حالياً)
         inputEmail = findViewById(R.id.inputEmail);               // حقل البريد
         inputPassword = findViewById(R.id.inputPassword);         // حقل الباسورد
+        auth = FirebaseAuth.getInstance();
 
+        GoogleSignInOptions gso = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
+                .requestIdToken(getString(R.string.default_web_client_id))
+                .requestEmail()
+                .build();
+
+        googleSignInClient = GoogleSignIn.getClient(this, gso);
         // عند الضغط على زر التسجيل
         btnSignup1.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -85,6 +102,10 @@ public class login extends AppCompatActivity {
                 Intent intent = new Intent(login.this, signup.class);
                 startActivity(intent);
             }
+        });
+        btnLoginWithGoogle.setOnClickListener(v -> {
+            Intent signInIntent = googleSignInClient.getSignInIntent();
+            startActivityForResult(signInIntent, RC_SIGN_IN);
         });
 
         // عند الضغط على زر تسجيل الدخول
@@ -168,6 +189,41 @@ public class login extends AppCompatActivity {
     private boolean isValidEmail(String email) {
         return android.util.Patterns.EMAIL_ADDRESS.matcher(email).matches();
 
+    }
+
+    //داله للدخول باستخدام جوجل
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+
+        if (requestCode == RC_SIGN_IN) {
+
+            Task<GoogleSignInAccount> task =
+                    GoogleSignIn.getSignedInAccountFromIntent(data);
+
+            try {
+                GoogleSignInAccount account = task.getResult(ApiException.class);
+
+                AuthCredential credential =
+                        GoogleAuthProvider.getCredential(account.getIdToken(), null);
+
+                auth.signInWithCredential(credential)
+                        .addOnCompleteListener(this, task1 -> {
+                            if (task1.isSuccessful()) {
+
+                                // ✅ تسجيل دخول ناجح
+                                startActivity(new Intent(login.this, MainActivity.class));
+                                finish();
+
+                            } else {
+                                Toast.makeText(this, "Google Login Failed", Toast.LENGTH_SHORT).show();
+                            }
+                        });
+
+            } catch (ApiException e) {
+                Toast.makeText(this, "Error: " + e.getMessage(), Toast.LENGTH_SHORT).show();
+            }
+        }
     }
 
 }
