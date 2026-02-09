@@ -1,4 +1,11 @@
 package com.example.finaproject;
+// أضف هذه الـ imports في أعلى الملف مع بقية الـ imports
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.android.gms.tasks.OnFailureListener;
+import androidx.annotation.NonNull;
+
 
 import static android.content.ContentValues.TAG;
 import android.Manifest;
@@ -149,6 +156,7 @@ public class NewReporScreen extends AppCompatActivity {
             @Override
             public void onActivityResult(Uri result) {
                 if (result != null) {
+                    getContentResolver().takePersistableUriPermission(result, Intent.FLAG_GRANT_READ_URI_PERMISSION);
                     selectedImageUri = result;
                     ivSelectedImage.setImageURI(result);
                     ivSelectedImage.setVisibility(View.VISIBLE);
@@ -263,9 +271,56 @@ public class NewReporScreen extends AppCompatActivity {
 
             // حفظ الكائن في قاعدة البيانات
             AppDatabase.getdb(this).getMyTaskQuery().insert(myTask1);
+            // استدعاء دالة الحفظ في Firebase بعد الحفظ المحلي
+            saveTask(myTask1, this);
+
         }
 
         return isValid;
     }
+
+    // هذه هي النسخة الصحيحة من الدالة
+    public void saveTask(MyTask task, android.content.Context context) {
+        // 1. الحصول على مؤشر مباشر لعقدة "tasks" (طريقة أفضل)
+        com.google.firebase.database.DatabaseReference tasksRef =
+                com.google.firebase.database.FirebaseDatabase.getInstance().getReference("tasks");
+
+        // 2. إنشاء مفتاح فريد (ID) للمهمة الجديدة
+        com.google.firebase.database.DatabaseReference newTaskRef = tasksRef.push();
+
+        // 3. تعيين هذا المفتاح الفريد (وهو String) داخل كائن المهمة نفسه
+        // هذا هو السطر الذي تم تصحيحه
+        task.setTaskName(newTaskRef.getKey());
+
+        // 4. حفظ الكائن بالكامل في Firebase تحت هذا المفتاح
+        newTaskRef.setValue(task)
+                .addOnSuccessListener(new com.google.android.gms.tasks.OnSuccessListener<Void>() {
+                    @Override
+                    public void onSuccess(Void aVoid) {
+                        if (context != null) {
+                            android.widget.Toast.makeText(context, "تم حفظ البلاغ بنجاح",
+                                    android.widget.Toast.LENGTH_SHORT).show();
+                            // إغلاق الشاشة الحالية بعد النجاح
+                            if (context instanceof android.app.Activity) {
+                                ((android.app.Activity) context).finish();
+                            }
+                        }
+                        // استخدام getTaskId() لعرض المعرف الصحيح
+                        android.util.Log.d("MyTask", "تم حفظ المهمة بنجاح: " + task.getId());
+                    }
+                })
+                .addOnFailureListener(new com.google.android.gms.tasks.OnFailureListener() {
+                    @Override
+                    public void onFailure(@NonNull Exception e) {
+                        android.util.Log.e("MyTask", "خطأ في حفظ المهمة: " + e.getMessage(), e);
+                        if (context != null) {
+                            android.widget.Toast.makeText(context,
+                                    "فشل في حفظ المهمة: " + e.getMessage(),
+                                    android.widget.Toast.LENGTH_SHORT).show();
+                        }
+                    }
+                });
+    }
+
 
 }

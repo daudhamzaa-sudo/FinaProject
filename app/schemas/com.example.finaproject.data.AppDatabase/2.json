@@ -1,24 +1,18 @@
 {
   "formatVersion": 1,
   "database": {
-    "version": 3,
+    "version": 2,
+    "identityHash": "547aa6d320a318d47fa0da25bb54d468",
     "entities": [
       {
         "tableName": "Profile",
-        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`uid` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `isAdmin` INTEGER NOT NULL DEFAULT false, `username` TEXT, `email` TEXT, `phone` INTEGER NOT NULL, `passw` TEXT)",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`uid` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `username` TEXT, `email` TEXT, `phone` INTEGER NOT NULL, `passw` TEXT)",
         "fields": [
           {
             "fieldPath": "uid",
             "columnName": "uid",
             "affinity": "INTEGER",
             "notNull": true
-          },
-          {
-            "fieldPath": "isAdmin",
-            "columnName": "isAdmin",
-            "affinity": "INTEGER",
-            "notNull": true,
-            "defaultValue": "false"
           },
           {
             "fieldPath": "username",
@@ -51,6 +45,7 @@
       },
       {
         "tableName": "MyTask",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`taskName` TEXT NOT NULL, `taskDescription` TEXT, `taskDate` TEXT, `Region` TEXT, `taskStatus` INTEGER NOT NULL, `imageUrl` TEXT, PRIMARY KEY(`taskName`))",
         "fields": [
           {
             "fieldPath": "taskName",
@@ -95,6 +90,7 @@
     ],
     "setupQueries": [
       "CREATE TABLE IF NOT EXISTS room_master_table (id INTEGER PRIMARY KEY,identity_hash TEXT)",
+      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, '547aa6d320a318d47fa0da25bb54d468')"
     ]
   }
 }

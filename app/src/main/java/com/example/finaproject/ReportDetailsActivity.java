@@ -16,7 +16,7 @@ public class ReportDetailsActivity extends AppCompatActivity {
     private TextView detailTitle;
     private TextView detailDescription;
     private TextView detailStatus;
-private TextView detailLocation;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -27,7 +27,7 @@ private TextView detailLocation;
         detailTitle = findViewById(R.id.detail_title);
         detailDescription = findViewById(R.id.detail_description);
         detailStatus = findViewById(R.id.detail_status);
-        detailLocation=findViewById(R.id.detail_location);
+
         // استلام البيانات من Intent
         String title = getIntent().getStringExtra("TITLE");
         String description = getIntent().getStringExtra("DESCRIPTION");
@@ -45,10 +45,6 @@ private TextView detailLocation;
         detailTitle.setText(title);
         detailDescription.setText(description);
         detailStatus.setText(status);
-        double lat = getIntent().getDoubleExtra("LAT", 0);
-        double lon = getIntent().getDoubleExtra("LON", 0);
-
-        detailLocation.setText("Coordinates: " + lat + ", " + lon);
 
         // تحميل الصورة (بدون ما تخرب)
         if (imageUrl != null && !imageUrl.isEmpty()) {

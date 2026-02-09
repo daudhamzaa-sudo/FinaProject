@@ -6,8 +6,6 @@
     <uses-permission android:name="android.permission.READ_MEDIA_IMAGES" />
     <uses-permission android:name="android.permission.READ_MEDIA_VIDEO" />
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
-    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION"/>
-    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION"/>
 
     <application
         android:allowBackup="true"
@@ -19,7 +17,7 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.FinaProject">
         <activity
-            android:name=".ReportDetailsActivity"/>//activity_report_details
+            android:name=".activity_report_details"
             android:exported="false" />
         <activity
             android:name=".Settings"
