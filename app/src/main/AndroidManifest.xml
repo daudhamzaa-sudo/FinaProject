@@ -18,7 +18,7 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.FinaProject">
         <activity
-            android:name=".activity_report_details"
+            android:name=".ReportDetailsActivity"
             android:exported="false" />
         <activity
             android:name=".Settings"

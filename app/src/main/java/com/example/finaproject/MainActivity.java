@@ -28,6 +28,9 @@ import com.google.android.material.textfield.TextInputEditText;
 import com.google.android.material.textfield.TextInputLayout;
 
 import java.util.ArrayList;
+import java.util.List;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -92,35 +95,35 @@ public class MainActivity extends AppCompatActivity {
         tvSubtitle = findViewById(R.id.tvSubtitle);
         inputSearchLayout = findViewById(R.id.inputSearchLayout);
         imgPreview = findViewById(R.id.imgPreview);
-        // إضافة مستمع النقر على الصورة للانتقال إلى شاشة الإعدادات
-        imgPreview.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent intent = new Intent(MainActivity.this, Settings.class);
-                startActivity(intent);
-            }
-        });
-
         btnAddReport = findViewById(R.id.btnAddReport);
         responseText = findViewById(R.id.responseText);
+
         // إعداد RecyclerView لعرض البيانات
         recyclerReports.setLayoutManager(new LinearLayoutManager(this));
-        // --- أضف هذا الكود هنا ---
-        // إضافة مستمع للنقرات على الـ RecyclerView
+        myTaskAdapter = new MyTaskAdapter(this, new ArrayList<>());
+        recyclerReports.setAdapter(myTaskAdapter);
+
+        // إضافة مستمع للنقرات على الـ RecyclerView (الكود المصحح والمدمج)
         recyclerReports.addOnItemTouchListener(new RecyclerItemClickListener(this, recyclerReports, new RecyclerItemClickListener.OnItemClickListener() {
             @Override
             public void onItemClick(View view, int position) {
                 // 1. الحصول على قائمة البلاغات الحالية من الـ Adapter
                 ArrayList<MyTask> currentTasks = myTaskAdapter.getTasksList();
-                if (currentTasks != null && position < currentTasks.size()) {
+                if (currentTasks != null && position >= 0 && position < currentTasks.size()) {
                     MyTask clickedTask = currentTasks.get(position);
 
                     // 2. إنشاء "نية" (Intent) للانتقال إلى شاشة التفاصيل
                     Intent intent = new Intent(MainActivity.this, ReportDetailsActivity.class);
 
-                    // 3. وضع "هوية" البلاغ (ID) في الـ Intent
-// نرسل اسم المهمة بدلاً من الرقم، ونغير اسم الـ Extra ليكون أوضح
+                    // 3. وضع جميع بيانات البلاغ في الـ Intent
                     intent.putExtra("TASK_id", clickedTask.getId());
+                    intent.putExtra("TITLE", clickedTask.getTaskTitle());
+                    intent.putExtra("DESCRIPTION", clickedTask.getTaskDescription());
+                    intent.putExtra("STATUS", clickedTask.getTaskStatus());
+                    intent.putExtra("IMAGE_URL", clickedTask.getImageUrl());
+                    intent.putExtra("LAT", clickedTask.getLatitude());
+                    intent.putExtra("LON", clickedTask.getLongitude());
+
                     // 4. بدء تشغيل شاشة التفاصيل
                     startActivity(intent);
                 }
@@ -131,12 +134,6 @@ public class MainActivity extends AppCompatActivity {
                 // يمكنك إضافة كود هنا إذا أردت تفعيل شيء عند الضغط المطول
             }
         }));
-        // ------------------------
-
-
-        ArrayList<MyTask> myTasks = (ArrayList<MyTask>) AppDatabase.getdb(this).getMyTaskQuery().getAllTasks();
-        myTaskAdapter = new MyTaskAdapter(this, myTasks);
-        recyclerReports.setAdapter(myTaskAdapter);
 
         // مستمع النقر لزر إضافة تقرير جديد
         btnAddReport.setOnClickListener(view -> {
@@ -214,6 +211,20 @@ public class MainActivity extends AppCompatActivity {
         });
     }
 
+    private void loadTasks() {
+        ExecutorService executor = Executors.newSingleThreadExecutor();
+        executor.execute(() -> {
+            List<MyTask> myTasksList = AppDatabase.getdb(getApplicationContext()).getMyTaskQuery().getAllTasks();
+            ArrayList<MyTask> myTasks = new ArrayList<>(myTasksList);
+            runOnUiThread(() -> {
+                if (myTaskAdapter != null) {
+                    myTaskAdapter.setTasksList(myTasks);
+                    myTaskAdapter.notifyDataSetChanged();
+                }
+            });
+        });
+    }
+
     /**
      * يتم استدعاؤها عند رجوع المستخدم إلى الشاشة.
      * تقوم بتحديث قائمة التقارير.
@@ -221,11 +232,6 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onResume() {
         super.onResume();
-        // التحقق من أن myTaskAdapter ليس null قبل استخدامه
-        if (myTaskAdapter != null) {
-            ArrayList<MyTask> myTasks = (ArrayList<MyTask>) AppDatabase.getdb(this).getMyTaskQuery().getAllTasks();
-            myTaskAdapter.setTasksList(myTasks);
-            myTaskAdapter.notifyDataSetChanged();
-        }
+        loadTasks();
     }
 }
