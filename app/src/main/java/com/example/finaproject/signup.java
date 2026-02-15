@@ -122,7 +122,7 @@ public class signup extends AppCompatActivity {
                     .addOnSuccessListener(result -> {
                         Toast.makeText(this, "Account Created", Toast.LENGTH_SHORT).show();
                         finish();
-                    })
+                    })//الداله التي تحفظ للفايربيس
                     .addOnFailureListener(e -> {
                         Toast.makeText(this, e.getMessage(), Toast.LENGTH_SHORT).show();
                     });
