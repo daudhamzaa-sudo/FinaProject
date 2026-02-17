@@ -98,6 +98,13 @@ public class MainActivity extends AppCompatActivity {
         btnAddReport = findViewById(R.id.btnAddReport);
         responseText = findViewById(R.id.responseText);
 
+        // --- الكود المضاف لحل المشكلة ---
+        // إضافة مستمع النقر على صورة الإعدادات لفتح شاشة الإعدادات
+        imgPreview.setOnClickListener(view -> {
+            Intent intent = new Intent(MainActivity.this, Settings.class);
+            startActivity(intent);
+        });
+
         // إعداد RecyclerView لعرض البيانات
         recyclerReports.setLayoutManager(new LinearLayoutManager(this));
         myTaskAdapter = new MyTaskAdapter(this, new ArrayList<>());
