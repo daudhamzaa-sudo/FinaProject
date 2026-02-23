@@ -95,7 +95,9 @@ public class MyTaskAdapter extends RecyclerView.Adapter<MyTaskAdapter.TaskViewHo
 
             // نمرر كل تفاصيل البلاغ
             intent.putExtra("TITLE", current.getTaskTitle());
-            intent.putExtra("DESCRIPTION", current.getTaskDescription());
+            intent.putExtra("DESCRIPTION",
+
+                    current.getTaskDescription());
             intent.putExtra("STATUS", current.getTaskStatus());
             intent.putExtra("IMAGE_URL", current.getImageUrl());
             intent.putExtra("LAT", current.getLatitude());
