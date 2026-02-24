@@ -186,8 +186,6 @@ public class MainActivity extends AppCompatActivity {
              * يتم استدعاؤها مرة واحدة عند بدء التشغيل، وكلما تغيرت البيانات.
              * @param snapshot نسخة من البيانات الحالية.
              */
-
-            //داخل onDataChange يتم استخدام "حلقة تكرار" (for loop) لتحويل كل بلاغ موجود في Firebase إلى كائن من نوع MyTask وإضافته للقائمة المؤقتة
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
                 ArrayList<MyTask> tasks = new ArrayList<>(); // إنشاء قائمة جديدة لتخزين المهام
@@ -288,21 +286,21 @@ public class MainActivity extends AppCompatActivity {
      * دالة لجلب المهام من قاعدة البيانات المحلية (Room). لم تعد مستخدمة حالياً.
      * تعمل في خيط منفصل (background thread) لتجنب تجميد الواجهة.
      */
-//    private void loadTasks() {
-//        ExecutorService executor = Executors.newSingleThreadExecutor();
-//        executor.execute(() -> {
-//            // جلب البيانات من قاعدة البيانات
-//            List<MyTask> myTasksList = AppDatabase.getdb(getApplicationContext()).getMyTaskQuery().getAllTasks();
-//            ArrayList<MyTask> myTasks = new ArrayList<>(myTasksList);
-//            // تحديث واجهة المستخدم في الخيط الرئيسي
-//            runOnUiThread(() -> {
-//                if (myTaskAdapter != null) {
-//                    myTaskAdapter.setTasksList(myTasks);
-//                    myTaskAdapter.notifyDataSetChanged();
-//                }
-//            });
-//        });
-//    }
+    private void loadTasks() {
+        ExecutorService executor = Executors.newSingleThreadExecutor();
+        executor.execute(() -> {
+            // جلب البيانات من قاعدة البيانات
+            List<MyTask> myTasksList = AppDatabase.getdb(getApplicationContext()).getMyTaskQuery().getAllTasks();
+            ArrayList<MyTask> myTasks = new ArrayList<>(myTasksList);
+            // تحديث واجهة المستخدم في الخيط الرئيسي
+            runOnUiThread(() -> {
+                if (myTaskAdapter != null) {
+                    myTaskAdapter.setTasksList(myTasks);
+                    myTaskAdapter.notifyDataSetChanged();
+                }
+            });
+        });
+    }
 
     /**
      * يتم استدعاؤها عند رجوع المستخدم إلى الشاشة أو عندما تصبح في الواجهة.
