@@ -304,7 +304,7 @@ private TextView tvLocation;
         com.google.firebase.database.DatabaseReference newTaskRef = tasksRef.push();
 
         // 3. تعيين هذا المفتاح الفريد (وهو String) داخل كائن المهمة نفسه
-        // هذا هو السطر الذي تم تصحيحه
+
         task.setTaskName(newTaskRef.getKey());
 
         // 4. حفظ الكائن بالكامل في Firebase تحت هذا المفتاح
