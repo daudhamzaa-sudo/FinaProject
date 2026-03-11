@@ -44,9 +44,7 @@ import java.util.concurrent.Executors;
  * مسؤولة عن عرض قائمة التقارير، والتفاعل مع Gemini، والتنقل بين الشاشات المختلفة.
  */
 public class MainActivity extends AppCompatActivity {
-
-    // --- متغيرات واجهة عرض التقارير (الكود الأصلي) ---
-    private TextView tvTitle;
+   private TextView tvTitle;
     private TextView responseText;
     private ImageView imgPreview;
     private TextView tvSubtitle;
@@ -55,21 +53,9 @@ public class MainActivity extends AppCompatActivity {
     private Button btnAddReport;
     private RecyclerView recyclerReports;
     private MyTaskAdapter myTaskAdapter;
-
-    // --- متغيرات واجهة Gemini (الكود الجديد المضاف) ---
-    /**
-     * حقل إدخال النص لإرسال سؤال إلى Gemini.
-     */
-    private EditText inputText;
-    /**
-     * زر لإرسال السؤال.
-     */
-    private Button sendButton;
-
-    /**
-     * شريط تقدم يظهر أثناء انتظار الرد.
-     */
-    private ProgressBar progressBar;
+   private EditText inputText;
+       private Button sendButton;
+   private ProgressBar progressBar;
 
     /**
      * دالة `onCreate` هي نقطة انطلاق النشاط (Activity).

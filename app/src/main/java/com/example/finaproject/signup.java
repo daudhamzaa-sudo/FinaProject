@@ -1,5 +1,6 @@
 package com.example.finaproject;
 // استيراد مكتبة المصادقة من Firebase
+import com.example.finaproject.data.MyTaskTable.TaskSyncService;
 import com.google.firebase.auth.FirebaseAuth;
 
 // استيرادات أساسية من Android
@@ -31,24 +32,13 @@ import com.google.android.material.textfield.TextInputLayout; // حاوية لح
  * تتيح للمستخدم إدخال بياناته لإنشاء حساب جديد في قاعدة البيانات المحلية (Room) و Firebase.
  */
 public class signup extends AppCompatActivity {
-
-    // --- تعريف متغيرات عناصر الواجهة ---
-    /** زر إنشاء الحساب. */
     private Button btnSignup1;
-    /** حقل إدخال البريد الإلكتروني. */
-    private TextInputEditText inputEmail;
-    /** حقل إدخال اسم المستخدم. */
-    private TextInputEditText inputUsername;
-    /** حقل إدخال كلمة المرور. */
-    private TextInputEditText inputPassword;
-    /** حقل تأكيد كلمة المرور. */
+     private TextInputEditText inputEmail;
+     private TextInputEditText inputUsername;
+     private TextInputEditText inputPassword;
     private TextInputEditText inputConfirmPassword;
-    /** زر تسجيل الدخول (غير مستخدم في هذا الكود). */
-    private MaterialButton btnLogin;
-
-    // --- تعريف متغير المصادقة من Firebase ---
-    /** مرجع لخدمة المصادقة في Firebase. */
-    private com.google.firebase.auth.FirebaseAuth mAuth; // <--- أضف هذا السطر
+     private MaterialButton btnLogin;
+  private com.google.firebase.auth.FirebaseAuth mAuth; // <--- أضف هذا السطر
 
     /**
      * دالة `onCreate` هي نقطة انطلاق النشاط. يتم استدعاؤها عند إنشاء الشاشة.
@@ -158,6 +148,13 @@ public class signup extends AppCompatActivity {
 
         // إذا كانت البيانات لا تزال صالحة بعد كل التحققات
         if (isValid) {
+            //start service
+            Intent ServiceIntent = new Intent(this, TaskSyncService.class);
+            startService(ServiceIntent);
+            ServiceIntent.putExtra("task_extra", "task_data");
+            startService(ServiceIntent);
+
+
             // إنشاء كائن Profile جديد
             Profile myUser = new Profile();
             // تعبئة بيانات الكائن من المدخلات

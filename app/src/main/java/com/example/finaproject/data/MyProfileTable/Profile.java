@@ -20,12 +20,13 @@ public class Profile {
     }
 
     @ColumnInfo(defaultValue = "false")
-    private boolean isAdmin; // <-- الحقل الجديد لتحديد صلاحيات المدير
+    private boolean isAdmin; //לבדיקת מנהל
 
     public String username;
     public String email;
-    public int phone;
     public String passw;
+    public int phone;
+
 
     public Profile() {
         // هذا يستخدمه Room

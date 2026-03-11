@@ -6,27 +6,30 @@ import androidx.annotation.NonNull; // لاستخدام علامة @NonNull ال
 import androidx.room.Entity;      // لتعريف الكلاس كجدول في قاعدة بيانات Room
 import androidx.room.PrimaryKey;    // لتعيين حقل كمفتاح أساسي للجدول
 
+import java.io.Serializable;
+
 /**
  * يمثل هذا الكلاس جدولاً باسم "MyTask" في قاعدة البيانات.
  * كل حقل (متغير) في هذا الكلاس يمثل عمودًا في هذا الجدول.
  */
 @Entity
-public class MyTask {
+public class MyTask implements Serializable {
 
-    /**
-     * اسم المهمة.
-     * @PrimaryKey: يحدد هذا الحقل كمفتاح أساسي (Primary Key) للجدول،
-     *              مما يعني أن قيمته يجب أن تكون فريدة لكل صف ولا يمكن تكرارها.
-     * @NonNull: تضمن أن هذا الحقل لا يمكن أن يكون فارغًا (null).
-     */
     @PrimaryKey(autoGenerate = true)
     long id;
     @NonNull
     public String taskName;
 
-    /**
-     * وصف تفصيلي للمهمة.
-     */
+    public String getKid() {
+        return kid;
+    }
+
+    public void setKid(String kid) {
+        this.kid = kid;
+    }
+
+    public String kid;
+
     public String taskDescription;
 
     private double latitude;
@@ -132,5 +135,6 @@ public class MyTask {
                 ", imageUrl='" + imageUrl + '\'' +
                 '}';
     }
+
 
 }

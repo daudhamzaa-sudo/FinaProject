@@ -56,7 +56,6 @@ private Button btnGetLocation;
 private TextView tvLocation;
     private double latitude = 0;
     private double longitude = 0;
-
     private TextView tvTitle;
     private TextView tvSubtitle;
     private MaterialButton btnSubmit;
