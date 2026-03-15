@@ -20,9 +20,7 @@ public class MyTask implements Serializable {
     @NonNull
     public String taskName;
 
-    public String getKid() {
-        return kid;
-    }
+   
 
     public void setKid(String kid) {
         this.kid = kid;

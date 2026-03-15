@@ -20,7 +20,7 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.FinaProject">
         <service
-            android:name=".data.MyTaskTable.TaskSyncService"
+            android:name=".data.MyProfileTable.UserSyncService"
             android:enabled="true"
             android:exported="true"></service>
 
@@ -31,7 +31,7 @@
             android:name=".Settings"
             android:exported="false" />
         <activity
-            android:name=".NewReporScreen"
+            android:name=".NewReportScreen"
             android:exported="false" />
         <activity
             android:name=".MainActivity"

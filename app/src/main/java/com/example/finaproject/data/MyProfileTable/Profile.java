@@ -2,50 +2,70 @@ package com.example.finaproject.data.MyProfileTable;
 
 import androidx.room.ColumnInfo;
 import androidx.room.Entity;
-import androidx.room.Ignore;
 import androidx.room.PrimaryKey;
 
-@Entity
-public class Profile {
+import java.io.Serializable;
 
+/**
+ * يمثل هذا الكلاس جدول "Profile" في قاعدة بيانات Room.
+ * تم إرجاع uid لنوع long لدعم الزيادة التلقائية (autoGenerate).
+ */
+@Entity
+public class Profile implements Serializable {
+
+    /**
+     * المعرف الفريد للمستخدم، يتم إنشاؤه تلقائياً بواسطة قاعدة البيانات.
+     */
     @PrimaryKey(autoGenerate = true)
     public long uid;
 
-    public boolean isAdmin() {
-        return isAdmin;
+    public String getKid() {
+        return kid;
     }
 
-    public void setAdmin(boolean admin) {
-        isAdmin = admin;
+    public void setKid(String kid) {
+        this.kid = kid;
     }
 
+    public String kid;
+    /**
+     * التحقق مما إذا كان المستخدم يمتلك صلاحيات مدير.
+     */
     @ColumnInfo(defaultValue = "false")
-    private boolean isAdmin; //לבדיקת מנהל
+    private boolean isAdmin; 
 
     public String username;
     public String email;
     public String passw;
     public int phone;
 
-
+    /**
+     * باني فارغ مطلوب لمكتبة Room.
+     */
     public Profile() {
-        // هذا يستخدمه Room
     }
 
+    public boolean isAdmin() {
+        return isAdmin;
+    }
 
-
-
+    public void setAdmin(boolean admin) {
+        this.isAdmin = admin;
+    }
 
     @Override
     public String toString() {
-        return "MyUser{" +
+        return "Profile{" +
                 "uid=" + uid +
-                ", fullName='" + username + '\'' +
+                ", username='" + username + '\'' +
                 ", email='" + email + '\'' +
-                ", phone='" + phone + '\'' +
+                ", phone=" + phone +
                 ", passw='" + passw + '\'' +
+                ", isAdmin=" + isAdmin +
                 '}';
     }
+
+    // --- دوال الحصول والتعيين (Getters & Setters) ---
 
     public long getUid() {
         return uid;

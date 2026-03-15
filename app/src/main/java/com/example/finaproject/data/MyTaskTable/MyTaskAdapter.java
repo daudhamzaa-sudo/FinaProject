@@ -93,15 +93,9 @@ public class MyTaskAdapter extends RecyclerView.Adapter<MyTaskAdapter.TaskViewHo
 
             Intent intent = new Intent(v.getContext(), ReportDetailsActivity.class);
 
-            // نمرر كل تفاصيل البلاغ
-            intent.putExtra("TITLE", current.getTaskTitle());
-            intent.putExtra("DESCRIPTION",
+// نمرر الكائن كاملاً في سطر واحد
+            intent.putExtra("TASK_EXTRA", current);
 
-                    current.getTaskDescription());
-            intent.putExtra("STATUS", current.getTaskStatus());
-            intent.putExtra("IMAGE_URL", current.getImageUrl());
-            intent.putExtra("LAT", current.getLatitude());
-            intent.putExtra("LON", current.getLongitude());
             v.getContext().startActivity(intent);
         });
     }

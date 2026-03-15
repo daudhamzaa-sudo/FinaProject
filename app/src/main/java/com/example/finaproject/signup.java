@@ -1,6 +1,6 @@
 package com.example.finaproject;
 // استيراد مكتبة المصادقة من Firebase
-import com.example.finaproject.data.MyTaskTable.TaskSyncService;
+import com.example.finaproject.data.MyProfileTable.UserSyncService;
 import com.google.firebase.auth.FirebaseAuth;
 
 // استيرادات أساسية من Android
@@ -19,13 +19,12 @@ import androidx.core.view.WindowInsetsCompat; // للتعامل مع هوامش 
 
 // استيرادات خاصة بقاعدة البيانات المحلية (Room)
 import com.example.finaproject.data.AppDatabase; // الفئة الرئيسية لقاعدة البيانات
-import com.example.finaproject.data.MyProfileTable.MyProfileQuery; // واجهة استعلامات الملف الشخصي
 import com.example.finaproject.data.MyProfileTable.Profile; // كائن يمثل الملف الشخصي
 
 // استيرادات من مكتبة Material Design
 import com.google.android.material.button.MaterialButton; // زر بتصميم Material
 import com.google.android.material.textfield.TextInputEditText; // حقل إدخال نص متقدم
-import com.google.android.material.textfield.TextInputLayout; // حاوية لحقل الإدخال
+
 
 /**
  * شاشة إنشاء حساب جديد (signup).
@@ -149,10 +148,7 @@ public class signup extends AppCompatActivity {
         // إذا كانت البيانات لا تزال صالحة بعد كل التحققات
         if (isValid) {
             //start service
-            Intent ServiceIntent = new Intent(this, TaskSyncService.class);
-            startService(ServiceIntent);
-            ServiceIntent.putExtra("task_extra", "task_data");
-            startService(ServiceIntent);
+
 
 
             // إنشاء كائن Profile جديد
@@ -161,6 +157,10 @@ public class signup extends AppCompatActivity {
             myUser.setUsername(username);
             myUser.setEmail(email);
             myUser.setPassw(password);
+            Intent ServiceIntent = new Intent(this, UserSyncService.class);
+            startService(ServiceIntent);
+            ServiceIntent.putExtra("task_extra", myUser);
+            startService(ServiceIntent);
             // إدراج الكائن (المستخدم الجديد) في قاعدة بيانات Room المحلية
             AppDatabase.getdb(getApplicationContext()).getProfile().insert(myUser);
 

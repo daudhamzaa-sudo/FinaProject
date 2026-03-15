@@ -1,0 +1,712 @@
+@startuml
+class com.example.finaproject.MainActivity {
+- TextView tvTitle
+- TextView responseText
+- ImageView imgPreview
+- TextView tvSubtitle
+- TextInputLayout inputSearchLayout
+- TextInputEditText inputSearch
+- Button btnAddReport
+- RecyclerView recyclerReports
+- MyTaskAdapter myTaskAdapter
+- EditText inputText
+- Button sendButton
+- ProgressBar progressBar
+# void onCreate(Bundle)
+- void setupReportsUI()
+- void getAllFromFirebase()
+- void setupGeminiUI()
+- void callGemini(String)
+- void loadTasks()
+# void onResume()
+}
+note top of com.example.finaproject.MainActivity
+
+ * الشاشة الرئيسية للتطبيق (MainActivity).
+ * مسؤولة عن عرض قائمة التقارير، والتفاعل مع Gemini، والتنقل بين الشاشات المختلفة.
+ 
+end note
+
+note left of com.example.finaproject.MainActivity::tvTitle
+ --- متغيرات واجهة عرض التقارير (الكود الأصلي) ---
+end note
+note right of com.example.finaproject.MainActivity::inputText
+
+     * حقل إدخال النص لإرسال سؤال إلى Gemini.
+     
+end note
+note left of com.example.finaproject.MainActivity::sendButton
+
+     * زر لإرسال السؤال.
+     
+end note
+note right of com.example.finaproject.MainActivity::progressBar
+
+     * شريط تقدم يظهر أثناء انتظار الرد.
+     
+end note
+
+note left of com.example.finaproject.MainActivity::onCreate(Bundle)
+
+     * دالة `onCreate` هي نقطة انطلاق النشاط (Activity).
+     * يتم استدعاؤها عند إنشاء الشاشة لأول مرة.
+     * @param savedInstanceState بيانات محفوظة من حالة سابقة للنشاط إذا كانت متاحة.
+     
+end note
+note right of com.example.finaproject.MainActivity::setupReportsUI()
+
+     * دالة لتنظيم وتهيئة كل ما يتعلق بواجهة عرض التقارير.
+     * تقوم بربط متغيرات الكود بعناصر الواجهة الرسومية وإعداد المستمعين (Listeners).
+     
+end note
+note left of com.example.finaproject.MainActivity::getAllFromFirebase()
+
+     * دالة لجلب جميع البيانات من Firebase Realtime Database وتحديث القائمة.
+     * تستخدم `addValueEventListener` للاستماع للتغييرات بشكل حي.
+     
+end note
+note right of com.example.finaproject.MainActivity::setupGeminiUI()
+
+     * دالة لتهيئة كل ما يتعلق بواجهة التفاعل مع Gemini.
+     
+end note
+note left of com.example.finaproject.MainActivity::callGemini(String)
+
+     * دالة لإرسال الطلب إلى Gemini API ومعالجة الرد.
+     * @param query السؤال المراد إرساله.
+     
+end note
+note right of com.example.finaproject.MainActivity::loadTasks()
+
+     * دالة لجلب المهام من قاعدة البيانات المحلية (Room). لم تعد مستخدمة حالياً.
+     * تعمل في خيط منفصل (background thread) لتجنب تجميد الواجهة.
+     
+end note
+note left of com.example.finaproject.MainActivity::onResume()
+
+     * يتم استدعاؤها عند رجوع المستخدم إلى الشاشة أو عندما تصبح في الواجهة.
+     
+end note
+
+class com.example.finaproject.Settings {
+- TextView tvTitle
+- TextView tvSubtitle
+- Button btnLogout
+- TextView txtUserEmail
+# void onCreate(Bundle)
+}
+note left of com.example.finaproject.Settings::tvTitle
+تعريف الصفات
+end note
+
+
+class com.example.finaproject.data.MyTaskTable.MyTaskAdapter {
+- ArrayList<MyTask> tasksList
+- Context context
+- boolean isAdmin
++ TaskViewHolder onCreateViewHolder(ViewGroup,int)
++ void onBindViewHolder(TaskViewHolder,int)
++ int getItemCount()
++ void setTasksList(ArrayList<MyTask>)
++ ArrayList<MyTask> getTasksList()
+}
+note left of com.example.finaproject.data.MyTaskTable.MyTaskAdapter::isAdmin
+ متغير لتخزين صلاحية المدير
+end note
+
+note left of com.example.finaproject.data.MyTaskTable.MyTaskAdapter::getTasksList()
+
+     * دالة لإرجاع قائمة البلاغات الحالية الموجودة في الـ Adapter.
+     * @return قائمة من نوع ArrayList<MyTask>
+     
+end note
+
+class com.example.finaproject.data.MyTaskTable.MyTaskAdapter$TaskViewHolder {
+~ TextView task_title
+~ TextView task_description
+~ TextView task_status
+~ ImageView task_image
+~ Switch switchConfirm
+}
+note top of com.example.finaproject.data.MyTaskTable.MyTaskAdapter$TaskViewHolder
+ الـ ViewHolder الذي يحمل عناصر الواجهة لكل عنصر في القائمة
+end note
+
+note left of com.example.finaproject.data.MyTaskTable.MyTaskAdapter$TaskViewHolder::switchConfirm
+ زر تأكيد الحذف (للمدير)
+end note
+
+class com.example.finaproject.SplashScreen {
+- {static} long SPLASH_DELAY
+# void onCreate(Bundle)
+}
+note top of com.example.finaproject.SplashScreen
+
+ * كلاس SplashScreen: هو أول شاشة تظهر للمستخدم عند فتح التطبيق.
+ * وظيفته عرض شعار التطبيق لفترة زمنية محددة قبل الانتقال لشاشة تسجيل الدخول.
+ 
+end note
+
+note left of com.example.finaproject.SplashScreen::SPLASH_DELAY
+ تحديد مدة عرض الشاشة بالملي ثانية (3000 ملي ثانية = 3 ثوانٍ)
+end note
+
+
+class com.example.finaproject.ReportDetailsActivity {
+- ImageView detailImage
+- TextView detailTitle
+- TextView detailDescription
+- TextView detailStatus
+- TextView detailLocation
+# void onCreate(Bundle)
+}
+
+
+interface com.example.finaproject.data.MyTaskTable.MyTaskQuery {
+~ List<MyTask> getAllTasks()
+~ MyTask getTaskById(long)
+~ MyTask getTaskByName(String)
+~ MyTask findByName(String)
+~ void insertAll(MyTask)
+~ void delete(MyTask)
+~ void insert(MyTask)
+~ void update(MyTask)
+}
+note top of com.example.finaproject.data.MyTaskTable.MyTaskQuery
+
+ * واجهة (Interface) لتعريف عمليات الاستعلام الخاصة بجدول المهام (MyTask) في قاعدة بيانات Room.
+ 
+end note
+
+note left of com.example.finaproject.data.MyTaskTable.MyTaskQuery::getAllTasks()
+
+     * جلب جميع المهام من قاعدة البيانات.
+     * @return قائمة بجميع المهام.
+     
+end note
+note right of com.example.finaproject.data.MyTaskTable.MyTaskQuery::getTaskById(long)
+
+     * جلب مهمة محددة باستخدام الرقم التعريفي (ID).
+     * @param id الرقم التعريفي للمهمة.
+     * @return كائن المهمة.
+     
+end note
+note left of com.example.finaproject.data.MyTaskTable.MyTaskQuery::getTaskByName(String)
+
+     * جلب مهمة محددة باستخدام اسمها.
+     * @param name اسم المهمة.
+     * @return كائن المهمة.
+     
+end note
+note right of com.example.finaproject.data.MyTaskTable.MyTaskQuery::findByName(String)
+
+     * البحث عن مهمة باستخدام نمط معين للاسم.
+     * @param name نمط الاسم المراد البحث عنه.
+     * @return كائن المهمة الأول الذي يطابق البحث.
+     
+end note
+note left of com.example.finaproject.data.MyTaskTable.MyTaskQuery::insertAll(MyTask)
+
+     * إدراج مجموعة من المهام دفعة واحدة.
+     * @param users مصفوفة من المهام.
+     
+end note
+note right of com.example.finaproject.data.MyTaskTable.MyTaskQuery::delete(MyTask)
+
+     * حذف مهمة محددة من قاعدة البيانات.
+     * @param user كائن المهمة المراد حذفه.
+     
+end note
+note left of com.example.finaproject.data.MyTaskTable.MyTaskQuery::insert(MyTask)
+
+     * إدراج مهمة واحدة جديدة.
+     * @param myTask كائن المهمة.
+     
+end note
+note right of com.example.finaproject.data.MyTaskTable.MyTaskQuery::update(MyTask)
+
+     * تحديث بيانات مهمة أو أكثر موجودة مسبقاً.
+     * @param values المهام المراد تحديثها.
+     
+end note
+
+class com.example.finaproject.NewReporScreen {
+- ImageView ivSelectedImage
+- Uri selectedImageUri
+- ActivityResultLauncher<String> pickImage
+- ActivityResultLauncher<String> requestReadMediaImagesPermission
+- ActivityResultLauncher<String> requestReadMediaVideoPermission
+- ActivityResultLauncher<String> requestReadExternalStoragePermission
+- TextInputEditText inputTitle
+- TextInputEditText inputDescription
+- FusedLocationProviderClient fusedLocationClient
+- Button btnGetLocation
+- TextView tvLocation
+- double latitude
+- double longitude
+- TextView tvTitle
+- TextView tvSubtitle
+- MaterialButton btnSubmit
+# void onCreate(Bundle)
+- void checkAndRequestPermissions()
+- boolean validateAndExtractData()
++ void saveTask(MyTask,android.content.Context)
+}
+note left of com.example.finaproject.NewReporScreen::ivSelectedImage
+صفة كمؤشر لهذا الكائن
+end note
+note right of com.example.finaproject.NewReporScreen::selectedImageUri
+صفة لحفظ عنوان الصورة بعد اختيارها
+end note
+note left of com.example.finaproject.NewReporScreen::pickImage
+ ‏كائن لطلب الصورة من الهاتف
+end note
+
+note left of com.example.finaproject.NewReporScreen::checkAndRequestPermissions()
+ دالة لفحص وطلب الأذونات
+end note
+note right of com.example.finaproject.NewReporScreen::saveTask(MyTask,android.content.Context)
+ هذه هي النسخة الصحيحة من الدالة
+end note
+
+class com.example.finaproject.data.GeminiHelper {
++ {static} String GEMINI_Version
+- {static} String GEMINI_API_KEY
+- {static} GeminiHelper instance
+- GenerativeModel gemini
++ {static} GeminiHelper getInstance()
++ void sendMessage(String,ResponseCallback)
+}
+note top of com.example.finaproject.data.GeminiHelper
+
+ * فئة مساعدة للتواصل مع خدمة الذكاء الاصطناعي التابعة google
+ * Gemini
+ 
+end note
+
+note left of com.example.finaproject.data.GeminiHelper::GEMINI_Version
+ ‏إصدار ال gemini الذي يمكن استعماله
+end note
+note right of com.example.finaproject.data.GeminiHelper::GEMINI_API_KEY
+ مفتاح التطبيق الذي نسخه من الموقع التابع gemini
+end note
+note left of com.example.finaproject.data.GeminiHelper::instance
+ كائن وحيد الذي يساعدنا على عدم بناء أكثر من كائن لهذه الخدمة ويسمى singleton
+end note
+note right of com.example.finaproject.data.GeminiHelper::gemini
+ موديل الذكاء الاصطناعي
+end note
+
+note left of com.example.finaproject.data.GeminiHelper::getInstance()
+ ‏هذه العملية تساعد على عدم بناء أكثر من كائن لهذه الفئة بإرجاع مؤشر واحد
+end note
+note right of com.example.finaproject.data.GeminiHelper::sendMessage(String,ResponseCallback)
+* ‏هذه العملية تتلقى جملة لإ بإرسالها لخدمة الذكاء الاصطناعي Gemini وتنتظر الرد
+     * @param prompt   Geminiجملة الاستعلام أو الطلب من الذكاء الاصطناعي
+     * @param callback Gemini كائن لمعالجة الرد 
+end note
+
+class com.example.finaproject.signup {
+- Button btnSignup1
+- TextInputEditText inputEmail
+- TextInputEditText inputUsername
+- TextInputEditText inputPassword
+- TextInputEditText inputConfirmPassword
+- MaterialButton btnLogin
+- com.google.firebase.auth.FirebaseAuth mAuth
+# void onCreate(Bundle)
++ boolean validateAndReadData()
+}
+note top of com.example.finaproject.signup
+
+ * شاشة إنشاء حساب جديد (signup).
+ * تتيح للمستخدم إدخال بياناته لإنشاء حساب جديد في قاعدة البيانات المحلية (Room) و Firebase.
+ 
+end note
+
+note left of com.example.finaproject.signup::btnSignup1
+ زر إنشاء الحساب. 
+end note
+note right of com.example.finaproject.signup::inputEmail
+ حقل إدخال البريد الإلكتروني. 
+end note
+note left of com.example.finaproject.signup::inputUsername
+ حقل إدخال اسم المستخدم. 
+end note
+note right of com.example.finaproject.signup::inputPassword
+ حقل إدخال كلمة المرور. 
+end note
+note left of com.example.finaproject.signup::inputConfirmPassword
+ حقل تأكيد كلمة المرور. 
+end note
+note right of com.example.finaproject.signup::btnLogin
+ زر تسجيل الدخول (غير مستخدم في هذا الكود). 
+end note
+note left of com.example.finaproject.signup::mAuth
+ <--- أضف هذا السطر
+end note
+
+note left of com.example.finaproject.signup::onCreate(Bundle)
+
+     * دالة `onCreate` هي نقطة انطلاق النشاط. يتم استدعاؤها عند إنشاء الشاشة.
+     * @param savedInstanceState بيانات محفوظة من حالة سابقة للنشاط إذا كانت متاحة.
+     
+end note
+note right of com.example.finaproject.signup::validateAndReadData()
+
+     * دالة تقوم بالتحقق من صحة المدخلات، ثم قراءة البيانات وإنشاء الحساب.
+     * @return `true` إذا كانت المدخلات صالحة، و `false` خلاف ذلك.
+     
+end note
+
+class com.example.finaproject.data.MyProfileTable.Profile {
++ long uid
+- boolean isAdmin
++ String username
++ String email
++ int phone
++ String passw
++ boolean isAdmin()
++ void setAdmin(boolean)
++ String toString()
++ long getUid()
++ void setUid(long)
++ String getUsername()
++ void setUsername(String)
++ String getEmail()
++ void setEmail(String)
++ String getPassw()
++ void setPassw(String)
++ int getPhone()
++ void setPhone(int)
+}
+
+
+class com.example.finaproject.data.MyTaskTable.MyTask {
+~ long id
++ String taskName
++ String taskDescription
+- double latitude
+- double longitude
++ String taskDate
++ String Region
++ boolean taskStatus
++ String imageUrl
++ void setImageUrl(String)
++ String getImageUrl()
++ String getTaskDescription()
++ void setTaskDescription(String)
++ String getTaskName()
++ void setTaskName(String)
++ double getLatitude()
++ void setLatitude(double)
++ double getLongitude()
++ void setLongitude(double)
++ boolean getTaskStatus()
++ void setTaskStatus(boolean)
++ String getTaskTitle()
++ long getId()
++ void setId(long)
++ String toString()
+}
+note top of com.example.finaproject.data.MyTaskTable.MyTask
+
+ * يمثل هذا الكلاس جدولاً باسم "MyTask" في قاعدة البيانات.
+ * كل حقل (متغير) في هذا الكلاس يمثل عمودًا في هذا الجدول.
+ 
+end note
+
+note left of com.example.finaproject.data.MyTaskTable.MyTask::id
+
+     * اسم المهمة.
+     * @PrimaryKey: يحدد هذا الحقل كمفتاح أساسي (Primary Key) للجدول،
+     *              مما يعني أن قيمته يجب أن تكون فريدة لكل صف ولا يمكن تكرارها.
+     * @NonNull: تضمن أن هذا الحقل لا يمكن أن يكون فارغًا (null).
+     
+end note
+note right of com.example.finaproject.data.MyTaskTable.MyTask::taskDescription
+
+     * وصف تفصيلي للمهمة.
+     
+end note
+note left of com.example.finaproject.data.MyTaskTable.MyTask::Region
+
+     * المنطقة المتعلقة بالمهمة.
+     * ملاحظة: اسم المتغير "Region" قد يكون مربكًا بعض الشيء لأنه مكتوب بحرف كبير.
+     * من الأفضل تسميته "region" ليتوافق مع معايير تسمية المتغيرات في جافا.
+     
+end note
+note right of com.example.finaproject.data.MyTaskTable.MyTask::taskStatus
+
+     * حالة المهمة (مثال: true إذا كانت مكتملة، و false إذا لم تكن).
+     
+end note
+
+note left of com.example.finaproject.data.MyTaskTable.MyTask::getTaskTitle()
+
+     * دالة بديلة للحصول على عنوان المهمة.
+     * هي فعليًا ترجع نفس قيمة getTaskName().
+     * @return اسم المهمة.
+     
+end note
+note right of com.example.finaproject.data.MyTaskTable.MyTask::toString()
+
+     * دالة toString() تقوم بإرجاع تمثيل نصي (String) للكائن.
+     * هذه الدالة مفيدة جدًا في عمليات التصحيح (Debugging) لطباعة محتويات الكائن بسهولة.
+     * @return سلسلة نصية تحتوي على قيم حقول الكائن.
+     
+end note
+
+class com.example.finaproject.PromptBuilder {
++ {static} String buildReportPrompt(String)
+}
+
+abstract class com.example.finaproject.data.AppDatabase {
+- {static} AppDatabase db
++ {static} AppDatabase getDB(Application)
++ {static} Object getInstance(Context)
++ {abstract}MyProfileQuery myProfileQuery()
++ {abstract}MyTaskQuery getMyTaskQuery()
++ {static} AppDatabase getDb()
++ {static} void setDb(AppDatabase)
++ {static} AppDatabase getdb(Context)
++ MyProfileQuery getProfile()
+}
+note top of com.example.finaproject.data.AppDatabase
+ تعريف الكيانات (Entities) المشمولة في قاعدة البيانات وإصدارها.
+end note
+
+note left of com.example.finaproject.data.AppDatabase::db
+ متغير ثابت يمثل نسخة واحدة من قاعدة البيانات (Singleton Pattern)
+end note
+
+note left of com.example.finaproject.data.AppDatabase::getDB(Application)
+
+     * دالة للحصول على نسخة من قاعدة البيانات باستخدام Application context.
+     * @param application سياق التطبيق.
+     * @return نسخة من AppDatabase.
+     
+end note
+note right of com.example.finaproject.data.AppDatabase::getInstance(Context)
+
+     * دالة غير مكتملة حالياً للحصول على نسخة (تم إرجاع null حسب الكود الأصلي).
+     
+end note
+note left of com.example.finaproject.data.AppDatabase::myProfileQuery()
+
+     * طريقة مجردة (Abstract) للوصول إلى واجهة الاستعلامات الخاصة بالملف الشخصي.
+     
+end note
+note right of com.example.finaproject.data.AppDatabase::getMyTaskQuery()
+
+     * طريقة مجردة (Abstract) للوصول إلى واجهة الاستعلامات الخاصة بالمهام.
+     
+end note
+note left of com.example.finaproject.data.AppDatabase::getDb()
+
+     * دالة ثابتة للحصول على النسخة الحالية من قاعدة البيانات.
+     
+end note
+note right of com.example.finaproject.data.AppDatabase::setDb(AppDatabase)
+
+     * دالة لتعيين نسخة قاعدة البيانات يدوياً.
+     
+end note
+note left of com.example.finaproject.data.AppDatabase::getdb(Context)
+
+     * دالة أخرى للحصول على قاعدة البيانات باستخدام Context عادي.
+     * @param context السياق.
+     * @return نسخة من AppDatabase.
+     
+end note
+note right of com.example.finaproject.data.AppDatabase::getProfile()
+
+     * دالة مساعدة للوصول السريع إلى استعلامات الملف الشخصي.
+     
+end note
+
+interface com.example.finaproject.data.MyProfileTable.MyProfileQuery {
+~ List<Profile> getAll()
+~ Profile checkEmailPassw(String,String)
+~ Profile checkEmail(String)
+~ void insertAll(Profile)
+~ void delete(Profile)
+~ void insert(Profile)
+~ void update(Profile)
+}
+note left of com.example.finaproject.data.MyProfileTable.MyProfileQuery::checkEmailPassw(String,String)
+هل المستعمل موجود حسب الايميل وكلمة السر
+end note
+note right of com.example.finaproject.data.MyProfileTable.MyProfileQuery::checkEmail(String)
+فحص هل الايميل موجود من قبل
+end note
+
+class com.example.finaproject.RecyclerItemClickListener {
+- OnItemClickListener mListener
+- GestureDetector mGestureDetector
++ boolean onInterceptTouchEvent(RecyclerView,MotionEvent)
++ void onTouchEvent(RecyclerView,MotionEvent)
++ void onRequestDisallowInterceptTouchEvent(boolean)
+}
+note top of com.example.finaproject.RecyclerItemClickListener
+
+ * كلاس مساعد (Helper Class) وظيفته التقاط أحداث اللمس (Clicks) واللمس المطول (Long Clicks)
+ * على العناصر الموجودة داخل الـ RecyclerView، حيث أن الـ RecyclerView لا يوفر ميزة
+ * setOnItemClickListener بشكل افتراضي مثل القوائم القديمة.
+ 
+end note
+
+note left of com.example.finaproject.RecyclerItemClickListener::mListener
+ متغير لحفظ الـ Listener الذي سيتم تنفيذه عند حدوث نقرة (يتم تمريره من الـ Activity)
+end note
+note right of com.example.finaproject.RecyclerItemClickListener::mGestureDetector
+ كائن لكشف الإيماءات (مثل النقرة السريعة أو الضغطة المطولة) وفهم نوع حركة الإصبع
+end note
+
+note left of com.example.finaproject.RecyclerItemClickListener::onInterceptTouchEvent(RecyclerView,MotionEvent)
+
+     * ميثود اعتراض اللمس: هذه أهم ميثود، حيث تقرر هل يجب "سرقة" اللمسة من القائمة ومعالجتها هنا أم لا.
+     
+end note
+note right of com.example.finaproject.RecyclerItemClickListener::onTouchEvent(RecyclerView,MotionEvent)
+
+     * يتم استدعاؤها إذا تقرر معالجة اللمسة (لكننا نعتمد على onInterceptTouchEvent لذا تترك فارغة).
+     
+end note
+note left of com.example.finaproject.RecyclerItemClickListener::onRequestDisallowInterceptTouchEvent(boolean)
+
+     * ميثود للتحكم في منع اعتراض اللمس من قبل العناصر الأب (عادة لا نغيرها).
+     
+end note
+
+interface com.example.finaproject.RecyclerItemClickListener$OnItemClickListener {
+~ void onItemClick(View,int)
+~ void onLongItemClick(View,int)
+}
+note top of com.example.finaproject.RecyclerItemClickListener$OnItemClickListener
+
+     * واجهة (Interface) تحدد العمليات التي يجب تنفيذها عند الضغط.
+     * يجب على الـ Activity أو Fragment تنفيذ هذه الميثودات.
+     
+end note
+
+note left of com.example.finaproject.RecyclerItemClickListener$OnItemClickListener::onItemClick(View,int)
+ للنقرة العادية
+end note
+note right of com.example.finaproject.RecyclerItemClickListener$OnItemClickListener::onLongItemClick(View,int)
+ للنقرة المطولة
+end note
+
+class com.example.finaproject.login {
+- Button btnLogin
+- Button btnLoginWithFacebook
+- Button btnLoginWithGoogle
+- Button btnSignup1
+- TextInputEditText inputEmail
+- TextInputEditText inputPassword
+- FirebaseAuth mAuth
+- FirebaseAuth auth
+- GoogleSignInClient googleSignInClient
+- int RC_SIGN_IN
+# void onCreate(Bundle)
+- Profile validateAndReadData()
+- boolean isValidEmail(String)
+# void onActivityResult(int,int,Intent)
+}
+note top of com.example.finaproject.login
+
+ * شاشة تسجيل الدخول: تتيح للمستخدم الدخول عبر البريد الإلكتروني أو حساب جوجل.
+ * كما تتحقق من صلاحيات المستخدم (مدير أم لا) وتتحقق من وجود جلسة سابقة.
+ 
+end note
+
+note left of com.example.finaproject.login::btnLogin
+ زر تسجيل الدخول التقليدي بالبريد الإلكتروني وكلمة المرور. 
+end note
+note right of com.example.finaproject.login::btnLoginWithFacebook
+ زر تسجيل الدخول باستخدام فيسبوك (غير مستخدم حاليًا). 
+end note
+note left of com.example.finaproject.login::btnLoginWithGoogle
+ زر تسجيل الدخول باستخدام حساب جوجل. 
+end note
+note right of com.example.finaproject.login::btnSignup1
+ زر الانتقال إلى شاشة إنشاء حساب جديد. 
+end note
+note left of com.example.finaproject.login::inputEmail
+ حقل إدخال البريد الإلكتروني. 
+end note
+note right of com.example.finaproject.login::inputPassword
+ حقل إدخال كلمة المرور. 
+end note
+note left of com.example.finaproject.login::mAuth
+ مرجع رئيسي لخدمة المصادقة في Firebase. 
+end note
+note right of com.example.finaproject.login::auth
+ مرجع آخر لخدمة المصادقة، يستخدم في تسجيل دخول جوجل. 
+end note
+note left of com.example.finaproject.login::googleSignInClient
+ العميل المسؤول عن إدارة عملية تسجيل الدخول عبر جوجل. 
+end note
+note right of com.example.finaproject.login::RC_SIGN_IN
+ رمز طلب فريد لتمييز عملية تسجيل الدخول عبر جوجل عند عودة النتيجة. 
+end note
+
+note left of com.example.finaproject.login::onCreate(Bundle)
+
+     * دالة `onCreate` هي نقطة انطلاق النشاط. يتم استدعاؤها عند إنشاء الشاشة.
+     * @param savedInstanceState بيانات محفوظة من حالة سابقة للنشاط إذا كانت متاحة.
+     
+end note
+note right of com.example.finaproject.login::validateAndReadData()
+
+     * دالة للتحقق من صحة المدخلات (البريد وكلمة المرور) والبحث عن المستخدم في قاعدة البيانات المحلية Room.
+     * @return كائن `Profile` في حال كان المستخدم موجودًا وكلمة المرور صحيحة، أو `null` في حال الفشل.
+     
+end note
+note left of com.example.finaproject.login::isValidEmail(String)
+
+     * دالة مساعدة للتحقق من أن صيغة البريد الإلكتروني المدخلة صحيحة.
+     * @param email البريد الإلكتروني المراد التحقق منه.
+     * @return `true` إذا كانت الصيغة صحيحة، و `false` خلاف ذلك.
+     
+end note
+note right of com.example.finaproject.login::onActivityResult(int,int,Intent)
+
+     * دالة `onActivityResult` يتم استدعاؤها عند العودة من نشاط تم بدؤه بواسطة `startActivityForResult`.
+     * هنا، نستخدمها لمعالجة النتيجة القادمة من شاشة تسجيل دخول جوجل.
+     
+end note
+
+interface com.example.finaproject.data.ResponseCallback {
++ void onResponse(String)
++ void onError(Throwable)
+}
+note left of com.example.finaproject.data.ResponseCallback::onResponse(String)
+
+     * معالجة جواب الطلب من Gemini
+     * @param response جواب الطلب
+     
+end note
+note right of com.example.finaproject.data.ResponseCallback::onError(Throwable)
+
+     * الرد بحالة وجود خطا
+     * @param error
+     
+end note
+
+
+
+androidx.appcompat.app.AppCompatActivity <|-- com.example.finaproject.MainActivity
+androidx.appcompat.app.AppCompatActivity <|-- com.example.finaproject.Settings
+com.example.finaproject.data.MyTaskTable.Adapter <|-- com.example.finaproject.data.MyTaskTable.MyTaskAdapter
+com.example.finaproject.data.MyTaskTable.MyTaskAdapter +.. com.example.finaproject.data.MyTaskTable.MyTaskAdapter$TaskViewHolder
+com.example.finaproject.data.MyTaskTable.ViewHolder <|-- com.example.finaproject.data.MyTaskTable.MyTaskAdapter$TaskViewHolder
+androidx.appcompat.app.AppCompatActivity <|-- com.example.finaproject.SplashScreen
+androidx.appcompat.app.AppCompatActivity <|-- com.example.finaproject.ReportDetailsActivity
+androidx.appcompat.app.AppCompatActivity <|-- com.example.finaproject.NewReporScreen
+androidx.appcompat.app.AppCompatActivity <|-- com.example.finaproject.signup
+androidx.room.RoomDatabase <|-- com.example.finaproject.data.AppDatabase
+com.example.finaproject.OnItemTouchListener <|.. com.example.finaproject.RecyclerItemClickListener
+com.example.finaproject.RecyclerItemClickListener +.. com.example.finaproject.RecyclerItemClickListener$OnItemClickListener
+androidx.appcompat.app.AppCompatActivity <|-- com.example.finaproject.login
+@enduml
