@@ -19,10 +19,18 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/Theme.FinaProject">
+
         <service
             android:name=".data.MyProfileTable.UserSyncService"
             android:enabled="true"
             android:exported="true"></service>
+        <receiver android:name=".AirplaneReceiver"
+            android:enabled="true"
+            android:exported="false">
+            <intent-filter>
+                <action android:name="android.intent.action.AIRPLANE_MODE"/>
+            </intent-filter>
+        </receiver>
 
         <activity
             android:name=".ReportDetailsActivity"

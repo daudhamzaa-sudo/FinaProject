@@ -1,7 +1,11 @@
 package com.example.finaproject;
 
 import android.annotation.SuppressLint;
+import android.content.BroadcastReceiver;
+import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
@@ -50,6 +54,20 @@ public class MainActivity extends AppCompatActivity {
     private EditText inputText;
     private Button sendButton;
     private ProgressBar progressBar;
+    BroadcastReceiver receiver = new BroadcastReceiver() {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+
+            boolean isOn = intent.getBooleanExtra("state", false);
+
+            if(isOn){
+                btnAddReport.setBackgroundColor(Color.GRAY);
+            }else{
+                btnAddReport.setBackgroundColor(Color.GREEN);
+            }
+
+        }
+    };
 
     @SuppressLint("MissingInflatedId")
     @Override
@@ -61,7 +79,8 @@ public class MainActivity extends AppCompatActivity {
         setupReportsUI();
         setupGeminiUI();
         getAllFromFirebase();
-
+        IntentFilter filter = new IntentFilter("android.intent.action.AIRPLANE_MODE");
+        registerReceiver(receiver, filter);
         ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main), (v, insets) -> {
             Insets systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars());
             v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom);
@@ -151,6 +170,7 @@ public class MainActivity extends AppCompatActivity {
                     Toast.makeText(MainActivity.this, "Error: " + throwable.getMessage(), Toast.LENGTH_SHORT).show();
                 });
             }
+
         });
     }
 }
