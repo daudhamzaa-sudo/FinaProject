@@ -7,40 +7,43 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
-import android.widget.Switch; // استيراد الـ Switch
+import android.widget.Switch;
 import android.widget.TextView;
+import android.widget.Toast;
+
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
+
 import com.bumptech.glide.Glide;
 import com.example.finaproject.R;
 import com.example.finaproject.ReportDetailsActivity;
+import com.example.finaproject.data.AppDatabase;
+import com.google.firebase.database.FirebaseDatabase;
 
 import java.util.ArrayList;
 
+/**
+ * المحول (Adapter) الخاص بعرض قائمة البلاغات.
+ * تم تعديله ليتيح للأدمن فقط حذف البلاغات عند تفعيل مفتاح التأكيد.
+ */
 public class MyTaskAdapter extends RecyclerView.Adapter<MyTaskAdapter.TaskViewHolder> {
 
     private ArrayList<MyTask> tasksList;
     private Context context;
-    private boolean isAdmin; // متغير لتخزين صلاحية المدير
+    private boolean isAdmin;
 
-    // الدالة البناءة للمحوّل (Constructor)
     public MyTaskAdapter(Context context, ArrayList<MyTask> tasksList) {
         this.context = context;
         this.tasksList = tasksList;
-
-        // --- تم نقل الكود إلى هنا (المكان الصحيح) ---
-        // قراءة صلاحية المدير من الذاكرة المؤقتة
+        // قراءة حالة الأدمن من الإعدادات
         SharedPreferences prefs = context.getSharedPreferences("AppPrefs", Context.MODE_PRIVATE);
         this.isAdmin = prefs.getBoolean("IS_ADMIN", false);
     }
 
-    // الـ ViewHolder الذي يحمل عناصر الواجهة لكل عنصر في القائمة
     public static class TaskViewHolder extends RecyclerView.ViewHolder {
-        TextView task_title;
-        TextView task_description;
-        TextView task_status;
+        TextView task_title, task_description, task_status;
         ImageView task_image;
-        Switch switchConfirm; // زر تأكيد الحذف (للمدير)
+        Switch switchConfirm;
 
         public TaskViewHolder(@NonNull View itemView) {
             super(itemView);
@@ -48,7 +51,6 @@ public class MyTaskAdapter extends RecyclerView.Adapter<MyTaskAdapter.TaskViewHo
             task_description = itemView.findViewById(R.id.task_description);
             task_title = itemView.findViewById(R.id.task_title);
             task_image = itemView.findViewById(R.id.task_image);
-            // تأكد من أن لديك Switch في ملف التصميم بهذا الـ ID
             switchConfirm = itemView.findViewById(R.id.switchConfirm);
         }
     }
@@ -63,41 +65,66 @@ public class MyTaskAdapter extends RecyclerView.Adapter<MyTaskAdapter.TaskViewHo
     @Override
     public void onBindViewHolder(@NonNull TaskViewHolder holder, int position) {
         MyTask current = tasksList.get(position);
-        holder.task_status.setText("" + current.getTaskStatus());
+        
+        holder.task_status.setText("Status: " + current.getTaskStatus());
         holder.task_description.setText(current.getTaskDescription());
-        holder.task_title.setText("Importance:" + current.getTaskTitle());
+        holder.task_title.setText(current.getTaskTitle());
 
-        // --- المنطق الجديد للتحكم بظهور زر التأكيد ---
+        // إظهار/إخفاء زر الحذف بناءً على صلاحية الأدمن
         if (isAdmin) {
-            // إذا كان المستخدم هو المدير
-            holder.switchConfirm.setVisibility(View.VISIBLE); // أظهر الزر
+            holder.switchConfirm.setVisibility(View.VISIBLE);
+            holder.switchConfirm.setChecked(false); // إعادة ضبط الحالة لتجنب أخطاء إعادة التدوير
+            
+            // مستمع لتغيير حالة الـ Switch (تأكيد الحذف)
+            holder.switchConfirm.setOnCheckedChangeListener((buttonView, isChecked) -> {
+                if (isChecked) {
+                    deleteTask(current, position);
+                }
+            });
         } else {
-            // إذا كان المستخدم عادياً
-            holder.switchConfirm.setVisibility(View.GONE); // أخفِ الزر
+            holder.switchConfirm.setVisibility(View.GONE);
         }
 
-        // التحقق من وجود رابط للصورة
+        // تحميل الصورة
         if (current.getImageUrl() != null && !current.getImageUrl().isEmpty()) {
             holder.task_image.setVisibility(View.VISIBLE);
-            // استخدام مكتبة Glide لتحميل الصورة
-            Glide.with(context)
-                    .load(current.getImageUrl())
-                    .placeholder(R.drawable.ic_launcher_background)
-                    .error(R.drawable.ic_launcher_foreground)
-                    .into(holder.task_image);
+            Glide.with(context).load(current.getImageUrl()).into(holder.task_image);
         } else {
-            // إخفاء الصورة في حال عدم وجود رابط
             holder.task_image.setVisibility(View.GONE);
         }
+
+        // فتح التفاصيل عند النقر
         holder.itemView.setOnClickListener(v -> {
-
-            Intent intent = new Intent(v.getContext(), ReportDetailsActivity.class);
-
-// نمرر الكائن كاملاً في سطر واحد
+            Intent intent = new Intent(context, ReportDetailsActivity.class);
             intent.putExtra("TASK_EXTRA", current);
-
-            v.getContext().startActivity(intent);
+            context.startActivity(intent);
         });
+    }
+
+    /**
+     * دالة لحذف البلاغ من Firebase ومن قاعدة البيانات المحلية.
+     */
+    private void deleteTask(MyTask task, int position) {
+        // 1. الحذف من Firebase باستخدام الـ kid
+        if (task.getKid() != null) {
+            FirebaseDatabase.getInstance().getReference("tasks")
+                    .child(task.getKid())
+                    .removeValue()
+                    .addOnSuccessListener(aVoid -> {
+                        Toast.makeText(context, "تم حذف البلاغ من السيرفر", Toast.LENGTH_SHORT).show();
+                    });
+        }
+
+        // 2. الحذف من قاعدة البيانات المحلية (Room)
+        new Thread(() -> {
+            AppDatabase.getdb(context).getMyTaskQuery().delete(task);
+        }).start();
+
+        // 3. تحديث القائمة في الواجهة
+        tasksList.remove(position);
+        notifyItemRemoved(position);
+        notifyItemRangeChanged(position, tasksList.size());
+        Toast.makeText(context, "تم تأكيد وحذف البلاغ بنجاح", Toast.LENGTH_SHORT).show();
     }
 
     @Override
@@ -109,12 +136,8 @@ public class MyTaskAdapter extends RecyclerView.Adapter<MyTaskAdapter.TaskViewHo
         this.tasksList = tasksList;
         notifyDataSetChanged();
     }
-    /**
-     * دالة لإرجاع قائمة البلاغات الحالية الموجودة في الـ Adapter.
-     * @return قائمة من نوع ArrayList<MyTask>
-     */
-    public ArrayList<MyTask> getTasksList() {
-        return tasksList; // 'tasksList' هو اسم القائمة الموجودة لديك بالفعل في الـ Adapter
-    }
 
+    public ArrayList<MyTask> getTasksList() {
+        return tasksList;
+    }
 }

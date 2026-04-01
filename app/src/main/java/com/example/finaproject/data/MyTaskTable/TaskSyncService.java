@@ -10,44 +10,64 @@ import androidx.annotation.Nullable;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 
+/**
+ * خدمة (Service) خلفية لمزامنة بيانات المهام مع Firebase.
+ * تضمن هذه الخدمة رفع البيانات حتى لو أغلق المستخدم التطبيق.
+ */
 public class TaskSyncService extends Service {
     public TaskSyncService() {
     }
 
+    /**
+     * يتم استدعاء هذه الدالة عند بدء تشغيل الخدمة.
+     * @param intent يحمل البيانات الممررة (كائن المهمة).
+     */
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
-        //read the data that received within the intent
+        // قراءة البيانات المستلمة من الـ Intent
         if (intent != null && intent.hasExtra("task_extra")) {
              MyTask task = (MyTask) intent.getSerializableExtra("task_extra");
+             // بدء عملية الحفظ في Firebase
             saveMyTaskToFirebase(task);
         }
-        // START_NOT_STICKY means if the system kills the service, don't recreate it automatically
+        
+        // START_NOT_STICKY: لا تقم بإعادة تشغيل الخدمة تلقائياً إذا قتلت من قبل النظام.
         return START_NOT_STICKY;
     }
 
-
+    /**
+     * دالة لإرسال بيانات المهمة إلى Firebase Realtime Database.
+     * @param task كائن المهمة المراد حفظه.
+     */
     private void saveMyTaskToFirebase(MyTask task) {
+        // الحصول على مرجع لعقدة "tasks"
         DatabaseReference myRef = FirebaseDatabase.getInstance().getReference("tasks");
+        
+        // إنشاء مفتاح فريد (Key) للمهمة الجديدة
         String key = myRef.push().getKey();
 
+        // تعيين المفتاح في حقل kid لسهولة الوصول إليه لاحقاً
         task.setKid(key);
 
-
+        // حفظ الكائن بالكامل في Firebase تحت المفتاح المنشأ
         myRef.child(key).setValue(task).addOnCompleteListener(fbTask -> {
             if (fbTask.isSuccessful()) {
-                // In a service, use context from getApplicationContext() for Toasts
-                Toast.makeText(getApplicationContext(), "Sync Successful", Toast.LENGTH_SHORT).show();
+                // عرض رسالة نجاح (باستخدام سياق التطبيق العام داخل الخدمة)
+                Toast.makeText(getApplicationContext(), "تمت المزامنة بنجاح", Toast.LENGTH_SHORT).show();
+            } else {
+                // في حال الفشل (مثل مشكلة Permission Denied)
+                Toast.makeText(getApplicationContext(), "فشلت المزامنة: " + fbTask.getException().getMessage(), Toast.LENGTH_SHORT).show();
             }
-            // Stop the service once the work is done to save battery/RAM
+            
+            // إيقاف الخدمة تلقائياً بعد انتهاء المهمة لتوفير الموارد
             stopSelf();
         });
     }
 
-
     @Nullable
     @Override
     public IBinder onBind(Intent intent) {
-        return null; // We are using a Started Service, not a Bound Service
+        // هذه الخدمة لا تدعم الربط (Binding)، لذا نعيد null.
+        return null; 
     }
 }
-

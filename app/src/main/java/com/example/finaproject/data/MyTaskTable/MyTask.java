@@ -10,44 +10,33 @@ import java.io.Serializable;
 
 /**
  * يمثل هذا الكلاس جدولاً باسم "MyTask" في قاعدة البيانات.
- * كل حقل (متغير) في هذا الكلاس يمثل عمودًا في هذا الجدول.
+ * تم تحديثه ليتضمن دالة getKid() اللازمة لعملية الحذف.
  */
 @Entity
 public class MyTask implements Serializable {
 
     @PrimaryKey(autoGenerate = true)
     long id;
+    
     @NonNull
-    public String taskName;
+    public String taskName = "";
 
-   
+    public String kid;
+
+    public String getKid() {
+        return kid;
+    }
 
     public void setKid(String kid) {
         this.kid = kid;
     }
 
-    public String kid;
-
     public String taskDescription;
-
     private double latitude;
     private double longitude;
-
     public String taskDate;
-
-    /**
-     * المنطقة المتعلقة بالمهمة.
-     * ملاحظة: اسم المتغير "Region" قد يكون مربكًا بعض الشيء لأنه مكتوب بحرف كبير.
-     * من الأفضل تسميته "region" ليتوافق مع معايير تسمية المتغيرات في جافا.
-     */
     public String Region;
-
-    /**
-     * حالة المهمة (مثال: true إذا كانت مكتملة، و false إذا لم تكن).
-     */
     public boolean taskStatus;
-
-
     public String imageUrl;
 
     public void setImageUrl(String imageUrl) {
@@ -57,8 +46,6 @@ public class MyTask implements Serializable {
     public String getImageUrl() {
         return imageUrl;
     }
-    // --- الدوال المساعدة (Getters and Setters) ---
-    // هذه الدوال توفر طريقة آمنة ومنظمة للوصول إلى بيانات الكائن وتعديلها.
 
     public String getTaskDescription() {
         return taskDescription;
@@ -75,6 +62,7 @@ public class MyTask implements Serializable {
     public void setTaskName(@NonNull String taskName) {
         this.taskName = taskName;
     }
+
     public double getLatitude() {
         return latitude;
     }
@@ -99,11 +87,6 @@ public class MyTask implements Serializable {
         this.taskStatus = taskStatus;
     }
 
-    /**
-     * دالة بديلة للحصول على عنوان المهمة.
-     * هي فعليًا ترجع نفس قيمة getTaskName().
-     * @return اسم المهمة.
-     */
     public String getTaskTitle() {
         return taskName;
     }
@@ -116,23 +99,13 @@ public class MyTask implements Serializable {
         this.id = id;
     }
 
-    /**
-     * دالة toString() تقوم بإرجاع تمثيل نصي (String) للكائن.
-     * هذه الدالة مفيدة جدًا في عمليات التصحيح (Debugging) لطباعة محتويات الكائن بسهولة.
-     * @return سلسلة نصية تحتوي على قيم حقول الكائن.
-     */
     @Override
     public String toString() {
         return "MyTask{" +
                 "id=" + id +
                 ", taskName='" + taskName + '\'' +
-                ", taskDescription='" + taskDescription + '\'' +
-                ", taskDate='" + taskDate + '\'' +
-                ", Region='" + Region + '\'' +
+                ", kid='" + kid + '\'' +
                 ", taskStatus=" + taskStatus +
-                ", imageUrl='" + imageUrl + '\'' +
                 '}';
     }
-
-
 }
