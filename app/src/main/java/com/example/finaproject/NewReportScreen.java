@@ -7,7 +7,11 @@ import android.Manifest;
 import android.content.pm.PackageManager;
 import androidx.core.app.ActivityCompat;
 import com.google.android.gms.location.FusedLocationProviderClient;
+import com.google.android.gms.location.LocationRequest;
 import com.google.android.gms.location.LocationServices;
+import com.google.android.gms.location.Priority;
+import com.google.android.gms.tasks.CancellationTokenSource;
+
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Build;
@@ -19,7 +23,6 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 import androidx.activity.EdgeToEdge;
-import androidx.activity.result.ActivityResultCallback;
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.appcompat.app.AppCompatActivity;
@@ -32,15 +35,11 @@ import com.example.finaproject.data.MyTaskTable.MyTask;
 import com.google.android.material.button.MaterialButton;
 import com.google.android.material.textfield.TextInputEditText;
 
-/**
- * شاشة إضافة بلاغ جديد: تتيح للمستخدم إدخال تفاصيل البلاغ، اختيار صورة، وتحديد الموقع.
- */
 public class NewReportScreen extends AppCompatActivity {
     private ImageView ivSelectedImage; 
     private Uri selectedImageUri;
     private ActivityResultLauncher<String> pickImage;
     private ActivityResultLauncher<String> requestReadMediaImagesPermission;
-    private ActivityResultLauncher<String> requestReadMediaVideoPermission;
     private ActivityResultLauncher<String> requestReadExternalStoragePermission;
     private TextInputEditText inputTitle;
     private TextInputEditText inputDescription;
@@ -49,8 +48,6 @@ public class NewReportScreen extends AppCompatActivity {
     private TextView tvLocation;
     private double latitude = 0;
     private double longitude = 0;
-    private TextView tvTitle;
-    private TextView tvSubtitle;
     private MaterialButton btnSubmit;
 
     @Override
@@ -59,15 +56,14 @@ public class NewReportScreen extends AppCompatActivity {
         EdgeToEdge.enable(this);
         setContentView(R.layout.activity_new_repor_screen);
         
-        // إعداد واجهة المستخدم وتعديل الهوامش
+        fusedLocationClient = LocationServices.getFusedLocationProviderClient(this);
+
         ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main), (v, insets) -> {
             Insets systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars());
             v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom);
-            fusedLocationClient = LocationServices.getFusedLocationProviderClient(this);
             return insets;
         });
 
-        // تهيئة العناصر
         btnSubmit = findViewById(R.id.btnSubmit);
         inputTitle = findViewById(R.id.inputTitle);
         inputDescription = findViewById(R.id.inputDescription);
@@ -75,14 +71,11 @@ public class NewReportScreen extends AppCompatActivity {
         tvLocation = findViewById(R.id.tvLocation);
         ivSelectedImage = findViewById(R.id.imgPreview);
 
-        // طلب أذونات الصور والموقع
         setupPermissionsLaunchers();
         checkAndRequestPermissions();
 
-        // زر جلب الموقع الجغرافي
         btnGetLocation.setOnClickListener(v -> fetchLocation());
 
-        // إعداد اختيار صورة من المعرض
         pickImage = registerForActivityResult(new ActivityResultContracts.GetContent(), result -> {
             if (result != null) {
                 getContentResolver().takePersistableUriPermission(result, Intent.FLAG_GRANT_READ_URI_PERMISSION);
@@ -94,51 +87,56 @@ public class NewReportScreen extends AppCompatActivity {
 
         ivSelectedImage.setOnClickListener(v -> pickImage.launch("image/*"));
 
-        // زر إرسال البلاغ
         btnSubmit.setOnClickListener(view -> {
             if (validateAndExtractData()) {
-                // سيتم الحفظ والرجوع عبر دالة saveTask
+                // الحفظ يتم داخل الدالة
             }
         });
     }
 
-    /**
-     * دالة لجلب الموقع الحالي للمستخدم.
-     */
     private void fetchLocation() {
         if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
             ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, 100);
             return;
         }
-        fusedLocationClient.getLastLocation().addOnSuccessListener(location -> {
-            if (location != null) {
-                latitude = location.getLatitude();
-                longitude = location.getLongitude();
-                tvLocation.setText("Location: " + latitude + ", " + longitude);
-            } else {
-                Toast.makeText(this, "Location not found", Toast.LENGTH_SHORT).show();
-            }
-        });
+
+        tvLocation.setText("جاري جلب الموقع...");
+
+        // محاولة جلب الموقع الحالي بدقة عالية بدلاً من الاعتماد على آخر موقع مخزن فقط
+        fusedLocationClient.getCurrentLocation(Priority.PRIORITY_HIGH_ACCURACY, new CancellationTokenSource().getToken())
+                .addOnSuccessListener(location -> {
+                    if (location != null) {
+                        latitude = location.getLatitude();
+                        longitude = location.getLongitude();
+                        tvLocation.setText("الموقع: " + latitude + " , " + longitude);
+                    } else {
+                        // إذا فشل getCurrentLocation، نحاول getLastLocation كملاذ أخير
+                        fusedLocationClient.getLastLocation().addOnSuccessListener(lastLoc -> {
+                            if (lastLoc != null) {
+                                latitude = lastLoc.getLatitude();
+                                longitude = lastLoc.getLongitude();
+                                tvLocation.setText("الموقع (قديم): " + latitude + " , " + longitude);
+                            } else {
+                                Toast.makeText(this, "تعذر العثور على الموقع. تأكد من تفعيل الـ GPS", Toast.LENGTH_LONG).show();
+                                tvLocation.setText("الموقع غير موجود");
+                            }
+                        });
+                    }
+                })
+                .addOnFailureListener(e -> {
+                    Toast.makeText(this, "خطأ في جلب الموقع: " + e.getMessage(), Toast.LENGTH_SHORT).show();
+                });
     }
 
-    /**
-     * دالة للتحقق من البيانات المدخلة وحفظها.
-     */
     private boolean validateAndExtractData() {
         String title = inputTitle.getText().toString().trim();
         String description = inputDescription.getText().toString().trim();
 
         if (title.isEmpty() || description.isEmpty()) {
-            Toast.makeText(this, "All fields are required", Toast.LENGTH_SHORT).show();
+            Toast.makeText(this, "جميع الحقول مطلوبة", Toast.LENGTH_SHORT).show();
             return false;
         }
 
-        if (title.length() < 5) {
-            inputTitle.setError("Title must be at least 5 characters");
-            return false;
-        }
-
-        // إنشاء كائن المهمة وتعبئة البيانات
         MyTask myTask1 = new MyTask();
         myTask1.setTaskName(title);
         myTask1.setTaskDescription(description);
@@ -148,26 +146,17 @@ public class NewReportScreen extends AppCompatActivity {
             myTask1.setImageUrl(selectedImageUri.toString());
         }
 
-        // حفظ محلياً في Room
         AppDatabase.getdb(this).getMyTaskQuery().insert(myTask1);
-        
-        // حفظ في Firebase
         saveTask(myTask1, this);
 
         return true;
     }
 
-    /**
-     * دالة لحفظ المهمة في Firebase Realtime Database.
-     */
     public void saveTask(MyTask task, android.content.Context context) {
         com.google.firebase.database.DatabaseReference tasksRef =
                 com.google.firebase.database.FirebaseDatabase.getInstance().getReference("tasks");
 
-        // إنشاء مفتاح فريد
         com.google.firebase.database.DatabaseReference newTaskRef = tasksRef.push();
-        
-        // تصحيح: حفظ المفتاح في حقل kid بدلاً من تغيير اسم المهمة
         task.setKid(newTaskRef.getKey());
 
         newTaskRef.setValue(task)
@@ -178,14 +167,12 @@ public class NewReportScreen extends AppCompatActivity {
                     }
                 })
                 .addOnFailureListener(e -> {
-                    Log.e("MyTask", "خطأ في حفظ المهمة: " + e.getMessage());
-                    Toast.makeText(context, "فشل في حفظ المهمة: " + e.getMessage(), Toast.LENGTH_SHORT).show();
+                    Toast.makeText(context, "فشل في الحفظ: " + e.getMessage(), Toast.LENGTH_SHORT).show();
                 });
     }
 
     private void setupPermissionsLaunchers() {
         requestReadMediaImagesPermission = registerForActivityResult(new ActivityResultContracts.RequestPermission(), isGranted -> {});
-        requestReadMediaVideoPermission = registerForActivityResult(new ActivityResultContracts.RequestPermission(), isGranted -> {});
         requestReadExternalStoragePermission = registerForActivityResult(new ActivityResultContracts.RequestPermission(), isGranted -> {});
     }
 

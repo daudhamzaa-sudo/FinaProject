@@ -11,6 +11,7 @@ import java.util.List;
 /**
  * واجهة (Interface) لتعريف عمليات الاستعلام الخاصة بجدول المهام (MyTask) في قاعدة بيانات Room.
  */
+
 @Dao
 public interface MyTaskQuery {
     /**
