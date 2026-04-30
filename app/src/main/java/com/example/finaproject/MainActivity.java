@@ -1,231 +1,201 @@
-package com.example.finaproject; // تعريف مكان الملف داخل المجلدات
+package com.example.finaproject;
 
-// استيراد المكتبات البرمجية اللازمة لعمل الواجهات والاتصال بالإنترنت وقاعدة البيانات
-import android.annotation.SuppressLint;      // لتجاهل تنبيهات معينة من النظام
-import android.content.BroadcastReceiver;    // لاستقبال إشارات البث من نظام أندرويد
-import android.content.Context;              // للوصول إلى موارد التطبيق الأساسية
-import android.content.Intent;               // للانتقال بين شاشات التطبيق المختلفة
-import android.content.IntentFilter;         // لتحديد نوع الإشارات التي نريد استقبالها
-import android.graphics.Color;                // للتحكم في الألوان برمجياً
-import android.os.Bundle;                   // لحفظ ونقل حالة الشاشة
-import android.view.View;                   // المكون الأساسي لجميع عناصر الواجهة
-import android.widget.Button;               // عنصر الزر القابل للنقر
-import android.widget.EditText;              // حقل إدخال النصوص
-import android.widget.ImageView;             // عنصر عرض الصور
-import android.widget.ProgressBar;          // شريط يوضح حالة التحميل
-import android.widget.TextView;              // عنصر عرض النصوص الثابتة
-import android.widget.Toast;                // لعرض رسائل سريعة للمستخدم
+import android.content.BroadcastReceiver;
+import android.content.Context;
+import android.content.Intent;
+import android.content.IntentFilter;
+import android.graphics.Color;
+import android.os.Bundle;
+import android.view.View;
+import android.widget.Button;
+import android.widget.EditText;
+import android.widget.ImageView;
+import android.widget.ProgressBar;
+import android.widget.TextView;
+import android.widget.Toast;
 
-// استيراد مكتبات AndroidX لدعم الميزات الحديثة
-import androidx.activity.EdgeToEdge;        // لتوسيع واجهة التطبيق لتشمل حواف الشاشة
-import androidx.annotation.NonNull;           // للإشارة إلى أن القيمة لا يمكن أن تكون فارغة
-import androidx.appcompat.app.AppCompatActivity; // الكلاس الأساسي للشاشات الحديثة
-import androidx.core.graphics.Insets;         // للتعامل مع مسافات النظام (أشرطة الحالة)
-import androidx.core.view.ViewCompat;          // لتوفير التوافق بين إصدارات أندرويد
-import androidx.core.view.WindowInsetsCompat;   // للتحكم في هوامش النوافذ
-import androidx.recyclerview.widget.LinearLayoutManager; // لترتيب القائمة بشكل طولي
-import androidx.recyclerview.widget.RecyclerView;            // القائمة المتطورة لعرض البيانات
+import androidx.activity.EdgeToEdge;
+import androidx.annotation.NonNull;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.graphics.Insets;
+import androidx.core.view.ViewCompat;
+import androidx.core.view.WindowInsetsCompat;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
-// استيراد كلاسات المشروع الداخلية (البيانات، قاعدة البيانات، والمساعدين)
-import com.example.finaproject.data.AppDatabase;
-import com.example.finaproject.data.GeminiHelper;
 import com.example.finaproject.data.MyTaskTable.MyTask;
 import com.example.finaproject.data.MyTaskTable.MyTaskAdapter;
-import com.example.finaproject.data.ResponseCallback;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
-import java.util.ArrayList; // قائمة ديناميكية لتخزين المهام
+import java.util.ArrayList;
 
 /**
- * الكلاس الرئيسي (MainActivity):
- * هو الشاشة المركزية التي تربط عرض البيانات بالسحابة وبالذكاء الاصطناعي.
+ * MainActivity: الشاشة الرئيسية للتطبيق بعد إزالة ميزات الذكاء الاصطناعي.
+ * تركز الشاشة الآن على عرض قائمة البلاغات وإدارة الإعدادات.
  */
 public class MainActivity extends AppCompatActivity {
+private Button button11;
+private EditText etTaskTopic;
+private TextView tvAiResponse;
+    private Button btnAddReport; // زر إضافة بلاغ جديد
+    private RecyclerView recyclerReports; // القائمة لعرض البلاغات
+    private MyTaskAdapter myTaskAdapter; // محول القائمة
+    private ImageView imgPreview; // أيقونة الإعدادات
 
-    // --- تعريف المتغيرات البرمجية لعناصر الواجهة ---
-    private TextView tvTitle;              // عنوان الشاشة (Reports)
-    private TextView responseText;         // مكان عرض رد الذكاء الاصطناعي
-    private ImageView imgPreview;          // أيقونة الإعدادات
-    private Button btnAddReport;           // زر إضافة بلاغ جديد
-    private RecyclerView recyclerReports;  // القائمة التي تعرض البلاغات
-    private MyTaskAdapter myTaskAdapter;   // المحول المسؤول عن ملء القائمة بالبيانات
-
-    private EditText inputText;            // حقل كتابة سؤال لـ Gemini
-    private Button sendButton;             // زر إرسال السؤال
-    private ProgressBar progressBar;       // دائرة التحميل عند انتظار رد Gemini
-
-    /**
-     * تعريف مستقبل البث (BroadcastReceiver):
-     * وظيفته مراقبة "وضع الطيران" في الهاتف بشكل لحظي.
-     */
+    // مستقبل البث لمراقبة وضع الطيران
     private final BroadcastReceiver airplaneReceiver = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
-            // التحقق إذا كان الحدث هو تغير وضع الطيران
             if (Intent.ACTION_AIRPLANE_MODE_CHANGED.equals(intent.getAction())) {
-                // استخراج الحالة الجديدة (مفعل أم لا)
                 boolean isAirplaneModeOn = intent.getBooleanExtra("state", false);
-                if (isAirplaneModeOn) {
-                    // إذا فُعل وضع الطيران، نغير لون الزر للأحمر كتنبيه
-                    btnAddReport.setBackgroundColor(Color.RED);
-                } else {
-                    // إذا عُطل، نرجع للون الأخضر الأصلي
-                    btnAddReport.setBackgroundColor(Color.parseColor("#2E7D32"));
+                if (btnAddReport != null) {
+                    // تغيير لون الزر للتنبيه عند تفعيل وضع الطيران
+                    btnAddReport.setBackgroundColor(isAirplaneModeOn ? Color.RED : Color.parseColor("#2E7D32"));
                 }
             }
         }
     };
 
-    @SuppressLint("MissingInflatedId") // تجاهل تحذيرات المعرفات المفقودة أثناء البرمجة
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState); // استدعاء دالة الإنشاء الأساسية
-        EdgeToEdge.enable(this);             // تفعيل خاصية ملء الشاشة بالكامل
-        setContentView(R.layout.activity_main); // ربط الكلاس بملف التصميم XML
+        super.onCreate(savedInstanceState);
+        EdgeToEdge.enable(this);
+        setContentView(R.layout.activity_main);
 
-        // استدعاء الدوال الفرعية لتهيئة الأجزاء المختلفة
-        setupReportsUI();      // تهيئة القائمة وأزرار التقارير
-        setupGeminiUI();       // تهيئة واجهة الذكاء الاصطناعي
-        getAllFromFirebase();  // بدء جلب البيانات من الإنترنت (Firebase)
+        // تهيئة عناصر الواجهة
+        initViews();
 
-        // ضبط هوامش الشاشة لتفادي التداخل مع شريط النظام العلوي والسفلي
+        // ضبط هوامش النظام
         ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main), (v, insets) -> {
             Insets systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars());
             v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom);
             return insets;
         });
+
+
+        // جلب البيانات من Firebase
+        getAllFromFirebase();
     }
 
     /**
-     * دالة تهيئة واجهة التقارير (UI Setup):
-     * تربط الأزرار والقوائم بالكود وتحدد ماذا يحدث عند النقر عليها.
+     * تهيئة العناصر وربط الأزرار.
      */
-    private void setupReportsUI() {
-        recyclerReports = findViewById(R.id.recyclerReports); // ربط القائمة
-        imgPreview = findViewById(R.id.imgPreview);           // ربط أيقونة الإعدادات
-        btnAddReport = findViewById(R.id.btnAddReport);       // ربط زر الإضافة
+    private void initViews() {
+        btnAddReport = findViewById(R.id.btnAddReport);
+        recyclerReports = findViewById(R.id.recyclerReports);
+        imgPreview = findViewById(R.id.imgPreview);
+        button11= findViewById(R.id.button11);
+        tvAiResponse = findViewById(R.id.tvAiResponse);
+        etTaskTopic = findViewById(R.id.etTaskTopic);
 
-        // عند النقر على أيقونة الإعدادات، انتقل لشاشة Settings
-        imgPreview.setOnClickListener(view -> {
-            startActivity(new Intent(MainActivity.this, Settings.class));
-        });
-
-        // إعداد القائمة لتكون مرتبة رأسياً (Vertical)
-        recyclerReports.setLayoutManager(new LinearLayoutManager(this));
-        // إنشاء المحول (Adapter) وربطه بالقائمة
-        myTaskAdapter = new MyTaskAdapter(this, new ArrayList<>());
-        recyclerReports.setAdapter(myTaskAdapter);
-
-        // إضافة مستمع للنقر على أي بلاغ داخل القائمة للانتقال لصفحة التفاصيل
-        recyclerReports.addOnItemTouchListener(new RecyclerItemClickListener(this, recyclerReports, new RecyclerItemClickListener.OnItemClickListener() {
-            @Override
-            public void onItemClick(View view, int position) {
-                // الحصول على بيانات البلاغ الذي تم النقر عليه
-                ArrayList<MyTask> currentTasks = myTaskAdapter.getTasksList();
-                if (currentTasks != null && position < currentTasks.size()) {
-                    MyTask clickedTask = currentTasks.get(position);
-                    // إنشاء نية انتقال (Intent) وحمل بيانات البلاغ معه
-                    Intent intent = new Intent(MainActivity.this, ReportDetailsActivity.class);
-                    intent.putExtra("TASK_EXTRA", clickedTask); // إرسال الكائن كاملاً
-                    startActivity(intent);
+        // إعداد القائمة
+        if (recyclerReports != null) {
+            recyclerReports.setLayoutManager(new LinearLayoutManager(this));
+            myTaskAdapter = new MyTaskAdapter(this, new ArrayList<>());
+            recyclerReports.setAdapter(myTaskAdapter);
+            
+            // إضافة مستمع للنقر على البلاغات
+            recyclerReports.addOnItemTouchListener(new RecyclerItemClickListener(this, recyclerReports, new RecyclerItemClickListener.OnItemClickListener() {
+                @Override
+                public void onItemClick(View view, int position) {
+                    ArrayList<MyTask> currentTasks = myTaskAdapter.getTasksList();
+                    if (currentTasks != null && position < currentTasks.size()) {
+                        MyTask clickedTask = currentTasks.get(position);
+                        Intent intent = new Intent(MainActivity.this, ReportDetailsActivity.class);
+                        intent.putExtra("TASK_EXTRA", clickedTask);
+                        startActivity(intent);
+                    }
                 }
-            }
-            @Override
-            public void onLongItemClick(View view, int position) {}
-        }));
+                @Override public void onLongItemClick(View view, int position) {}
+            }));
+        }
 
-        // عند النقر على زر "إضافة بلاغ"، انتقل لشاشة الإضافة
-        btnAddReport.setOnClickListener(v -> startActivity(new Intent(this, NewReportScreen.class)));
+        // زر إضافة بلاغ جديد
+        if (btnAddReport != null) {
+            btnAddReport.setOnClickListener(v -> startActivity(new Intent(this, NewReportScreen.class)));
+        }
+
+        // أيقونة الإعدادات
+        if (imgPreview != null) {
+            imgPreview.setOnClickListener(v -> startActivity(new Intent(this, Settings.class)));
+        }
+    }
+    ai = FirebaseAI.getInstance(GenerativeBackend.googleAI())
+            .generativeModel("gemini-3-flash-preview");
+    model = GenerativeModelFutures.from(ai);
+    private void askFirebaseAiGeminiForSteps(String topic) {
+        pbLoading.setVisibility(View.VISIBLE);
+        tvAiResponse.setText("");
+        btnSuggestSteps.setEnabled(false);
+
+
+        String promptStr = "I want to perform the following task: '" + topic + "'. " +
+                "Can you suggest a clear, step-by-step checklist to complete this task effectively?";
+
+
+        Content prompt = new Content.Builder()
+                .addText(promptStr)
+                .build();
+
+
+        ListenableFuture<GenerateContentResponse> response = model.generateContent(prompt);
+        Executor executor = this::runOnUiThread;
+        Futures.addCallback(response, new FutureCallback<GenerateContentResponse>() {
+            @Override
+            public void onSuccess(GenerateContentResponse result) {
+                pbLoading.setVisibility(View.GONE);
+                btnSuggestSteps.setEnabled(true);
+                tvAiResponse.setText(result.getText());
+            }
+
+
+            @Override
+            public void onFailure(Throwable t) {
+                pbLoading.setVisibility(View.GONE);
+                btnSuggestSteps.setEnabled(true);
+                Toast.makeText(SmartTaskActivity.this, "Error: " + t.getMessage(), Toast.LENGTH_LONG).show();
+            }
+        }, executor);
     }
 
+
+
     /**
-     * دالة جلب البيانات من Firebase:
-     * وظيفتها مراقبة قاعدة البيانات السحابية وتحديث القائمة فوراً عند إضافة أي بلاغ.
+     * جلب قائمة البلاغات من قاعدة البيانات السحابية.
      */
     private void getAllFromFirebase() {
-        FirebaseDatabase.getInstance().getReference("tasks") // الوصول لعقدة المهام في Firebase
-            .addValueEventListener(new ValueEventListener() { // إضافة مستمع للتغيرات اللحظية
+        FirebaseDatabase.getInstance().getReference("tasks")
+            .addValueEventListener(new ValueEventListener() {
                 @Override
                 public void onDataChange(@NonNull DataSnapshot snapshot) {
                     ArrayList<MyTask> tasks = new ArrayList<>();
-                    // المرور على كل البلاغات الموجودة في السحابة وتحويلها لكائنات برمجية
-                    for (DataSnapshot postSnapshot : snapshot.getChildren()) {
-                        MyTask task = postSnapshot.getValue(MyTask.class);
-                        if (task != null) tasks.add(task);
+                    for (DataSnapshot ds : snapshot.getChildren()) {
+                        MyTask t = ds.getValue(MyTask.class);
+                        if (t != null) tasks.add(t);
                     }
-                    // تحديث القائمة بالبيانات الجديدة
-                    myTaskAdapter.setTasksList(tasks);
-                    myTaskAdapter.notifyDataSetChanged(); // إخبار الواجهة بإعادة الرسم
+                    if (myTaskAdapter != null) {
+                        myTaskAdapter.setTasksList(tasks);
+                        myTaskAdapter.notifyDataSetChanged();
+                    }
                 }
-
-                @Override
-                public void onCancelled(@NonNull DatabaseError error) {
-                    // عرض رسالة في حال فشل الاتصال بالإنترنت أو حدوث خطأ
-                    Toast.makeText(MainActivity.this, "حدث خطأ في جلب البيانات", Toast.LENGTH_SHORT).show();
+                @Override public void onCancelled(@NonNull DatabaseError error) {
+                    Toast.makeText(MainActivity.this, "فشل جلب البيانات", Toast.LENGTH_SHORT).show();
                 }
             });
-    }
-
-    /**
-     * تهيئة واجهة الذكاء الاصطناعي (Gemini):
-     * تربط حقل الإدخال وزر الإرسال بمنطق التعامل مع Gemini API.
-     */
-    private void setupGeminiUI() {
-        inputText = findViewById(R.id.inputText);   // ربط حقل النص
-        sendButton = findViewById(R.id.sendButton);   // ربط زر الإرسال
-        responseText = findViewById(R.id.responseText); // ربط مكان الرد
-        progressBar = findViewById(R.id.progressBar);   // ربط مؤشر التحميل
-
-        sendButton.setOnClickListener(v -> {
-            String query = inputText.getText().toString(); // الحصول على سؤال المستخدم
-            if (!query.isEmpty()) {
-                callGemini(query); // استدعاء دالة التواصل مع الذكاء الاصطناعي
-            }
-        });
-    }
-
-    /**
-     * دالة الاتصال بـ Gemini:
-     * ترسل السؤال وتستقبل الإجابة وتعرضها.
-     */
-    private void callGemini(String query) {
-        progressBar.setVisibility(View.VISIBLE); // إظهار مؤشر التحميل
-        // استخدام المساعد GeminiHelper لإرسال الرسالة
-        GeminiHelper.getInstance().sendMessage(PromptBuilder.buildReportPrompt(query), new ResponseCallback() {
-            @Override
-            public void onResponse(String response) {
-                // عند استلام الرد، نعرضه في الواجهة من خلال الخيط الرئيسي (Main Thread)
-                runOnUiThread(() -> {
-                    responseText.setText(response);
-                    progressBar.setVisibility(View.GONE); // إخفاء مؤشر التحميل
-                });
-            }
-
-            @Override
-            public void onError(Throwable throwable) {
-                // في حال حدوث خطأ في الاتصال
-                runOnUiThread(() -> {
-                    progressBar.setVisibility(View.GONE);
-                    Toast.makeText(MainActivity.this, "خطأ في الذكاء الاصطناعي", Toast.LENGTH_SHORT).show();
-                });
-            }
-        });
     }
 
     @Override
     protected void onResume() {
         super.onResume();
-        // تفعيل مراقب وضع الطيران فور عودة المستخدم للتطبيق
         registerReceiver(airplaneReceiver, new IntentFilter(Intent.ACTION_AIRPLANE_MODE_CHANGED));
     }
 
     @Override
     protected void onPause() {
         super.onPause();
-        // إيقاف المراقب عند خروج المستخدم من التطبيق لتوفير موارد الهاتف والبطارية
         unregisterReceiver(airplaneReceiver);
     }
 }

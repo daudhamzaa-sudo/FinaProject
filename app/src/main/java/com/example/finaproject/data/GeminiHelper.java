@@ -1,67 +1,63 @@
 package com.example.finaproject.data;
 
 import androidx.annotation.NonNull;
-
 import com.google.ai.client.generativeai.GenerativeModel;
 import com.google.ai.client.generativeai.type.GenerateContentResponse;
-
-import kotlin.Result;
+import kotlin.ResultKt;
 import kotlin.coroutines.Continuation;
 import kotlin.coroutines.CoroutineContext;
 import kotlin.coroutines.EmptyCoroutineContext;
 
 /**
- * فئة مساعدة للتواصل مع خدمة الذكاء الاصطناعي التابعة google
- * Gemini
+ * فئة GeminiHelper:
+ * تم تحديثها لاستخدام الطريقة الرسمية والأكثر أماناً (ResultKt) للتعامل مع نتائج Kotlin في Java.
+ * هذا يمنع الانهيار (Crash) عند محاولة الوصول لنتائج الذكاء الاصطناعي.
  */
-public  class GeminiHelper {
-    public static final String GEMINI_Version = "gemini-1.5-flash";    // ‏إصدار ال gemini الذي يمكن استعماله
-    private static String GEMINI_API_KEY = "AIzaSyCJ_7dTIZSo0NY0D-2SF5YgCXgp4Dn6Kxs";   // مفتاح التطبيق الذي نسخه من الموقع التابع gemini
-    private static GeminiHelper instance;    // كائن وحيد الذي يساعدنا على عدم بناء أكثر من كائن لهذه الخدمة ويسمى singleton
-    private GenerativeModel gemini;    // موديل الذكاء الاصطناعي
+public class GeminiHelper {
+    public static final String GEMINI_Version = "gemini-1.5-flash";
+    private static final String GEMINI_API_KEY = "AIzaSyCJ_7dTIZSo0NY0D-2SF5YgCXgp4Dn6Kxs";
+    private static GeminiHelper instance;
+    private final GenerativeModel gemini;
 
-    // دالة بنائيه لبناء الموديل التابع gemini
-    // ‏تحتاج دراع رقم النسخة أو الإصدار ومفتاح التطبيق للاستعمال
     private GeminiHelper() {
-        gemini = new GenerativeModel(
-                GEMINI_Version,
-                GEMINI_API_KEY
-        );
+        gemini = new GenerativeModel(GEMINI_Version, GEMINI_API_KEY);
     }
 
-    // ‏هذه العملية تساعد على عدم بناء أكثر من كائن لهذه الفئة بإرجاع مؤشر واحد
-    public static GeminiHelper getInstance() {
-        if (null == instance) {
+    public static synchronized GeminiHelper getInstance() {
+        if (instance == null) {
             instance = new GeminiHelper();
         }
         return instance;
     }
 
-    /*** ‏هذه العملية تتلقى جملة لإ بإرسالها لخدمة الذكاء الاصطناعي Gemini وتنتظر الرد
-     * @param prompt   Geminiجملة الاستعلام أو الطلب من الذكاء الاصطناعي
-     * @param callback Gemini كائن لمعالجة الرد */
     public void sendMessage(String prompt, ResponseCallback callback) {
-        gemini.generateContent(prompt,
-                new Continuation<GenerateContentResponse>() {
-                    @NonNull
-                    @Override
-                    public CoroutineContext getContext() {
-                        return EmptyCoroutineContext.INSTANCE;
-                    }
+        gemini.generateContent(prompt, new Continuation<GenerateContentResponse>() {
+            @NonNull
+            @Override
+            public CoroutineContext getContext() {
+                return EmptyCoroutineContext.INSTANCE;
+            }
 
-                    //ده لك معالجة جواب خدمة الذكاء الاصطناعي Gemini للجملة التي أرسل ناها
-                    @Override
-                    public void resumeWith(@NonNull Object result) {
-                        if (result instanceof Result.Failure) {
-                            //Gemini رسالة بحالة فشل وصول الرد من خدمة الذكاء الاصطناعي
-                            callback.onError(((Result.Failure) result).exception);
-                        } else {
-                            // إرسال النتيجة التي أعدتها خدمة الذكاء الاصطناعي كالجواب للطلب أو الجملة التي أرسلناها
-                            callback.onResponse(((GenerateContentResponse) result).getText());
-                        }
+            @Override
+            public void resumeWith(@NonNull Object result) {
+                try {
+                    // هذه هي الطريقة السحرية في Java للتعامل مع نتائج Kotlin:
+                    // إذا كان هناك فشل، ستقوم هذه الدالة برمي استثناء (Throw Exception)
+                    // وإذا كان نجاحاً، ستكمل الكود بشكل طبيعي.
+                    ResultKt.throwOnFailure(result);
+
+                    // إذا وصلنا هنا، فهذا يعني أن العملية نجحت
+                    GenerateContentResponse response = (GenerateContentResponse) result;
+                    if (callback != null) {
+                        callback.onResponse(response.getText());
+                    }
+                } catch (Throwable e) {
+                    // إذا حدث فشل، سنقوم بتمريره للـ callback
+                    if (callback != null) {
+                        callback.onError(e);
                     }
                 }
-        );
+            }
+        });
     }
 }
-
