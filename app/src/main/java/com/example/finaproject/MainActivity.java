@@ -10,7 +10,6 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
-import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -25,12 +24,22 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.finaproject.data.MyTaskTable.MyTask;
 import com.example.finaproject.data.MyTaskTable.MyTaskAdapter;
+import com.google.common.util.concurrent.FutureCallback;
+import com.google.common.util.concurrent.Futures;
+import com.google.common.util.concurrent.ListenableFuture;
+import com.google.firebase.ai.FirebaseAI;
+import com.google.firebase.ai.GenerativeModel;
+import com.google.firebase.ai.java.GenerativeModelFutures;
+import com.google.firebase.ai.type.Content;
+import com.google.firebase.ai.type.GenerateContentResponse;
+import com.google.firebase.ai.type.GenerativeBackend;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
 import java.util.ArrayList;
+import java.util.concurrent.Executor;
 
 /**
  * MainActivity: الشاشة الرئيسية للتطبيق بعد إزالة ميزات الذكاء الاصطناعي.
@@ -39,6 +48,8 @@ import java.util.ArrayList;
 public class MainActivity extends AppCompatActivity {
 private Button button11;
 private EditText etTaskTopic;
+    GenerativeModel ai;
+    GenerativeModelFutures model;
 private TextView tvAiResponse;
     private Button btnAddReport; // زر إضافة بلاغ جديد
     private RecyclerView recyclerReports; // القائمة لعرض البلاغات
@@ -91,26 +102,15 @@ private TextView tvAiResponse;
         tvAiResponse = findViewById(R.id.tvAiResponse);
         etTaskTopic = findViewById(R.id.etTaskTopic);
 
+
+// 👇 AI
+        ai = FirebaseAI.getInstance(GenerativeBackend.googleAI()).generativeModel("gemini-3-flash-preview");
+        model = GenerativeModelFutures.from(ai);
         // إعداد القائمة
         if (recyclerReports != null) {
             recyclerReports.setLayoutManager(new LinearLayoutManager(this));
             myTaskAdapter = new MyTaskAdapter(this, new ArrayList<>());
             recyclerReports.setAdapter(myTaskAdapter);
-            
-            // إضافة مستمع للنقر على البلاغات
-            recyclerReports.addOnItemTouchListener(new RecyclerItemClickListener(this, recyclerReports, new RecyclerItemClickListener.OnItemClickListener() {
-                @Override
-                public void onItemClick(View view, int position) {
-                    ArrayList<MyTask> currentTasks = myTaskAdapter.getTasksList();
-                    if (currentTasks != null && position < currentTasks.size()) {
-                        MyTask clickedTask = currentTasks.get(position);
-                        Intent intent = new Intent(MainActivity.this, ReportDetailsActivity.class);
-                        intent.putExtra("TASK_EXTRA", clickedTask);
-                        startActivity(intent);
-                    }
-                }
-                @Override public void onLongItemClick(View view, int position) {}
-            }));
         }
 
         // زر إضافة بلاغ جديد
@@ -123,46 +123,41 @@ private TextView tvAiResponse;
             imgPreview.setOnClickListener(v -> startActivity(new Intent(this, Settings.class)));
         }
     }
-    ai = FirebaseAI.getInstance(GenerativeBackend.googleAI())
-            .generativeModel("gemini-3-flash-preview");
-    model = GenerativeModelFutures.from(ai);
+
     private void askFirebaseAiGeminiForSteps(String topic) {
-        pbLoading.setVisibility(View.VISIBLE);
+
+       // pbLoading.setVisibility(View.VISIBLE);
         tvAiResponse.setText("");
-        btnSuggestSteps.setEnabled(false);
+        button11.setEnabled(false);
 
-
-        String promptStr = "I want to perform the following task: '" + topic + "'. " +
-                "Can you suggest a clear, step-by-step checklist to complete this task effectively?";
-
+        String promptStr = "I want to perform: " + topic;
 
         Content prompt = new Content.Builder()
                 .addText(promptStr)
                 .build();
 
+        ListenableFuture<GenerateContentResponse> response =
+                model.generateContent(prompt);
 
-        ListenableFuture<GenerateContentResponse> response = model.generateContent(prompt);
         Executor executor = this::runOnUiThread;
+
         Futures.addCallback(response, new FutureCallback<GenerateContentResponse>() {
+
             @Override
             public void onSuccess(GenerateContentResponse result) {
-                pbLoading.setVisibility(View.GONE);
-                btnSuggestSteps.setEnabled(true);
+            //    pbLoading.setVisibility(View.GONE);
+                button11.setEnabled(true);
                 tvAiResponse.setText(result.getText());
             }
 
-
             @Override
             public void onFailure(Throwable t) {
-                pbLoading.setVisibility(View.GONE);
-                btnSuggestSteps.setEnabled(true);
-                Toast.makeText(SmartTaskActivity.this, "Error: " + t.getMessage(), Toast.LENGTH_LONG).show();
+             //   pbLoading.setVisibility(View.GONE);
+                button11.setEnabled(true);
             }
+
         }, executor);
     }
-
-
-
     /**
      * جلب قائمة البلاغات من قاعدة البيانات السحابية.
      */

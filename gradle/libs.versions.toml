@@ -26,4 +26,3 @@ firebase-ai = { group = "com.google.firebase", name = "firebase-ai", version.ref
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }
-
