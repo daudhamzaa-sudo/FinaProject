@@ -16,6 +16,7 @@ import android.widget.Toast;
 import androidx.activity.EdgeToEdge;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.content.ContextCompat;
 import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
@@ -42,28 +43,25 @@ import java.util.ArrayList;
 import java.util.concurrent.Executor;
 
 /**
- * MainActivity: الشاشة الرئيسية للتطبيق بعد إزالة ميزات الذكاء الاصطناعي.
- * تركز الشاشة الآن على عرض قائمة البلاغات وإدارة الإعدادات.
+ * MainActivity: تم تحديثها لربط الأزرار بالذكاء الاصطناعي بشكل صحيح.
  */
 public class MainActivity extends AppCompatActivity {
-private Button button11;
-private EditText etTaskTopic;
-    GenerativeModel ai;
-    GenerativeModelFutures model;
-private TextView tvAiResponse;
-    private Button btnAddReport; // زر إضافة بلاغ جديد
-    private RecyclerView recyclerReports; // القائمة لعرض البلاغات
-    private MyTaskAdapter myTaskAdapter; // محول القائمة
-    private ImageView imgPreview; // أيقونة الإعدادات
+    private Button button11;
+    private EditText etTaskTopic;
+    private GenerativeModel ai;
+    private GenerativeModelFutures model;
+    private TextView tvAiResponse;
+    private Button btnAddReport;
+    private RecyclerView recyclerReports;
+    private MyTaskAdapter myTaskAdapter;
+    private ImageView imgPreview;
 
-    // مستقبل البث لمراقبة وضع الطيران
     private final BroadcastReceiver airplaneReceiver = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
             if (Intent.ACTION_AIRPLANE_MODE_CHANGED.equals(intent.getAction())) {
                 boolean isAirplaneModeOn = intent.getBooleanExtra("state", false);
                 if (btnAddReport != null) {
-                    // تغيير لون الزر للتنبيه عند تفعيل وضع الطيران
                     btnAddReport.setBackgroundColor(isAirplaneModeOn ? Color.RED : Color.parseColor("#2E7D32"));
                 }
             }
@@ -76,102 +74,104 @@ private TextView tvAiResponse;
         EdgeToEdge.enable(this);
         setContentView(R.layout.activity_main);
 
-        // تهيئة عناصر الواجهة
+        // 1. تهيئة الذكاء الاصطناعي (تم تصحيح اسم الموديل)
+        try {
+            ai = FirebaseAI.getInstance(GenerativeBackend.googleAI())
+                    .generativeModel("gemini-1.5-flash");
+            model = GenerativeModelFutures.from(ai);
+        } catch (Exception e) {
+            Toast.makeText(this, "خطأ في تهيئة AI", Toast.LENGTH_SHORT).show();
+        }
+
         initViews();
 
-        // ضبط هوامش النظام
         ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main), (v, insets) -> {
             Insets systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars());
             v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom);
             return insets;
         });
 
-
-        // جلب البيانات من Firebase
         getAllFromFirebase();
     }
 
-    /**
-     * تهيئة العناصر وربط الأزرار.
-     */
     private void initViews() {
         btnAddReport = findViewById(R.id.btnAddReport);
         recyclerReports = findViewById(R.id.recyclerReports);
         imgPreview = findViewById(R.id.imgPreview);
-        button11= findViewById(R.id.button11);
+        button11 = findViewById(R.id.button11);
         tvAiResponse = findViewById(R.id.tvAiResponse);
         etTaskTopic = findViewById(R.id.etTaskTopic);
 
+        // برمجة زر إرسال السؤال
+        if (button11 != null) {
+            button11.setOnClickListener(v -> {
+                String topic = etTaskTopic.getText().toString().trim();
+                if (!topic.isEmpty()) {
+                    askFirebaseAiGeminiForSteps(topic);
+                } else {
+                    Toast.makeText(this, "يرجى كتابة المشكلة أولاً", Toast.LENGTH_SHORT).show();
+                }
+            });
+        }
 
-// 👇 AI
-        ai = FirebaseAI.getInstance(GenerativeBackend.googleAI()).generativeModel("gemini-3-flash-preview");
-        model = GenerativeModelFutures.from(ai);
-        // إعداد القائمة
         if (recyclerReports != null) {
             recyclerReports.setLayoutManager(new LinearLayoutManager(this));
             myTaskAdapter = new MyTaskAdapter(this, new ArrayList<>());
             recyclerReports.setAdapter(myTaskAdapter);
         }
 
-        // زر إضافة بلاغ جديد
         if (btnAddReport != null) {
             btnAddReport.setOnClickListener(v -> startActivity(new Intent(this, NewReportScreen.class)));
         }
 
-        // أيقونة الإعدادات
         if (imgPreview != null) {
             imgPreview.setOnClickListener(v -> startActivity(new Intent(this, Settings.class)));
         }
     }
 
     private void askFirebaseAiGeminiForSteps(String topic) {
+        if (model == null) return;
 
-       // pbLoading.setVisibility(View.VISIBLE);
-        tvAiResponse.setText("");
+        tvAiResponse.setText("جاري التفكير...");
         button11.setEnabled(false);
 
+        // صياغة الطلب بشكل صحيح
         String promptStr = "You are a smart assistant for city issue reporting.\n" +
-                "\n" +
-                "A user reported this issue: \"{problem}\".\n" +
-                "\n" +
+                "A user reported this issue: \"" + topic + "\".\n\n" +
                 "Provide:\n" +
                 "- A brief description of the issue\n" +
                 "- Step-by-step actions to resolve it\n" +
                 "- The responsible authority\n" +
                 "- Estimated urgency level (low, medium, high)\n" +
-                "- Safety tips if relevant\n" +
-                "\n" +
-                "Make the response clear and structured. " + topic;
+                "- Safety tips if relevant\n\n" +
+                "Make the response clear and structured.";
 
         Content prompt = new Content.Builder()
                 .addText(promptStr)
                 .build();
 
-        ListenableFuture<GenerateContentResponse> response =
-                model.generateContent(prompt);
-
-        Executor executor = this::runOnUiThread;
+        Executor executor = ContextCompat.getMainExecutor(this);
+        ListenableFuture<GenerateContentResponse> response = model.generateContent(prompt);
 
         Futures.addCallback(response, new FutureCallback<GenerateContentResponse>() {
-
             @Override
             public void onSuccess(GenerateContentResponse result) {
-            //    pbLoading.setVisibility(View.GONE);
-                button11.setEnabled(true);
-                tvAiResponse.setText(result.getText());
+                runOnUiThread(() -> {
+                    button11.setEnabled(true);
+                    tvAiResponse.setText(result.getText());
+                });
             }
 
             @Override
-            public void onFailure(Throwable t) {
-             //   pbLoading.setVisibility(View.GONE);
-                button11.setEnabled(true);
+            public void onFailure(@NonNull Throwable t) {
+                runOnUiThread(() -> {
+                    button11.setEnabled(true);
+                    tvAiResponse.setText("خطأ: " + t.getMessage());
+                });
             }
-
         }, executor);
     }
-    /**
-     * جلب قائمة البلاغات من قاعدة البيانات السحابية.
-     */
+
     private void getAllFromFirebase() {
         FirebaseDatabase.getInstance().getReference("tasks")
             .addValueEventListener(new ValueEventListener() {

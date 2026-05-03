@@ -85,17 +85,52 @@
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/recyclerReports"
-        android:layout_width="397dp"
-        android:layout_height="257dp"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
         android:layout_marginHorizontal="16dp"
         android:layout_marginTop="8dp"
+        android:layout_marginBottom="8dp"
+        app:layout_constraintBottom_toTopOf="@id/etTaskTopic"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/tvRecent" />
+
+    <EditText
+        android:id="@+id/etTaskTopic"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="24dp"
+        android:layout_marginBottom="8dp"
+        android:hint="Ask AI something..."
+        android:minHeight="48dp"
+        app:layout_constraintBottom_toTopOf="@id/tvAiResponse"
+        app:layout_constraintEnd_toStartOf="@id/button11"
+        app:layout_constraintStart_toStartOf="parent" />
+
+    <Button
+        android:id="@+id/button11"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="24dp"
+        android:text="Ask AI"
+        app:layout_constraintBottom_toBottomOf="@id/etTaskTopic"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="@id/etTaskTopic" />
+
+    <TextView
+        android:id="@+id/tvAiResponse"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginHorizontal="24dp"
         android:layout_marginBottom="16dp"
+        android:background="#F5F5F5"
+        android:padding="8dp"
+        android:text="AI response will appear here"
+        android:textColor="#333333"
+        android:textSize="14sp"
         app:layout_constraintBottom_toTopOf="@id/btnAddReport"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.172"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/tvRecent"
-        app:layout_constraintVertical_bias="0.0" />
+        app:layout_constraintStart_toStartOf="parent" />
 
     <com.google.android.material.button.MaterialButton
         android:id="@+id/btnAddReport"
@@ -107,52 +142,10 @@
         android:textAllCaps="false"
         android:textColor="#FFFFFF"
         android:textSize="16sp"
-        android:fontFamily="sans-serif-medium"
         app:cornerRadius="16dp"
         app:backgroundTint="#2E7D32"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"/>
-
-    <ScrollView
-        android:id="@+id/ed"
-        android:layout_width="362dp"
-        android:layout_height="66dp"
-        tools:layout_editor_absoluteX="24dp"
-        tools:layout_editor_absoluteY="578dp"
-        tools:ignore="MissingConstraints">
-
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="vertical" />
-    </ScrollView>
-
-    <EditText
-        android:id="@+id/etTaskTopic"
-        android:layout_width="304dp"
-        android:layout_height="37dp"
-        android:text="TextView"
-        tools:ignore="MissingConstraints"
-        tools:layout_editor_absoluteX="23dp"
-        tools:layout_editor_absoluteY="519dp" />
-
-    <Button
-        android:id="@+id/button11"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Button"
-        tools:layout_editor_absoluteX="327dp"
-        tools:layout_editor_absoluteY="519dp"
-        tools:ignore="MissingConstraints" />
-
-    <TextView
-        android:id="@+id/tvAiResponse"
-        android:layout_width="370dp"
-        android:layout_height="35dp"
-        android:text="TextView"
-        tools:layout_editor_absoluteX="23dp"
-        tools:layout_editor_absoluteY="549dp"
-        tools:ignore="MissingConstraints" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
