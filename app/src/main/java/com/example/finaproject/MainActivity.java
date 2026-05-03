@@ -130,7 +130,18 @@ private TextView tvAiResponse;
         tvAiResponse.setText("");
         button11.setEnabled(false);
 
-        String promptStr = "I want to perform: " + topic;
+        String promptStr = "You are a smart assistant for city issue reporting.\n" +
+                "\n" +
+                "A user reported this issue: \"{problem}\".\n" +
+                "\n" +
+                "Provide:\n" +
+                "- A brief description of the issue\n" +
+                "- Step-by-step actions to resolve it\n" +
+                "- The responsible authority\n" +
+                "- Estimated urgency level (low, medium, high)\n" +
+                "- Safety tips if relevant\n" +
+                "\n" +
+                "Make the response clear and structured. " + topic;
 
         Content prompt = new Content.Builder()
                 .addText(promptStr)
