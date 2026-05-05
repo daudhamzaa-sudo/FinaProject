@@ -1,189 +1,185 @@
-package com.example.finaproject; // تعريف الحزمة (المجلد) الذي ينتمي إليه الملف
+package com.example.finaproject;
 
-// استيراد كافة المكتبات اللازمة للتعامل مع الموقع، الصور، قاعدة البيانات، والواجهات
-import android.Manifest;                      // لاستخدام صلاحيات النظام (مثل الموقع)
-import android.content.Intent;                // للانتقال أو فتح تطبيقات أخرى (مثل المعرض)
-import android.content.pm.PackageManager;      // لفحص هل منح المستخدم الصلاحيات أم لا
-import android.net.Uri;                       // للتعامل مع مسارات الصور
-import android.os.Build;                      // لمعرفة إصدار أندرويد للهاتف
-import android.os.Bundle;                     // لإدارة حالة الشاشة
-import android.view.View;                     // المكون الأساسي للواجهة
-import android.widget.Button;                 // عنصر الزر
-import android.widget.ImageView;              // عنصر عرض الصور
-import android.widget.TextView;               // عنصر عرض النصوص
-import android.widget.Toast;                  // عرض رسائل سريعة للمستخدم
+import android.Manifest;
+import android.annotation.SuppressLint;
+import android.app.AlarmManager;
+import android.app.DatePickerDialog;
+import android.app.PendingIntent;
+import android.app.TimePickerDialog;
+import android.content.Context;
+import android.content.Intent;
+import android.content.pm.PackageManager;
+import android.net.Uri;
+import android.os.Build;
+import android.os.Bundle;
+import android.view.View;
+import android.widget.Button;
+import android.widget.ImageView;
+import android.widget.TextView;
+import android.widget.Toast;
 
-// استيراد مكتبات AndroidX الحديثة
-import androidx.activity.EdgeToEdge;          // تفعيل عرض الشاشة الكاملة
-import androidx.activity.result.ActivityResultLauncher; // أداة حديثة لانتظار نتائج من تطبيقات أخرى
-import androidx.activity.result.contract.ActivityResultContracts; // عقود جاهزة (مثل اختيار محتوى)
-import androidx.appcompat.app.AppCompatActivity; // الكلاس الأساسي للشاشات
-import androidx.core.app.ActivityCompat;      // أداة مساعدة لطلب الصلاحيات
-import androidx.core.content.ContextCompat;    // أداة لفحص الصلاحيات بشكل متوافق
-import androidx.core.graphics.Insets;           // مسافات النظام
-import androidx.core.view.ViewCompat;            // توافق الواجهات
-import androidx.core.view.WindowInsetsCompat;     // هوامش النوافذ
+import androidx.activity.EdgeToEdge;
+import androidx.activity.result.ActivityResultLauncher;
+import androidx.activity.result.contract.ActivityResultContracts;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.app.ActivityCompat;
+import androidx.core.content.ContextCompat;
+import androidx.core.graphics.Insets;
+import androidx.core.view.ViewCompat;
+import androidx.core.view.WindowInsetsCompat;
 
-// استيراد خدمات جوجل للموقع والبيانات
 import com.example.finaproject.data.AppDatabase;
 import com.example.finaproject.data.MyTaskTable.MyTask;
-import com.google.android.gms.location.FusedLocationProviderClient; // المحرك الرئيسي لجلب الموقع
-import com.google.android.gms.location.LocationServices;            // خدمات الموقع من جوجل
-import com.google.android.gms.location.Priority;                    // تحديد دقة الموقع المطلوبة
-import com.google.android.gms.tasks.CancellationTokenSource;       // لإلغاء طلب الموقع إذا أغلق المستخدم الشاشة
-import com.google.android.material.button.MaterialButton;           // زر متطور من مكتبة Material
-import com.google.android.material.textfield.TextInputEditText;     // حقل إدخال نصوص متطور
-import com.google.firebase.database.DatabaseReference;              // مرجع قاعدة بيانات Firebase
-import com.google.firebase.database.FirebaseDatabase;               // محرك قاعدة بيانات Firebase
+import com.google.android.gms.location.FusedLocationProviderClient;
+import com.google.android.gms.location.LocationServices;
+import com.google.android.gms.location.Priority;
+import com.google.android.gms.tasks.CancellationTokenSource;
+import com.google.android.material.button.MaterialButton;
+import com.google.android.material.textfield.TextInputEditText;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
 
-/**
- * كلاس NewReportScreen:
- * الوظيفة: يسمح للمستخدم بإنشاء بلاغ جديد (عنوان، وصف، صورة، موقع جغرافي).
- * المنطق: يحفظ البيانات محلياً (Room) لضمان العمل بدون إنترنت، وسحابياً (Firebase) للمزامنة.
- */
+import java.util.Calendar;
+
 public class NewReportScreen extends AppCompatActivity {
 
-    // --- تعريف متغيرات عناصر الواجهة ---
-    private ImageView ivSelectedImage;       // لعرض الصورة التي يختارها المستخدم
-    private Uri selectedImageUri;            // لتخزين مسار الصورة المختار
-    private TextInputEditText inputTitle;    // حقل إدخال عنوان البلاغ
-    private TextInputEditText inputDescription; // حقل إدخال وصف البلاغ
-    private FusedLocationProviderClient fusedLocationClient; // أداة جلب الموقع من جوجل
-    private TextView tvLocation;             // لعرض الإحداثيات المجلوبة
-    private double latitude = 0;             // متغير لتخزين خط العرض
-    private double longitude = 0;            // متغير لتخزين خط الطول
-    private MaterialButton btnSubmit;        // زر حفظ وإرسال البلاغ
+    private ImageView ivSelectedImage;
+    private Uri selectedImageUri;
+    private TextInputEditText inputTitle;
+    private TextInputEditText inputDescription;
+    private FusedLocationProviderClient fusedLocationClient;
+    private TextView tvLocation;
+    private double latitude = 0;
+    private double longitude = 0;
+    private MaterialButton btnSubmit;
+    private Button btnSetReminder;
+    private TextView tvReminderTime;
+    private long selectedReminderTime = 0;
 
-    // --- أدوات حديثة لطلب النتائج (أذونات وصور) ---
-    private ActivityResultLauncher<String> pickImage; // أداة فتح معرض الصور واختيار واحدة
-    private ActivityResultLauncher<String> requestReadMediaPermission; // طلب صلاحية الوصول للصور
+    private ActivityResultLauncher<String> pickImage;
+    private final ActivityResultLauncher<String> requestNotificationPermissionLauncher = 
+        registerForActivityResult(new ActivityResultContracts.RequestPermission(), isGranted -> {
+            if (!isGranted) Toast.makeText(this, "Notification permission denied", Toast.LENGTH_SHORT).show();
+        });
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState); // دالة الإنشاء الأساسية
-        EdgeToEdge.enable(this);             // جعل التطبيق يملأ الشاشة بالكامل
-        setContentView(R.layout.activity_new_repor_screen); // ربط ملف التصميم XML
+        super.onCreate(savedInstanceState);
+        EdgeToEdge.enable(this);
+        setContentView(R.layout.activity_new_repor_screen);
+        
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+            if (ContextCompat.checkSelfPermission(this, Manifest.permission.POST_NOTIFICATIONS) != PackageManager.PERMISSION_GRANTED) {
+                requestNotificationPermissionLauncher.launch(Manifest.permission.POST_NOTIFICATIONS);
+            }
+        }
 
-        // تهيئة محرك الموقع الجغرافي
         fusedLocationClient = LocationServices.getFusedLocationProviderClient(this);
-
-        initViews();           // دالة لربط العناصر البرمجية بالواجهة
-        setupLaunchers();      // دالة لتجهيز أدوات اختيار الصور
-        handleSystemBars();     // دالة لضبط هوامش الشاشة
+        initViews();
+        setupLaunchers();
+        handleSystemBars();
     }
 
-    /**
-     * دالة ربط العناصر (Initialization):
-     * تربط كل متغير بالـ ID الخاص به في ملف الـ XML.
-     */
     private void initViews() {
         btnSubmit = findViewById(R.id.btnSubmit);
         inputTitle = findViewById(R.id.inputTitle);
         inputDescription = findViewById(R.id.inputDescription);
         tvLocation = findViewById(R.id.tvLocation);
         ivSelectedImage = findViewById(R.id.imgPreview);
+        btnSetReminder = findViewById(R.id.btnSetReminder);
+        tvReminderTime = findViewById(R.id.tvReminderTime);
 
-        // عند النقر على أيقونة جلب الموقع
+        btnSetReminder.setOnClickListener(v -> showDateTimePicker());
         findViewById(R.id.btnGetLocation).setOnClickListener(v -> fetchLocation());
-
-        // عند النقر على مكان الصورة لفتح معرض الصور
         ivSelectedImage.setOnClickListener(v -> pickImage.launch("image/*"));
-
-        // عند النقر على زر "حفظ البلاغ"
         btnSubmit.setOnClickListener(v -> saveReportLogic());
     }
 
-    /**
-     * دالة جلب الموقع (Location Logic):
-     * تطلب من نظام أندرويد الإحداثيات الحالية للمستخدم بدقة عالية.
-     */
     private void fetchLocation() {
-        // 1. التأكد من أن المستخدم منح التطبيق صلاحية الوصول للموقع
         if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-            // إذا لم تمنح، نطلبها الآن
             ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, 100);
             return;
         }
-
-        tvLocation.setText("جاري جلب الموقع..."); // تحديث النص لإعلام المستخدم
-        
-        // 2. طلب الموقع "الحالي" بدقة عالية (High Accuracy)
         fusedLocationClient.getCurrentLocation(Priority.PRIORITY_HIGH_ACCURACY, new CancellationTokenSource().getToken())
-                .addOnSuccessListener(location -> {
-                    if (location != null) {
-                        // حفظ الإحداثيات في المتغيرات لاستخدامها لاحقاً عند الحفظ
-                        latitude = location.getLatitude();
-                        longitude = location.getLongitude();
-                        tvLocation.setText("الموقع: " + latitude + " , " + longitude);
-                    } else {
-                        // في حال فشل الجلب (مثلاً GPS مغلق)
-                        Toast.makeText(this, "تعذر جلب الموقع، تأكد من تشغيل GPS", Toast.LENGTH_SHORT).show();
-                    }
-                });
+            .addOnSuccessListener(location -> {
+                if (location != null) {
+                    latitude = location.getLatitude();
+                    longitude = location.getLongitude();
+                    tvLocation.setText("Location: " + latitude + " , " + longitude);
+                }
+            });
     }
 
-    /**
-     * دالة منطق الحفظ (Save Logic):
-     * تتأكد من صحة البيانات ثم تحفظها في قاعدة البيانات المحلية والسحابية.
-     */
+    private void showDateTimePicker() {
+        Calendar now = Calendar.getInstance();
+        Calendar date = Calendar.getInstance();
+        new DatePickerDialog(this, (view, year, month, day) -> {
+            date.set(year, month, day);
+            new TimePickerDialog(this, (view1, hour, minute) -> {
+                date.set(Calendar.HOUR_OF_DAY, hour);
+                date.set(Calendar.MINUTE, minute);
+                selectedReminderTime = date.getTimeInMillis();
+                tvReminderTime.setText(date.getTime().toString());
+            }, now.get(Calendar.HOUR_OF_DAY), now.get(Calendar.MINUTE), false).show();
+        }, now.get(Calendar.YEAR), now.get(Calendar.MONTH), now.get(Calendar.DAY_OF_MONTH)).show();
+    }
+
     private void saveReportLogic() {
         String title = inputTitle.getText().toString().trim();
         String desc = inputDescription.getText().toString().trim();
 
-        // فحص: هل الحقول فارغة؟
         if (title.isEmpty() || desc.isEmpty()) {
-            Toast.makeText(this, "يرجى ملء جميع الحقول", Toast.LENGTH_SHORT).show();
+            Toast.makeText(this, "Please fill all fields", Toast.LENGTH_SHORT).show();
             return;
         }
 
-        // إنشاء كائن المهمة وتعبئته بالبيانات المجمعة
         MyTask task = new MyTask();
         task.setTaskName(title);
         task.setTaskDescription(desc);
         task.setLatitude(latitude);
         task.setLongitude(longitude);
-        if (selectedImageUri != null) {
-            task.setImageUrl(selectedImageUri.toString());
-        }
+        task.setReminderTime(selectedReminderTime);
+        if (selectedImageUri != null) task.setImageUrl(selectedImageUri.toString());
 
-        // 1. الحفظ المحلي (Room Database):
-        // نقوم بالحفظ في خيط منفصل (Thread) لعدم تجميد واجهة المستخدم
         new Thread(() -> {
-            AppDatabase.getdb(this).getMyTaskQuery().insert(task);
+            // الحفظ المحلي أولاً للحصول على ID فريد للمنبه
+            long id = AppDatabase.getdb(this).getMyTaskQuery().insert(task);
+            task.setId(id);
             
-            // العودة للخيط الرئيسي لتنفيذ المزامنة السحابية وإظهار النتائج
             runOnUiThread(() -> {
+                if (selectedReminderTime > System.currentTimeMillis()) {
+                    scheduleAlarm(task);
+                }
                 syncWithFirebase(task);
             });
         }).start();
     }
 
-    /**
-     * دالة المزامنة السحابية (Firebase Sync):
-     * ترفع البلاغ إلى قاعدة بيانات Firebase ليكون متاحاً لجميع المستخدمين.
-     */
-    private void syncWithFirebase(MyTask task) {
-        // الحصول على مرجع فريد لكل بلاغ جديد في Firebase
-        DatabaseReference ref = FirebaseDatabase.getInstance().getReference("tasks").push();
-        task.setKid(ref.getKey()); // حفظ المعرف الفريد القادم من Firebase داخل الكائن
+    @SuppressLint("ScheduleExactAlarm")
+    private void scheduleAlarm(MyTask task) {
+        AlarmManager am = (AlarmManager) getSystemService(Context.ALARM_SERVICE);
+        Intent intent = new Intent(this, TaskReminderReceiver.class);
+        intent.putExtra("title", task.getTaskName());
+        intent.putExtra("text", task.getTaskDescription());
 
-        // تنفيذ عملية الرفع
+        PendingIntent pi = PendingIntent.getBroadcast(this, (int) task.getId(), intent,
+                PendingIntent.FLAG_UPDATE_CURRENT | PendingIntent.FLAG_IMMUTABLE);
+
+        if (am != null) am.setExactAndAllowWhileIdle(AlarmManager.RTC_WAKEUP, task.getReminderTime(), pi);
+    }
+
+    private void syncWithFirebase(MyTask task) {
+        DatabaseReference ref = FirebaseDatabase.getInstance().getReference("tasks").push();
+        task.setKid(ref.getKey());
         ref.setValue(task).addOnSuccessListener(aVoid -> {
-            Toast.makeText(this, "تم حفظ البلاغ ومزامنته سحابياً", Toast.LENGTH_SHORT).show();
-            finish(); // إغلاق هذه الشاشة والرجوع للرئيسية بعد النجاح
-        }).addOnFailureListener(e -> {
-            Toast.makeText(this, "فشل المزامنة السحابية: " + e.getMessage(), Toast.LENGTH_SHORT).show();
+            Toast.makeText(this, "Saved and Synced!", Toast.LENGTH_SHORT).show();
+            finish();
         });
     }
 
-    /**
-     * إعداد أدوات الاستجابة (Launchers):
-     * تحدد ماذا يحدث عند اختيار صورة من المعرض.
-     */
     private void setupLaunchers() {
         pickImage = registerForActivityResult(new ActivityResultContracts.GetContent(), uri -> {
             if (uri != null) {
-                // حفظ مسار الصورة وعرضها في الواجهة فوراً
                 selectedImageUri = uri;
                 ivSelectedImage.setImageURI(uri);
                 ivSelectedImage.setVisibility(View.VISIBLE);
@@ -191,10 +187,6 @@ public class NewReportScreen extends AppCompatActivity {
         });
     }
 
-    /**
-     * ضبط هوامش النظام (Handle System Bars):
-     * تضمن أن المحتوى لن يختفي تحت شريط الحالة أو شريط التنقل السفلي.
-     */
     private void handleSystemBars() {
         ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main), (v, insets) -> {
             Insets systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars());

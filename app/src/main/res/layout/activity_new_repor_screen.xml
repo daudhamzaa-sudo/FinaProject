@@ -102,7 +102,17 @@
                 android:visibility="visible" />
 
         </LinearLayout>
+        <Button
+            android:id="@+id/btnSetReminder"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Set Reminder" />
 
+        <TextView
+            android:id="@+id/tvReminderTime"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="No reminder set" />
         <!-- Get Location Button (Professional Look) -->
         <com.google.android.material.button.MaterialButton
             android:id="@+id/btnGetLocation"
