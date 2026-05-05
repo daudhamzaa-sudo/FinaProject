@@ -48,20 +48,14 @@ public class signup extends AppCompatActivity {
         inputConfirmPassword = findViewById(R.id.inputConfirmPassword);
 
         btnSignup1.setOnClickListener(view -> {
-            if (validateAndReadData()) {
-                // الانتقال للشاشة الرئيسية بعد النجاح
-                Intent intent = new Intent(signup.this, MainActivity.class);
-                startActivity(intent);
-                finish();
-            }
+            validateAndCreateAccount();
         });
     }
 
     /**
-     * التحقق من البيانات المدخلة وحفظ المستخدم في قاعدة البيانات المحلية و Firebase.
+     * التحقق من البيانات المدخلة وإنشاء الحساب في Firebase.
      */
-    public boolean validateAndReadData() {
-        boolean isValid = true;
+    private void validateAndCreateAccount() {
         String username = inputUsername.getText().toString().trim();
         String email = inputEmail.getText().toString().trim();
         String password = inputPassword.getText().toString().trim();
@@ -70,60 +64,34 @@ public class signup extends AppCompatActivity {
         // فحص الحقول الفارغة والصيغ
         if (username.isEmpty()) {
             inputUsername.setError("Username is required");
-            isValid = false;
+            return;
         }
         if (email.isEmpty() || !android.util.Patterns.EMAIL_ADDRESS.matcher(email).matches()) {
             inputEmail.setError("Valid email is required");
-            isValid = false;
+            return;
         }
         if (password.isEmpty() || password.length() < 5 || password.length() > 8) {
             inputPassword.setError("Password must be 5-8 characters");
-            isValid = false;
+            return;
         }
         if (!password.equals(confirmPassword)) {
             inputConfirmPassword.setError("Passwords do not match");
-            isValid = false;
+            return;
         }
 
-        if (isValid) {
-            // فحص هل الايميل موجود مسبقاً في قاعدة البيانات المحلية (Room)
-            Profile existingProfile = AppDatabase.getdb(this).getProfile().checkEmail(email);
-            if (existingProfile != null) {
-                inputEmail.setError("Email already registered");
-                isValid = false;
-            }
-        }
-
-        if (isValid) {
-            // إنشاء كائن المستخدم الجديد
-            Profile myUser = new Profile();
-            myUser.setUsername(username);
-            myUser.setEmail(email);
-            myUser.setPassw(password);
-
-            // --- منطق الأدمن الجديد ---
-            // إذا كان الإيميل هو "admin@gmail.com"، اجعله مديراً تلقائياً
-            if (email.equalsIgnoreCase("admin@gmail.com")) {
-                myUser.setAdmin(true);
-                Toast.makeText(this, "Welcome Admin!", Toast.LENGTH_SHORT).show();
-            } else {
-                myUser.setAdmin(false);
-            }
-
-            // حفظ البيانات محلياً
-            AppDatabase.getdb(getApplicationContext()).getProfile().insert(myUser);
-
-            // إنشاء الحساب في Firebase
-            FirebaseAuth.getInstance()
-                    .createUserWithEmailAndPassword(email, password)
-                    .addOnSuccessListener(result -> {
-                        Toast.makeText(this, "Account Created Successfully", Toast.LENGTH_SHORT).show();
-                        finish();
-                    })
-                    .addOnFailureListener(e -> {
-                        Toast.makeText(this, "Firebase Error: " + e.getMessage(), Toast.LENGTH_SHORT).show();
-                    });
-        }
-        return isValid;
+        // إنشاء الحساب في Firebase فقط (تجنب قاعدة البيانات المحلية مؤقتاً)
+        FirebaseAuth.getInstance()
+                .createUserWithEmailAndPassword(email, password)
+                .addOnSuccessListener(result -> {
+                    Toast.makeText(this, "Account Created Successfully", Toast.LENGTH_SHORT).show();
+                    
+                    // الانتقال للشاشة الرئيسية بعد النجاح
+                    Intent intent = new Intent(signup.this, MainActivity.class);
+                    startActivity(intent);
+                    finish();
+                })
+                .addOnFailureListener(e -> {
+                    Toast.makeText(this, "Firebase Error: " + e.getMessage(), Toast.LENGTH_SHORT).show();
+                });
     }
 }

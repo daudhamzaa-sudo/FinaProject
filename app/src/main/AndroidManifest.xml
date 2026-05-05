@@ -2,11 +2,12 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools">
 
-    <!-- لطلب صلاحية قراءة الملفات -->
+    <!-- الصلاحيات الضرورية -->
     <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
+    <uses-permission android:name="android.permission.SCHEDULE_EXACT_ALARM" />
     <uses-permission android:name="android.permission.READ_MEDIA_IMAGES" />
-    <uses-permission android:name="android.permission.READ_MEDIA_VIDEO" />
-    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
+    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" android:maxSdkVersion="32" />
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
     <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
 
@@ -20,10 +21,13 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.FinaProject">
 
+        <!-- خدمات المزامنة -->
         <service
             android:name=".data.MyProfileTable.UserSyncService"
             android:enabled="true"
-            android:exported="true"></service>
+            android:exported="true" />
+
+        <!-- مستقبلات البث (مهمة جداً لمنع الكراش) -->
         <receiver android:name=".AirplaneReceiver"
             android:enabled="true"
             android:exported="false">
@@ -31,6 +35,11 @@
                 <action android:name="android.intent.action.AIRPLANE_MODE"/>
             </intent-filter>
         </receiver>
+
+        <!-- إضافة مستقبل التنبيهات المفقود -->
+        <receiver android:name=".TaskReminderReceiver"
+            android:enabled="true"
+            android:exported="false" />
 
         <activity
             android:name=".ReportDetailsActivity"
@@ -44,27 +53,26 @@
         <activity
             android:name=".MainActivity"
             android:exported="false" />
+        
+        <!-- جعل الـ Login شاشة عادية وليس Launcher لتجنب تكرار الأيقونة -->
         <activity
             android:name=".login"
-            android:exported="true">
-            <intent-filter>
-                <action android:name="android.intent.action.MAIN" />
-
-                <category android:name="android.intent.category.LAUNCHER" />
-            </intent-filter>
-        </activity>
+            android:exported="false" />
+            
         <activity
             android:name=".signup"
             android:exported="false" />
+
+        <!-- شاشة البداية هي الوحيدة التي تملك خاصية LAUNCHER -->
         <activity
             android:name=".SplashScreen"
             android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
-
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+
     </application>
 
 </manifest>

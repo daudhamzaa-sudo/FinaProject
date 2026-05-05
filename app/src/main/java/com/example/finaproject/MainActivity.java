@@ -6,7 +6,6 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.graphics.Color;
 import android.os.Bundle;
-import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
@@ -23,46 +22,42 @@ import androidx.core.view.WindowInsetsCompat;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.example.finaproject.data.AppDatabase;
 import com.example.finaproject.data.MyTaskTable.MyTask;
 import com.example.finaproject.data.MyTaskTable.MyTaskAdapter;
 import com.google.common.util.concurrent.FutureCallback;
 import com.google.common.util.concurrent.Futures;
 import com.google.common.util.concurrent.ListenableFuture;
-import com.google.firebase.ai.FirebaseAI;
-import com.google.firebase.ai.GenerativeModel;
-import com.google.firebase.ai.java.GenerativeModelFutures;
-import com.google.firebase.ai.type.Content;
-import com.google.firebase.ai.type.GenerateContentResponse;
-import com.google.firebase.ai.type.GenerativeBackend;
+import com.google.firebase.vertexai.FirebaseVertexAI;
+import com.google.firebase.vertexai.GenerativeModel;
+import com.google.firebase.vertexai.java.GenerativeModelFutures;
+import com.google.firebase.vertexai.type.Content;
+import com.google.firebase.vertexai.type.GenerateContentResponse;
+import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
 import java.util.ArrayList;
+import java.util.List;
 import java.util.concurrent.Executor;
 
-/**
- * MainActivity: تم تحديثها لربط الأزرار بالذكاء الاصطناعي بشكل صحيح.
- */
 public class MainActivity extends AppCompatActivity {
     private Button button11;
     private EditText etTaskTopic;
-    private GenerativeModel ai;
-    private GenerativeModelFutures model;
     private TextView tvAiResponse;
     private Button btnAddReport;
-    private RecyclerView recyclerReports;
     private MyTaskAdapter myTaskAdapter;
-    private ImageView imgPreview;
+    private GenerativeModelFutures model;
 
     private final BroadcastReceiver airplaneReceiver = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
             if (Intent.ACTION_AIRPLANE_MODE_CHANGED.equals(intent.getAction())) {
-                boolean isAirplaneModeOn = intent.getBooleanExtra("state", false);
+                boolean isOn = intent.getBooleanExtra("state", false);
                 if (btnAddReport != null) {
-                    btnAddReport.setBackgroundColor(isAirplaneModeOn ? Color.RED : Color.parseColor("#2E7D32"));
+                    btnAddReport.setBackgroundColor(isOn ? Color.RED : Color.parseColor("#2E7D32"));
                 }
             }
         }
@@ -74,123 +69,93 @@ public class MainActivity extends AppCompatActivity {
         EdgeToEdge.enable(this);
         setContentView(R.layout.activity_main);
 
-        // 1. تهيئة الذكاء الاصطناعي (تم تصحيح اسم الموديل)
+        // تهيئة الذكاء الاصطناعي بشكل مستقر
         try {
-            ai = FirebaseAI.getInstance(GenerativeBackend.googleAI())
-                    .generativeModel("gemini-1.5-flash");
-            model = GenerativeModelFutures.from(ai);
+            //GenerativeModel gm = FirebaseVertexAI.getInstance().generativeModel("gemini-2.5-flash");
+            //model = GenerativeModelFutures.from(gm);
         } catch (Exception e) {
-            Toast.makeText(this, "خطأ في تهيئة AI", Toast.LENGTH_SHORT).show();
+            Toast.makeText(this, "AI initialization failed", Toast.LENGTH_SHORT).show();
+            model = null;
         }
 
         initViews();
+         getAllFromFirebase();
 
         ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main), (v, insets) -> {
             Insets systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars());
             v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom);
             return insets;
         });
-
-        getAllFromFirebase();
     }
 
     private void initViews() {
-        btnAddReport = findViewById(R.id.btnAddReport);
-        recyclerReports = findViewById(R.id.recyclerReports);
-        imgPreview = findViewById(R.id.imgPreview);
         button11 = findViewById(R.id.button11);
-        tvAiResponse = findViewById(R.id.tvAiResponse);
         etTaskTopic = findViewById(R.id.etTaskTopic);
+        tvAiResponse = findViewById(R.id.tvAiResponse);
+        btnAddReport = findViewById(R.id.btnAddReport);
+        RecyclerView rv = findViewById(R.id.recyclerReports);
+        ImageView imgPreview = findViewById(R.id.imgPreview);
 
-        // برمجة زر إرسال السؤال
         if (button11 != null) {
             button11.setOnClickListener(v -> {
-                String topic = etTaskTopic.getText().toString().trim();
-                if (!topic.isEmpty()) {
-                    askFirebaseAiGeminiForSteps(topic);
-                } else {
-                    Toast.makeText(this, "يرجى كتابة المشكلة أولاً", Toast.LENGTH_SHORT).show();
-                }
+                String q = etTaskTopic.getText().toString().trim();
+                if (!q.isEmpty()) askAi(q);
             });
         }
 
-        if (recyclerReports != null) {
-            recyclerReports.setLayoutManager(new LinearLayoutManager(this));
+        if (rv != null) {
+            rv.setLayoutManager(new LinearLayoutManager(this));
             myTaskAdapter = new MyTaskAdapter(this, new ArrayList<>());
-            recyclerReports.setAdapter(myTaskAdapter);
+            rv.setAdapter(myTaskAdapter);
         }
 
-        if (btnAddReport != null) {
-            btnAddReport.setOnClickListener(v -> startActivity(new Intent(this, NewReportScreen.class)));
-        }
-
-        if (imgPreview != null) {
-            imgPreview.setOnClickListener(v -> startActivity(new Intent(this, Settings.class)));
-        }
+        if (btnAddReport != null) btnAddReport.setOnClickListener(v -> startActivity(new Intent(this, NewReportScreen.class)));
+        if (imgPreview != null) imgPreview.setOnClickListener(v -> startActivity(new Intent(this, Settings.class)));
     }
-
-    private void askFirebaseAiGeminiForSteps(String topic) {
+    
+    private void askAi(String prompt) {
         if (model == null) return;
-
-        tvAiResponse.setText("جاري التفكير...");
+        tvAiResponse.setText("Thinking...");
         button11.setEnabled(false);
 
-        // صياغة الطلب بشكل صحيح
-        String promptStr = "You are a smart assistant for city issue reporting.\n" +
-                "A user reported this issue: \"" + topic + "\".\n\n" +
-                "Provide:\n" +
-                "- A brief description of the issue\n" +
-                "- Step-by-step actions to resolve it\n" +
-                "- The responsible authority\n" +
-                "- Estimated urgency level (low, medium, high)\n" +
-                "- Safety tips if relevant\n\n" +
-                "Make the response clear and structured.";
-
-        Content prompt = new Content.Builder()
-                .addText(promptStr)
-                .build();
-
+        Content content = new Content.Builder().addText(prompt).build();
         Executor executor = ContextCompat.getMainExecutor(this);
-        ListenableFuture<GenerateContentResponse> response = model.generateContent(prompt);
-
+        ListenableFuture<GenerateContentResponse> response = model.generateContent(content);
+        
         Futures.addCallback(response, new FutureCallback<GenerateContentResponse>() {
             @Override
             public void onSuccess(GenerateContentResponse result) {
                 runOnUiThread(() -> {
-                    button11.setEnabled(true);
                     tvAiResponse.setText(result.getText());
+                    button11.setEnabled(true);
                 });
             }
-
             @Override
             public void onFailure(@NonNull Throwable t) {
                 runOnUiThread(() -> {
+                    tvAiResponse.setText("Error: " + t.getMessage());
                     button11.setEnabled(true);
-                    tvAiResponse.setText("خطأ: " + t.getMessage());
                 });
             }
         }, executor);
     }
 
     private void getAllFromFirebase() {
-        FirebaseDatabase.getInstance().getReference("tasks")
-            .addValueEventListener(new ValueEventListener() {
-                @Override
-                public void onDataChange(@NonNull DataSnapshot snapshot) {
-                    ArrayList<MyTask> tasks = new ArrayList<>();
-                    for (DataSnapshot ds : snapshot.getChildren()) {
-                        MyTask t = ds.getValue(MyTask.class);
-                        if (t != null) tasks.add(t);
-                    }
-                    if (myTaskAdapter != null) {
-                        myTaskAdapter.setTasksList(tasks);
-                        myTaskAdapter.notifyDataSetChanged();
-                    }
+        FirebaseDatabase.getInstance().getReference("tasks").addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                ArrayList<MyTask> tasks = new ArrayList<>();
+                for (DataSnapshot ds : snapshot.getChildren()) {
+                    MyTask t = ds.getValue(MyTask.class);
+                    if (t != null) tasks.add(t);
                 }
-                @Override public void onCancelled(@NonNull DatabaseError error) {
-                    Toast.makeText(MainActivity.this, "فشل جلب البيانات", Toast.LENGTH_SHORT).show();
+                if (myTaskAdapter != null) {
+                    myTaskAdapter.setTasksList(tasks);
+                    myTaskAdapter.notifyDataSetChanged();
                 }
-            });
+            }
+            @Override public void onCancelled(@NonNull DatabaseError error) {}
+        });
     }
 
     @Override

@@ -17,11 +17,18 @@ public class MyTask implements Serializable {
 
     @PrimaryKey(autoGenerate = true)
     long id;
-    
+    private long reminderTime;
     @NonNull
     public String taskName = "";
 
     public String kid;
+    public long getReminderTime() {
+        return reminderTime;
+    }
+
+    public void setReminderTime(long reminderTime) {
+        this.reminderTime = reminderTime;
+    }
 
     public String getKid() {
         return kid;

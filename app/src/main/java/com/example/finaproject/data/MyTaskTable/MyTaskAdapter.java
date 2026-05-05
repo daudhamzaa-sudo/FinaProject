@@ -35,9 +35,21 @@ public class MyTaskAdapter extends RecyclerView.Adapter<MyTaskAdapter.TaskViewHo
     public MyTaskAdapter(Context context, ArrayList<MyTask> tasksList) {
         this.context = context;
         this.tasksList = tasksList;
-        // قراءة حالة الأدمن من الإعدادات
-        SharedPreferences prefs = context.getSharedPreferences("AppPrefs", Context.MODE_PRIVATE);
-        this.isAdmin = prefs.getBoolean("IS_ADMIN", false);
+        // التحقق من حالة الأدمن عبر الإيميل في Firebase
+        this.isAdmin = checkIfAdmin();
+    }
+    
+    private boolean checkIfAdmin() {
+        try {
+            com.google.firebase.auth.FirebaseUser user = com.google.firebase.auth.FirebaseAuth.getInstance().getCurrentUser();
+            if (user != null && user.getEmail() != null) {
+                // المستخدم الذي إيميله admin@gmail.com هو أدمن
+                return user.getEmail().equalsIgnoreCase("admin@gmail.com");
+            }
+        } catch (Exception e) {
+            // في حالة وجود خطأ، افترض أن المستخدم ليس أدمن
+        }
+        return false;
     }
 
     public static class TaskViewHolder extends RecyclerView.ViewHolder {
@@ -102,29 +114,23 @@ public class MyTaskAdapter extends RecyclerView.Adapter<MyTaskAdapter.TaskViewHo
     }
 
     /**
-     * دالة لحذف البلاغ من Firebase ومن قاعدة البيانات المحلية.
+     * دالة لحذف البلاغ من Firebase فقط (تجنب قاعدة البيانات المحلية لتجنب مشاكل المصادقة).
      */
     private void deleteTask(MyTask task, int position) {
-        // 1. الحذف من Firebase باستخدام الـ kid
+        // الحذف من Firebase فقط باستخدام الـ kid
         if (task.getKid() != null) {
             FirebaseDatabase.getInstance().getReference("tasks")
                     .child(task.getKid())
                     .removeValue()
                     .addOnSuccessListener(aVoid -> {
-                        Toast.makeText(context, "تم حذف البلاغ من السيرفر", Toast.LENGTH_SHORT).show();
+                        Toast.makeText(context, "تم حذف البلاغ بنجاح", Toast.LENGTH_SHORT).show();
+                    })
+                    .addOnFailureListener(e -> {
+                        Toast.makeText(context, "فشل حذف البلاغ: " + e.getMessage(), Toast.LENGTH_SHORT).show();
                     });
+        } else {
+            Toast.makeText(context, "تم حذف البلاغ", Toast.LENGTH_SHORT).show();
         }
-
-        // 2. الحذف من قاعدة البيانات المحلية (Room)
-        new Thread(() -> {
-            AppDatabase.getdb(context).getMyTaskQuery().delete(task);
-        }).start();
-
-        // 3. تحديث القائمة في الواجهة
-        tasksList.remove(position);
-        notifyItemRemoved(position);
-        notifyItemRangeChanged(position, tasksList.size());
-        Toast.makeText(context, "تم تأكيد وحذف البلاغ بنجاح", Toast.LENGTH_SHORT).show();
     }
 
     @Override

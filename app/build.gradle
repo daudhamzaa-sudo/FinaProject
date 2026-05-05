@@ -21,29 +21,37 @@ android {
         targetCompatibility JavaVersion.VERSION_11
     }
 }
-
 dependencies {
+    // Firebase BoM and services
     implementation platform('com.google.firebase:firebase-bom:33.1.0')
     implementation 'com.google.firebase:firebase-analytics'
     implementation 'com.google.firebase:firebase-auth'
     implementation 'com.google.firebase:firebase-database'
+    implementation 'com.google.firebase:firebase-vertexai:16.0.0-beta01'
     
-    // الأسطر التي طلبتها
-    implementation 'com.google.firebase:firebase-ai:17.11.0'
+    // AI and Generative AI
+    implementation 'com.google.ai.client.generativeai:generativeai:0.7.0'
+    
+    // Guava for Futures
     implementation 'com.google.guava:guava:31.1-android'
-    
-    // مكتبات ضرورية للربط
     implementation 'androidx.concurrent:concurrent-futures:1.1.0'
-
+    
+    // Google Play Services
+    implementation 'com.google.android.gms:play-services-location:21.0.1'
+    implementation 'com.google.android.gms:play-services-auth:21.1.1'
+    
+    // AndroidX libraries
     implementation libs.appcompat
     implementation libs.material
     implementation libs.activity
     implementation libs.constraintlayout
-    
-    // Room Database
+    implementation libs.firebase.ai
+
+    // Room database
     def room_version = "2.6.1"
     implementation "androidx.room:room-runtime:$room_version"
     annotationProcessor "androidx.room:room-compiler:$room_version"
     
+    // Image loading
     implementation "com.github.bumptech.glide:glide:4.16.0"
 }

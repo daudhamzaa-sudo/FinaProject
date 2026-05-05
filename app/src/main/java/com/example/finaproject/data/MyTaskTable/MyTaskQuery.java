@@ -61,10 +61,12 @@ public interface MyTaskQuery {
     
     /**
      * إدراج مهمة واحدة جديدة.
+     *
      * @param myTask كائن المهمة.
+     * @return
      */
     @Insert
-    void insert(MyTask myTask);
+    long insert(MyTask myTask);
 
     /**
      * تحديث بيانات مهمة أو أكثر موجودة مسبقاً.
