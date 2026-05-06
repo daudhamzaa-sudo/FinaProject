@@ -28,11 +28,6 @@ import com.example.finaproject.data.MyTaskTable.MyTaskAdapter;
 import com.google.common.util.concurrent.FutureCallback;
 import com.google.common.util.concurrent.Futures;
 import com.google.common.util.concurrent.ListenableFuture;
-import com.google.firebase.vertexai.FirebaseVertexAI;
-import com.google.firebase.vertexai.GenerativeModel;
-import com.google.firebase.vertexai.java.GenerativeModelFutures;
-import com.google.firebase.vertexai.type.Content;
-import com.google.firebase.vertexai.type.GenerateContentResponse;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
@@ -49,7 +44,6 @@ public class MainActivity extends AppCompatActivity {
     private TextView tvAiResponse;
     private Button btnAddReport;
     private MyTaskAdapter myTaskAdapter;
-    private GenerativeModelFutures model;
 
     private final BroadcastReceiver airplaneReceiver = new BroadcastReceiver() {
         @Override
@@ -69,17 +63,10 @@ public class MainActivity extends AppCompatActivity {
         EdgeToEdge.enable(this);
         setContentView(R.layout.activity_main);
 
-        // تهيئة الذكاء الاصطناعي بشكل مستقر
-        try {
-            //GenerativeModel gm = FirebaseVertexAI.getInstance().generativeModel("gemini-2.5-flash");
-            //model = GenerativeModelFutures.from(gm);
-        } catch (Exception e) {
-            Toast.makeText(this, "AI initialization failed", Toast.LENGTH_SHORT).show();
-            model = null;
-        }
+        // AI functionality disabled - Vertex AI removed per user request
 
         initViews();
-         getAllFromFirebase();
+        getAllFromFirebase();
 
         ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main), (v, insets) -> {
             Insets systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars());
@@ -96,12 +83,12 @@ public class MainActivity extends AppCompatActivity {
         RecyclerView rv = findViewById(R.id.recyclerReports);
         ImageView imgPreview = findViewById(R.id.imgPreview);
 
-        if (button11 != null) {
-            button11.setOnClickListener(v -> {
-                String q = etTaskTopic.getText().toString().trim();
-                if (!q.isEmpty()) askAi(q);
-            });
-        }
+//        if (button11 != null) {
+//            button11.setOnClickListener(v -> {
+//                String q = etTaskTopic.getText().toString().trim();
+//                if (!q.isEmpty()) askAi(q);
+//            });
+//        }
 
         if (rv != null) {
             rv.setLayoutManager(new LinearLayoutManager(this));
@@ -112,33 +99,43 @@ public class MainActivity extends AppCompatActivity {
         if (btnAddReport != null) btnAddReport.setOnClickListener(v -> startActivity(new Intent(this, NewReportScreen.class)));
         if (imgPreview != null) imgPreview.setOnClickListener(v -> startActivity(new Intent(this, Settings.class)));
     }
-    
-    private void askAi(String prompt) {
-        if (model == null) return;
-        tvAiResponse.setText("Thinking...");
+
+    private void askFirebaseAiGeminiForSteps(String topic) {
+        //pbLoading.setVisibility(View.VISIBLE);
+        tvAiResponse.setText("");
         button11.setEnabled(false);
 
-        Content content = new Content.Builder().addText(prompt).build();
-        Executor executor = ContextCompat.getMainExecutor(this);
-        ListenableFuture<GenerateContentResponse> response = model.generateContent(content);
-        
-        Futures.addCallback(response, new FutureCallback<GenerateContentResponse>() {
-            @Override
-            public void onSuccess(GenerateContentResponse result) {
-                runOnUiThread(() -> {
-                    tvAiResponse.setText(result.getText());
-                    button11.setEnabled(true);
-                });
-            }
-            @Override
-            public void onFailure(@NonNull Throwable t) {
-                runOnUiThread(() -> {
-                    tvAiResponse.setText("Error: " + t.getMessage());
-                    button11.setEnabled(true);
-                });
-            }
-        }, executor);
+
+        String promptStr = "I want to perform the following task: '" + topic + "'. " +
+                "Can you suggest a clear, step-by-step checklist to complete this task effectively?";
+
+
+//        Content prompt = new Content.Builder()
+//                .addText(promptStr)
+//                .build();
+
+
+        // model.generateContent(prompt); // Vertex AI removed
+//        Executor executor = this::runOnUiThread;
+//        Futures.addCallback(response, new FutureCallback<GenerateContentResponse>() {
+//            @Override
+//            public void onSuccess(GenerateContentResponse result) {
+//                //pbLoading.setVisibility(View.GONE);
+//                button11.setEnabled(true);
+//                tvAiResponse.setText(result.getText());
+//            }
+//
+//
+//            @Override
+//            public void onFailure(Throwable t) {
+//                //pbLoading.setVisibility(View.GONE);
+//                button11.setEnabled(true);
+//                Toast.makeText(MainActivity.this, "Error: " + t.getMessage(), Toast.LENGTH_LONG).show();
+//            }
+//        }, executor);
     }
+
+
 
     private void getAllFromFirebase() {
         FirebaseDatabase.getInstance().getReference("tasks").addValueEventListener(new ValueEventListener() {
