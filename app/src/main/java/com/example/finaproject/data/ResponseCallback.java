@@ -1,17 +1,21 @@
 package com.example.finaproject.data;
 
+/**
+ * واجهة (Interface) ResponseCallback:
+ * تستخدم كـ "عقد" (Contract) لضمان أن الكود الذي يطلب خدمة الذكاء الاصطناعي 
+ * سيوفر مكاناً لاستلام النتيجة أو معالجة الخطأ.
+ */
 public interface ResponseCallback {
+    
     /**
-     * معالجة جواب الطلب من Gemini
-     * @param response جواب الطلب
+     * دالة onResponse: يتم استدعاؤها عندما يعيد الذكاء الاصطناعي جواباً بنجاح.
+     * @param response النص المولد من قبل Gemini.
      */
-    public void onResponse(String response);
-
+    void onResponse(String response);
 
     /**
-     * الرد بحالة وجود خطا
-     * @param error
+     * دالة onError: يتم استدعاؤها في حال حدوث خطأ (مثل انقطاع الإنترنت).
+     * @param error كائن يحتوي على تفاصيل الخطأ التقني.
      */
-    public void onError(Throwable error);
+    void onError(Throwable error);
 }
-

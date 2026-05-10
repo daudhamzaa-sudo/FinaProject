@@ -2,12 +2,15 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools">
 
-    <!-- الصلاحيات الضرورية -->
+    <!-- صلاحية الوصول للإنترنت: ضرورية لـ Firebase والذكاء الاصطناعي -->
     <uses-permission android:name="android.permission.INTERNET" />
+    <!-- صلاحية الإشعارات: مطلوبة في أندرويد 13 فما فوق لإظهار تنبيهات المنبه -->
     <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
+    <!-- صلاحية المنبه الدقيق: لضمان تشغيل التذكيرات في وقتها المحدد بالضبط -->
     <uses-permission android:name="android.permission.SCHEDULE_EXACT_ALARM" />
+    <!-- صلاحية قراءة الصور: لكي يختار المستخدم صورة للبلاغ من الاستوديو -->
     <uses-permission android:name="android.permission.READ_MEDIA_IMAGES" />
-    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" android:maxSdkVersion="32" />
+    <!-- صلاحية الموقع الجغرافي: لتحديد مكان المشكلة (دقيق وتقريبي) -->
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
     <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
 
@@ -21,58 +24,28 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.FinaProject">
 
-        <!-- خدمات المزامنة -->
-        <service
-            android:name=".data.MyProfileTable.UserSyncService"
-            android:enabled="true"
-            android:exported="true" />
+        <!-- خدمات المزامنة التي تعمل في الخلفية لتحديث البيانات -->
+        <service android:name=".data.MyProfileTable.UserSyncService" android:enabled="true" android:exported="true" />
+        <service android:name=".data.MyTaskTable.TaskSyncService" android:enabled="true" android:exported="true" />
 
-        <!-- مستقبلات البث (مهمة جداً لمنع الكراش) -->
-        <receiver android:name=".AirplaneReceiver"
-            android:enabled="true"
-            android:exported="false">
-            <intent-filter>
-                <action android:name="android.intent.action.AIRPLANE_MODE"/>
-            </intent-filter>
-        </receiver>
+        <!-- مستقبل التنبيهات: المسؤول عن إظهار الإشعار عند حلول وقت المهمة -->
+        <receiver android:name=".TaskReminderReceiver" android:enabled="true" android:exported="false" />
 
-        <!-- إضافة مستقبل التنبيهات المفقود -->
-        <receiver android:name=".TaskReminderReceiver"
-            android:enabled="true"
-            android:exported="false" />
+        <!-- تعريف الشاشات المختلفة في التطبيق -->
+        <activity android:name=".ReportDetailsActivity" android:exported="false" />
+        <activity android:name=".Settings" android:exported="false" />
+        <activity android:name=".NewReportScreen" android:exported="false" />
+        <activity android:name=".MainActivity" android:exported="false" />
+        <activity android:name=".login" android:exported="false" />
+        <activity android:name=".signup" android:exported="false" />
 
-        <activity
-            android:name=".ReportDetailsActivity"
-            android:exported="false" />
-        <activity
-            android:name=".Settings"
-            android:exported="false" />
-        <activity
-            android:name=".NewReportScreen"
-            android:exported="false" />
-        <activity
-            android:name=".MainActivity"
-            android:exported="false" />
-        
-        <!-- جعل الـ Login شاشة عادية وليس Launcher لتجنب تكرار الأيقونة -->
-        <activity
-            android:name=".login"
-            android:exported="false" />
-            
-        <activity
-            android:name=".signup"
-            android:exported="false" />
-
-        <!-- شاشة البداية هي الوحيدة التي تملك خاصية LAUNCHER -->
-        <activity
-            android:name=".SplashScreen"
-            android:exported="true">
+        <!-- شاشة البداية (SplashScreen): هي نقطة الانطلاق الوحيدة للتطبيق -->
+        <activity android:name=".SplashScreen" android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-
     </application>
 
 </manifest>

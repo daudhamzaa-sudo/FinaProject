@@ -1,16 +1,16 @@
 plugins {
-    alias(libs.plugins.android.application)
+    id 'com.android.application'
     id 'com.google.gms.google-services'
 }
 
 android {
     namespace 'com.example.finaproject'
-    compileSdk 35
+    compileSdk 34
 
     defaultConfig {
         applicationId "com.example.finaproject"
         minSdk 26
-        targetSdk 35
+        targetSdk 34
         versionCode 1
         versionName "1.0"
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
@@ -22,36 +22,58 @@ android {
     }
 }
 dependencies {
-    // Firebase BoM and services
+    // المكتبة الأساسية لـ Gemini
+    implementation("com.google.ai.client.generativeai:generativeai:0.7.0")
+
+    // المكتبة الضرورية لدعم Java (Guava/Futures)
+    implementation("com.google.guava:guava:31.1-android")
+}
+dependencies {
+    // المكتبة الأساسية
+    implementation("com.google.ai.client.generativeai:generativeai:0.9.0")
+
+    // المكتبة الضرورية جداً لمبرمجي الجافا (توفّر الـ Futures)
+    implementation("com.google.guava:guava:31.1-android")
+}
+dependencies {
+    // هذه المكتبة هي المسؤولة عن GoogleSignIn و GoogleSignInClient
+    implementation("com.google.android.gms:play-services-auth:21.1.1")
+}
+dependencies {
+    // المكتبة الرسمية لـ Gemini عبر Firebase
+    implementation("com.google.firebase:firebase-vertexai:16.0.0-beta02")
+}
+dependencies {
+    // 1. Firebase Core (استخدام BOM حديث لضمان دعم Vertex AI)
     implementation platform('com.google.firebase:firebase-bom:33.1.0')
     implementation 'com.google.firebase:firebase-analytics'
     implementation 'com.google.firebase:firebase-auth'
     implementation 'com.google.firebase:firebase-database'
-    implementation 'com.google.firebase:firebase-vertexai:16.0.0-beta01'
     
-    // AI and Generative AI
-    implementation 'com.google.ai.client.generativeai:generativeai:0.7.0'
+    // 2. Vertex AI for Firebase (الذكاء الاصطناعي Gemini)
+    implementation 'com.google.firebase:firebase-vertexai'
     
-    // Guava for Futures
+    // 3. مكتبات دعم الجافا والمستقبلات (تصلح خطأ GenerativeModelFutures)
     implementation 'com.google.guava:guava:31.1-android'
     implementation 'androidx.concurrent:concurrent-futures:1.1.0'
     
-    // Google Play Services
+    // 4. خدمات جوجل للموقع والمهام (تصلح خطأ CancellationTokenSource)
     implementation 'com.google.android.gms:play-services-location:21.0.1'
-    implementation 'com.google.android.gms:play-services-auth:21.1.1'
+    implementation 'com.google.android.gms:play-services-tasks:18.1.0'
+    implementation 'com.google.android.gms:play-services-base:18.3.0'
     
-    // AndroidX libraries
-    implementation libs.appcompat
-    implementation libs.material
-    implementation libs.activity
-    implementation libs.constraintlayout
-    implementation libs.firebase.ai
+    // 5. المكتبات الأساسية للواجهة
+    implementation 'androidx.appcompat:appcompat:1.6.1'
+    implementation 'com.google.android.material:material:1.10.0'
+    implementation 'androidx.constraintlayout:constraintlayout:2.1.4'
+    implementation 'androidx.activity:activity:1.8.0'
+    testImplementation libs.junit.junit
 
-    // Room database
+    // 6. قاعدة بيانات Room
     def room_version = "2.6.1"
     implementation "androidx.room:room-runtime:$room_version"
     annotationProcessor "androidx.room:room-compiler:$room_version"
     
-    // Image loading
+    // 7. مكتبة تحميل الصور
     implementation "com.github.bumptech.glide:glide:4.16.0"
 }

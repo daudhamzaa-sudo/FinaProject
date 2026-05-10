@@ -7,26 +7,29 @@ import android.os.Looper;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+/**
+ * شاشة البداية (Splash Screen): تظهر عند فتح التطبيق لأول مرة لعرض شعار التطبيق.
+ */
 public class SplashScreen extends AppCompatActivity {
-    // Splash screen duration in milliseconds
-    private static final long SPLASH_DELAY = 3000; // 3 seconds
+    // تحديد مدة بقاء الشاشة (3 ثوانٍ) قبل الانتقال للشاشة التالية
+    private static final long SPLASH_DELAY = 3000; 
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        // تعيين التصميم الخاص بشاشة البداية
         setContentView(R.layout.activity_splash_screen);
 
-        // Using a handler to delay the navigation
+        // استخدام Handler لتأخير عملية الانتقال
         new Handler(Looper.getMainLooper()).postDelayed(() -> {
-            // Start the main activity
+            // الانتقال من شاشة البداية إلى شاشة تسجيل الدخول (login)
             Intent intent = new Intent(SplashScreen.this, login.class);
             startActivity(intent);
-            startActivity(intent);
             
-            // Close this activity
+            // إغلاق شاشة البداية لكي لا يعود إليها المستخدم عند الضغط على زر الرجوع
             finish();
             
-            // Apply fade in/out animation between activities
+            // إضافة حركة انتقال ناعمة (تلاشي) بين الشاشات
             overridePendingTransition(android.R.anim.fade_in, android.R.anim.fade_out);
         }, SPLASH_DELAY);
     }

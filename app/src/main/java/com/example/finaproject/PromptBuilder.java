@@ -1,18 +1,28 @@
 package com.example.finaproject;
 
+/**
+ * كلاس PromptBuilder: وظيفته تحضير "الطلب" (Prompt) الذي يرسل للذكاء الاصطناعي.
+ */
 public class PromptBuilder {
 
+    /**
+     * دالة buildReportPrompt: تأخذ نصاً بسيطاً من المستخدم وتحوله لطلب منظم.
+     * @param userText النص الذي كتبه المواطن عن المشكلة.
+     * @return النص الكامل (الأمر) الموجه للذكاء الاصطناعي.
+     */
     public static String buildReportPrompt(String userText) {
+        // إنشاء نص الأمر (Prompt) مع تعليمات محددة للموديل
         String prompt =
-                "You are a municipal infrastructure assistant.\n\n" +
-                        "A citizen reported the following issue:\n" +
-                        "\"" + userText + "\"\n\n" +
-                        "Your tasks:\n" +
-                        "1. Identify the type of problem.\n" +
-                        "2. Rewrite the report professionally.\n" +
-                        "3. Suggest a solution.\n" +
-                        "4. Define urgency level.\n";
+                "أنت مساعد فني متخصص في البنية التحتية للمدن.\n\n" + // تحديد دور الذكاء الاصطناعي
+                        "قام أحد المواطنين بالإبلاغ عن المشكلة التالية:\n" + // سياق الطلب
+                        "\"" + userText + "\"\n\n" + // إدراج نص المستخدم داخل الطلب
+                        "مهامك هي:\n" + // قائمة التعليمات المطلوب تنفيذها من الموديل
+                        "1. تحديد نوع المشكلة بدقة.\n" + // المهمة الأولى
+                        "2. إعادة صياغة البلاغ بشكل مهني واحترافي.\n" + // المهمة الثانية
+                        "3. اقتراح حل عملي لهذه المشكلة.\n" + // المهمة الثالثة
+                        "4. تحديد درجة الاستعجال (منخفضة، متوسطة، عالية).\n"; // المهمة الرابعة
 
+        // إرجاع النص النهائي لإرساله عبر API الذكاء الاصطناعي
         return prompt;
     }
 }

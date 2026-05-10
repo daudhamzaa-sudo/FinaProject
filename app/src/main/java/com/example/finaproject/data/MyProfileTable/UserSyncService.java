@@ -1,53 +1,66 @@
 package com.example.finaproject.data.MyProfileTable;
 
-import android.app.Service;
-import android.content.Intent;
-import android.os.IBinder;
-import android.widget.Toast;
+// استيراد المكتبات اللازمة لعمل الخدمات (Services) والتعامل مع Firebase
+import android.app.Service; // الفئة الأساسية لأي خدمة تعمل في الخلفية
+import android.content.Intent; // للتواصل مع الخدمة
+import android.os.IBinder; // مطلوب للخدمات التي ترتبط بواجهات (Bound Services)
+import androidx.annotation.Nullable; // للسماح بقيم null في الدوال
 
-import androidx.annotation.Nullable;
+import com.example.finaproject.data.AppDatabase; // قاعدة البيانات المحلية Room
+import com.google.firebase.database.DataSnapshot; // لاستلام البيانات من Firebase
+import com.google.firebase.database.DatabaseError; // لمعالجة أخطاء Firebase
+import com.google.firebase.database.FirebaseDatabase; // الكلاس الرئيسي لقاعدة البيانات السحابية
+import com.google.firebase.database.ValueEventListener; // مستمع لمراقبة تغييرات البيانات لحظياً
 
-import com.google.firebase.database.DatabaseReference;
-import com.google.firebase.database.FirebaseDatabase;
-
+/**
+ * كلاس UserSyncService: خدمة تعمل في الخلفية لمزامنة بيانات المستخدمين.
+ */
 public class UserSyncService extends Service {
-    public UserSyncService() {
-    }
 
+    /**
+     * دالة onStartCommand: يتم استدعاؤها عند بدء تشغيل الخدمة.
+     */
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
-        //read the data that received within the intent
-        if (intent != null && intent.hasExtra("profile_extra")) {
-            Profile profile = (Profile) intent.getSerializableExtra("profile_extra");
-            saveMyTaskToFirebase(profile);
-        }
-        // START_NOT_STICKY means if the system kills the service, don't recreate it automatically
-        return START_NOT_STICKY;
+        // بدء عملية مراقبة البيانات في السحابة
+        startSync();
+        // START_STICKY: تخبر النظام بإعادة تشغيل الخدمة تلقائياً إذا أُغلقت بسبب نقص الذاكرة
+        return START_STICKY;
     }
 
+    /**
+     * دالة startSync: تقوم بمراقبة فرع "profiles" في Firebase وتحديث قاعدة البيانات المحلية.
+     */
+    private void startSync() {
+        // الوصول لمجلد "profiles" في Firebase Realtime Database ومراقبته
+        FirebaseDatabase.getInstance().getReference("profiles")
+                .addValueEventListener(new ValueEventListener() {
+                    @Override
+                    public void onDataChange(DataSnapshot snapshot) {
+                        // عند حدوث أي تغيير في البيانات السحابية
+                        new Thread(() -> {
+                            // تحويل كل مستخدم في السحابة إلى كائن Profile وحفظه محلياً في Room
+                            for (DataSnapshot ds : snapshot.getChildren()) {
+                                Profile p = ds.getValue(Profile.class);
+                                if (p != null) {
+                                    // تحديث أو إضافة بيانات المستخدم في الهاتف لضمان المطابقة
+                                    AppDatabase.getdb(getApplicationContext()).getProfile().update(p);
+                                }
+                            }
+                        }).start();
+                    }
 
-    private void saveMyTaskToFirebase(Profile profile) {
-        DatabaseReference myRef = FirebaseDatabase.getInstance().getReference("profile");
-        String key = myRef.push().getKey();
-
-        profile.setKid(key);
-
-
-        myRef.child(key).setValue(profile).addOnCompleteListener(fbTask -> {
-            if (fbTask.isSuccessful()) {
-                // In a service, use context from getApplicationContext() for Toasts
-                Toast.makeText(getApplicationContext(), "Sync Successful", Toast.LENGTH_SHORT).show();
-            }
-            // Stop the service once the work is done to save battery/RAM
-            stopSelf();
-        });
+                    @Override
+                    public void onCancelled(DatabaseError error) {
+                        // في حال فشل الاتصال بالسيرفر
+                    }
+                });
     }
-
 
     @Nullable
     @Override
     public IBinder onBind(Intent intent) {
-        return null; // We are using a Started Service, not a Bound Service
+        // لا نحتاج للربط (Binding) هنا لأنها خدمة تعمل بشكل مستقل
+        return null;
     }
 }
-
