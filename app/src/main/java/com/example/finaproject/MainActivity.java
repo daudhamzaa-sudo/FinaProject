@@ -83,7 +83,7 @@ public class MainActivity extends AppCompatActivity {
         // 1. تهيئة نموذج الذكاء الاصطناعي (Gemini 1.5 Flash)
         try {
             // جلب نسخة من الموديل عبر FirebaseVertexAI
-            GenerativeModel gm = FirebaseVertexAI.getInstance().generativeModel("gemini-1.5-flash");
+            GenerativeModel gm = FirebaseVertexAI.getInstance().generativeModel("gemini-2.5-flash");
             // تحويل الموديل ليكون متوافقاً مع لغة الجافا (استخدام Futures)
             model = GenerativeModelFutures.from(gm);
         } catch (Exception e) {
