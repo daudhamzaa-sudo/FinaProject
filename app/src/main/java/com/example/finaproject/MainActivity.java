@@ -80,7 +80,7 @@ public class MainActivity extends AppCompatActivity {
         // ربط كود الجافا بملف التصميم XML الخاص بهذه الشاشة
         setContentView(R.layout.activity_main);
 
-        // 1. تهيئة نموذج الذكاء الاصطناعي (Gemini 1.5 Flash)
+        // 1. تهيئة نموذج الذكاء الاصطناعي ()
         try {
             // جلب نسخة من الموديل عبر FirebaseVertexAI
             GenerativeModel gm = FirebaseVertexAI.getInstance().generativeModel("gemini-2.5-flash");
@@ -157,16 +157,7 @@ public class MainActivity extends AppCompatActivity {
         // يمكنك تغيير النص بين علامات التنصيص حسب ما تريد
         String systemInstruction ="You are a smart assistant for city issue reporting.\n" +
                 "\n" +
-                "A user reported this issue: \"{problem}\".\n" +
-                "\n" +
-                "Provide:\n" +
-                "- A brief description of the issue\n" +
-                "- Step-by-step actions to resolve it\n" +
-                "- The responsible authority\n" +
-                "- Estimated urgency level (low, medium, high)\n" +
-                "- Safety tips if relevant\n" +
-                "\n" +
-                "Make the response clear and structured." ;
+                "A user reported this issue: \"{problem}\".\n" + "\n" + "Provide:\n" + "- A brief description of the issue\n" + "- Step-by-step actions to resolve it\n" + "- The responsible authority\n" + "- Estimated urgency level (low, medium, high)\n" + "- Safety tips if relevant\n" + "\n" + "Make the response clear and structured." ;
 
         // 2. دمج التعليمات الثابتة مع سؤال المستخدم في متغير واحد
         String finalPrompt = systemInstruction + "\n\nسؤال المستخدم: " + prompt;
