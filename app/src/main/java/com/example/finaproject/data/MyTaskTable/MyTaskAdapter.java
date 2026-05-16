@@ -31,7 +31,7 @@ public class MyTaskAdapter extends RecyclerView.Adapter<MyTaskAdapter.TaskViewHo
     private boolean isAdmin;            // متغير لتحديد هل المستخدم الحالي "مدير" أم لا
 
     /**
-     * الباني (Constructor): يجهز المحول بالبيانات ويفحص صلاحية المستخدم.
+     * الباني (Constructor): يجهز المحول بالبيانات ويفحص صلاحية المستخدم.Context لقاعده البيانات
      */
     public MyTaskAdapter(Context context, ArrayList<MyTask> tasksList) {
         this.context = context;
