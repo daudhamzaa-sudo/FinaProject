@@ -65,6 +65,8 @@ public class NewReportScreen extends AppCompatActivity {
     private long selectedReminderTime = 0;    // وقت المنبه بالملي ثانية
 
     // --- لاقطات النتائج (Launchers) ---
+
+    //???????
     private ActivityResultLauncher<String> pickImage; // لفتح الاستوديو واختيار صورة
     
     // لاقط لطلب صلاحية الإشعارات (إلزامي في أندرويد 13 فما فوق)

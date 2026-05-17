@@ -19,7 +19,7 @@ public class SplashScreen extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         // تعيين التصميم الخاص بشاشة البداية
         setContentView(R.layout.activity_splash_screen);
-
+// thread
         // استخدام Handler لتأخير عملية الانتقال
         new Handler(Looper.getMainLooper()).postDelayed(() -> {
             // الانتقال من شاشة البداية إلى شاشة تسجيل الدخول (login)
